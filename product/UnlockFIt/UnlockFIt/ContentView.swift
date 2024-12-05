@@ -38,12 +38,6 @@ struct ContentView: View {
     }
 }
 
-struct ScreenTimeView: View {
-    var body: some View {
-        Text("Screen Time Section")
-    }
-}
-
 struct ProgressView: View {
     var body: some View {
         Text("Progress Section")

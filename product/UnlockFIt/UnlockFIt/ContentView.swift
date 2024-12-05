@@ -38,12 +38,6 @@ struct ContentView: View {
     }
 }
 
-struct ProfileView: View {
-    var body: some View {
-        Text("Profile Section")
-    }
-}
-
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()

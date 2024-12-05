@@ -27,6 +27,12 @@ struct ContentView: View {
                     Image(systemName: "chart.bar")
                     Text("Progress")
                 }
+            
+            ProfileView()
+                .tabItem {
+                    Image(systemName: "person.crop.circle")
+                    Text("Profile")
+                }
         }
         .accentColor(.green) // Set the theme color
     }
@@ -47,6 +53,12 @@ struct ScreenTimeView: View {
 struct ProgressView: View {
     var body: some View {
         Text("Progress Section")
+    }
+}
+
+struct ProfileView: View {
+    var body: some View {
+        Text("Profile Section")
     }
 }
 

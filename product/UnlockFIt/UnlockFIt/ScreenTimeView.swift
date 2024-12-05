@@ -10,51 +10,60 @@ import SwiftUI
 
 struct ScreenTimeView: View {
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            // Header
-            Text("Today's Screen Time")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding(.top)
-            
-            // Screen Time Summary Card
-            VStack(alignment: .leading) {
-                Text("Total Screen Time: 3h 45m")
-                    .font(.headline)
-                
-                HStack {
-                    AppUsageView(appName: "Instagram", usage: "1h 30m", color: .purple)
-                    AppUsageView(appName: "TikTok", usage: "1h", color: .pink)
+        ZStack {
+            Color.black.edgesIgnoringSafeArea(.all)
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Today's Screen Time")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+
+                // Screen Time Summary Card
+                VStack(alignment: .leading) {
+                    Text("Total Screen Time: 3h 45m")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    HStack {
+                        AppUsageView(appName: "Instagram", usage: "1h 30m", color: .purple)
+                        AppUsageView(appName: "TikTok", usage: "1h", color: .pink)
+                    }
                 }
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+
+                // Progress Bar
+                VStack(alignment: .leading) {
+                    Text("Time Saved by Fitness")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    ProgressBarView(progress: 0.6, color: .green)
+                        .frame(height: 20)
+                }
+                .padding(.vertical)
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+
+                // Button
+                Button(action: {
+                    // Action
+                }) {
+                    Text("Manage App Restrictions")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(LinearGradient(
+                            gradient: Gradient(colors: [Color.pink, Color.purple]),
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        ))
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                }
+                .padding(.horizontal)
             }
             .padding()
-            .background(Color.gray.opacity(0.1))
-            .cornerRadius(10)
-            
-            // Screen Time Saved Progress Bar
-            VStack(alignment: .leading) {
-                Text("Time Saved by Fitness")
-                    .font(.headline)
-                
-                ProgressBarView(progress: 0.6, color: .green)
-                    .frame(height: 20)
-            }
-            .padding(.vertical)
-            
-            // Placeholder for App Management
-            Button(action: {
-                // Action for managing app restrictions
-            }) {
-                Text("Manage App Restrictions")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-            }
         }
-        .padding()
-        .navigationTitle("Screen Time")
     }
 }
 
@@ -72,6 +81,7 @@ struct AppUsageView: View {
             
             Text(appName)
                 .font(.caption)
+                .foregroundColor(Color.white)
                 .multilineTextAlignment(.center)
             
             Text(usage)
@@ -101,5 +111,11 @@ struct ProgressBarView: View {
             }
             .cornerRadius(geometry.size.height / 2)
         }
+    }
+}
+
+struct ScreenTimeView_Previews: PreviewProvider {
+    static var previews: some View {
+        ScreenTimeView()
     }
 }

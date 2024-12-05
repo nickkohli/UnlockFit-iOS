@@ -10,54 +10,60 @@ import SwiftUI
 
 struct ProgressView: View {
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Header
-                Text("Your Progress")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .padding(.top)
-                
-                // Weekly Overview
-                VStack(alignment: .leading) {
-                    Text("Weekly Overview")
-                        .font(.headline)
-                    
-                    HStack {
-                        ProgressCard(title: "Steps", value: "56,000", color: .blue)
-                        ProgressCard(title: "Calories", value: "3,500", color: .red)
-                        ProgressCard(title: "Time Saved", value: "5h 20m", color: .green)
+        ZStack {
+            Color.black.edgesIgnoringSafeArea(.all)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("Your Progress")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+
+                    // Weekly Overview
+                    VStack(alignment: .leading) {
+                        Text("Weekly Overview")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        HStack {
+                            ProgressCard(title: "Steps", value: "56,000", color: CustomColors.ringRed)
+                            ProgressCard(title: "Calories", value: "3,500", color: CustomColors.ringGreen)
+                            ProgressCard(title: "Time Saved", value: "5h 20m", color: CustomColors.ringBlue)
+                        }
                     }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+
+                    // Fitness Trends
+                    VStack(alignment: .leading) {
+                        Text("Fitness Trends")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: .blue)
+                            .frame(height: 200)
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+
+                    // Achievements
+                    VStack(alignment: .leading) {
+                        Text("Achievements")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.leading)
+                        HStack {
+                            AchievementBadge(title: "10k Steps", icon: "figure.walk", color: CustomColors.bronze)
+                            AchievementBadge(title: "Screen Saver", icon: "clock", color: CustomColors.silver)
+                            AchievementBadge(title: "Calorie Burner", icon: "flame", color: CustomColors.gold)
+                        }
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
                 }
                 .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                
-                // Trend Graph (Placeholder)
-                VStack(alignment: .leading) {
-                    Text("Fitness Trends")
-                        .font(.headline)
-                    
-                    LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: .blue)
-                        .frame(height: 200)
-                }
-                
-                Spacer().frame(height: 20)
-                
-                // Achievements
-                VStack(alignment: .leading) {
-                    Text("Achievements")
-                        .font(.headline)
-                    
-                    HStack {
-                        AchievementBadge(title: "10k Steps", icon: "figure.walk", color: .blue)
-                        AchievementBadge(title: "Screen Saver", icon: "clock", color: .green)
-                        AchievementBadge(title: "Calorie Burner", icon: "flame", color: .red)
-                    }
-                }
             }
-            .padding()
-            .navigationTitle("Progress")
         }
     }
 }
@@ -69,7 +75,7 @@ struct ProgressCard: View {
     let color: Color
     
     var body: some View {
-        VStack {
+        VStack() {
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
@@ -77,13 +83,12 @@ struct ProgressCard: View {
             
             Text(title)
                 .font(.caption)
-                .foregroundColor(.gray)
+                .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
-        .padding()
-        .background(Color.white)
-        .cornerRadius(10)
-        .shadow(radius: 2)
+        .padding(.all, 12.0)
+        .background(Color(red: 0.108, green: 0.108, blue: 0.114))
+        
     }
 }
 
@@ -131,6 +136,8 @@ struct AchievementBadge: View {
             Text(title)
                 .font(.caption)
                 .foregroundColor(.gray)
+                .multilineTextAlignment(.center)
+                .padding(.all, 0.2)
         }
     }
 }

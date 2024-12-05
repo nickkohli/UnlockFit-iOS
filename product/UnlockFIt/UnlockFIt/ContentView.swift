@@ -8,35 +8,47 @@
 import SwiftUI
 
 struct ContentView: View {
+    init() {
+        // Set the appearance of the Tab Bar globally
+        UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray
+    }
+
     var body: some View {
-        TabView {
-            FitnessView()
-                .tabItem {
-                    Image(systemName: "figure.walk")
-                    Text("Fitness")
-                }
-            
-            ScreenTimeView()
-                .tabItem {
-                    Image(systemName: "clock")
-                    Text("Screen Time")
-                }
-            
-            ProgressView()
-                .tabItem {
-                    Image(systemName: "chart.bar")
-                    Text("Progress")
-                }
-            
-            ProfileView()
-                .tabItem {
-                    Image(systemName: "person.crop.circle")
-                    Text("Profile")
-                }
+        ZStack {
+            // Dark background
+            Color.black
+                .edgesIgnoringSafeArea(.all)
+
+            TabView {
+                FitnessView()
+                    .tabItem {
+                        Image(systemName: "figure.walk")
+                        Text("Fitness")
+                    }
+
+                ScreenTimeView()
+                    .tabItem {
+                        Image(systemName: "clock")
+                        Text("Screen Time")
+                    }
+
+                ProgressView()
+                    .tabItem {
+                        Image(systemName: "chart.bar")
+                        Text("Progress")
+                    }
+
+                ProfileView()
+                    .tabItem {
+                        Image(systemName: "person.crop.circle")
+                        Text("Profile")
+                    }
+            }
+            .accentColor(.purple) // Selected tab icon color
         }
-        .accentColor(.green) // Set the theme color
     }
 }
+
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {

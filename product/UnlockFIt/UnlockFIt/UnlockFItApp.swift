@@ -6,9 +6,16 @@
 //
 
 import SwiftUI
+import UIKit
 
 @main
-struct UnlockFItApp: App {
+struct UnlockFitApp: App {
+    init() {
+        UITabBar.appearance().barTintColor = UIColor.black // Background color for Tab Bar
+        UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray // Unselected tabs
+        UITabBar.appearance().tintColor = UIColor(.purple) // Selected tabs
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()

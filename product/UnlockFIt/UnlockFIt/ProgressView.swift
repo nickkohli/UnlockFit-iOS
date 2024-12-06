@@ -8,7 +8,11 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct ProgressView: View {
+    @EnvironmentObject var themeManager: ThemeManager // Inject ThemeManager
+
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
@@ -39,7 +43,7 @@ struct ProgressView: View {
                         Text("Fitness Trends")
                             .font(.headline)
                             .foregroundColor(.white)
-                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: .blue)
+                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: themeManager.accentColor) // Use dynamic accent color
                             .frame(height: 200)
                     }
                     .padding()
@@ -145,5 +149,6 @@ struct AchievementBadge: View {
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
         ProgressView()
+            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
     }
 }

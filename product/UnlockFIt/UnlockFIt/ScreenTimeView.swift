@@ -9,6 +9,8 @@
 import SwiftUI
 
 struct ScreenTimeView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
@@ -53,7 +55,7 @@ struct ScreenTimeView: View {
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(LinearGradient(
-                            gradient: Gradient(colors: [Color.pink, Color.purple]),
+                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
                             startPoint: .leading,
                             endPoint: .trailing
                         ))
@@ -117,5 +119,6 @@ struct ProgressBarView: View {
 struct ScreenTimeView_Previews: PreviewProvider {
     static var previews: some View {
         ScreenTimeView()
+            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
     }
 }

@@ -45,7 +45,7 @@ struct ContentView: View {
                         Text("Profile")
                     }
             }
-            .accentColor(.purple) // Selected tab icon color
+            .accentColor(themeManager.accentColor) // Selected tab icon color
         }
     }
 }

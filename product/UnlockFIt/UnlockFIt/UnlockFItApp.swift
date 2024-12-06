@@ -15,7 +15,7 @@ struct UnlockFitApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(themeManager) // Inject into the entire app
+                .environmentObject(themeManager)
         }
     }
 }

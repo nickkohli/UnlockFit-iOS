@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct FitnessView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    
     var body: some View {
         ZStack {
             // Dark Background
@@ -74,7 +76,7 @@ struct FitnessView: View {
                     Text("Set a Step Goal")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(LinearGradient(gradient: Gradient(colors: [.pink, .purple]), startPoint: .leading, endPoint: .trailing))
+                        .background(LinearGradient(gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]), startPoint: .leading, endPoint: .trailing))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }

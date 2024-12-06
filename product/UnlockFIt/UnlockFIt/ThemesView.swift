@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct ThemesView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+
+    let themes = ["Default", "Neon"]
+
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
             Text("Select a Theme")
@@ -8,22 +12,26 @@ struct ThemesView: View {
                 .fontWeight(.bold)
                 .foregroundColor(.white)
                 .padding(.bottom, 20)
-            
-            // Toggles for themes
-            VStack(alignment: .leading, spacing: 10) {
-                Toggle(isOn: .constant(false)) {
-                    Text("Default")
-                        .foregroundColor(.white)
-                }
-                .toggleStyle(SwitchToggleStyle(tint: .purple))
-                
-                Toggle(isOn: .constant(false)) {
-                    Text("Neon")
-                        .foregroundColor(.white)
-                }
-                .toggleStyle(SwitchToggleStyle(tint: .purple))
-            }
 
+            ForEach(themes, id: \.self) { theme in
+                Toggle(
+                    isOn: Binding<Bool>(
+                        get: { themeManager.selectedTheme == theme },
+                        set: { isOn in
+                            if isOn {
+                                themeManager.selectedTheme = theme
+                            }
+                        }
+                    )
+                ) {
+                    Text(theme)
+                        .foregroundColor(.white)
+                        .font(.headline)
+                }
+                .toggleStyle(SwitchToggleStyle(tint: themeManager.accentColor)) // Dynamic tint color
+                .padding(.vertical, 5)
+            }
+            
             Spacer()
         }
         .padding()

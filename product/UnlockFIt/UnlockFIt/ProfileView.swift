@@ -86,7 +86,7 @@ struct ProfileView: View {
                             }
                             .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
                             
-                            NavigationLink(destination: Text("Themes")) {
+                            NavigationLink(destination: ThemesView()) {
                                 Label("Themes", systemImage: "paintpalette.fill")
                                     .foregroundColor(.orange)
                             }

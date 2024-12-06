@@ -10,15 +10,12 @@ import UIKit
 
 @main
 struct UnlockFitApp: App {
-    init() {
-        UITabBar.appearance().barTintColor = UIColor.black // Background color for Tab Bar
-        UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray // Unselected tabs
-        UITabBar.appearance().tintColor = UIColor(.purple) // Selected tabs
-    }
-    
+    @StateObject private var themeManager = ThemeManager()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(themeManager) // Inject into the entire app
         }
     }
 }

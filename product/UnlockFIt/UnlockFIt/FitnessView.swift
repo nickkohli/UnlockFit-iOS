@@ -123,5 +123,6 @@ struct ProgressRingView: View {
 struct FitnessView_Previews: PreviewProvider {
     static var previews: some View {
         FitnessView()
+            .environmentObject(ThemeManager()) // Provide a basic ThemeManager
     }
 }

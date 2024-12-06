@@ -26,7 +26,6 @@ struct ProfileView: View {
                                     .scaledToFill()
                                     .frame(width: 80, height: 80)
                                     .clipShape(Circle())
-                                    .overlay(Circle().stroke(CustomColors.ringRed, lineWidth: 2))
                             } else {
                                 Circle()
                                     .fill(Color.gray.opacity(0.5))
@@ -57,31 +56,42 @@ struct ProfileView: View {
                     // Settings Section
                     List {
                         Section(header: Text("Health Settings").foregroundColor(.gray)) {
+                            
                             NavigationLink(destination: Text("Health Details")) {
                                 Label("Health Details", systemImage: "heart.fill")
                                     .foregroundColor(.pink)
                             }
                             .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
-                            NavigationLink(destination: Text("Change Move Goal")
-                                .foregroundColor(Color.white)) {
+                            
+                            NavigationLink(destination: Text("Change Move Goal")) {
                                 Label("Change Move Goal", systemImage: "figure.walk")
                                     .foregroundColor(.green)
                             }
                             .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
+                            
                             NavigationLink(destination: Text("Units of Measure")) {
                                 Label("Units of Measure", systemImage: "ruler.fill")
                                     .foregroundColor(.blue)
                             }
                             .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
+                            
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
-                        Section(header: Text("Notifications").foregroundColor(.gray)) {
+                        Section(header: Text("App Settings").foregroundColor(.gray)) {
+                            
                             NavigationLink(destination: Text("Notifications Settings")) {
                                 Label("Notifications", systemImage: "bell.fill")
                                     .foregroundColor(.yellow)
                             }
                             .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
+                            
+                            NavigationLink(destination: Text("Themes")) {
+                                Label("Themes", systemImage: "paintpalette.fill")
+                                    .foregroundColor(.orange)
+                            }
+                                .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
+                            
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 

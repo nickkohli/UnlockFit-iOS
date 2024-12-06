@@ -5,9 +5,6 @@
 //  Created by woozy on 05/12/2024.
 //
 
-
-import SwiftUI
-
 import SwiftUI
 
 struct ProgressView: View {
@@ -56,18 +53,46 @@ struct ProgressView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                             .multilineTextAlignment(.leading)
-                        HStack {
-                            AchievementBadge(title: "10k Steps", icon: "figure.walk", color: CustomColors.bronze)
-                            AchievementBadge(title: "Screen Saver", icon: "clock", color: CustomColors.silver)
-                            AchievementBadge(title: "Calorie Burner", icon: "flame", color: CustomColors.gold)
+
+                        HStack(spacing: 20) {
+                            AchievementBadge(
+                                title: "10k Steps",
+                                icon: "figure.walk",
+                                gradient: LinearGradient(
+                                    gradient: Gradient(colors: [CustomColors.bronze, CustomColors.bronze2]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                shadowColor: CustomColors.bronze
+                            )
+                            AchievementBadge(
+                                title: "Screen Saver",
+                                icon: "clock",
+                                gradient: LinearGradient(
+                                    gradient: Gradient(colors: [CustomColors.silver, CustomColors.silver2]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                shadowColor: CustomColors.silver
+                            )
+                            AchievementBadge(
+                                title: "Calorie Burner",
+                                icon: "flame",
+                                gradient: LinearGradient(
+                                    gradient: Gradient(colors: [CustomColors.gold, CustomColors.gold2]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                shadowColor: CustomColors.gold
+                            )
                         }
                     }
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                 }
-                .padding()
-            }
+                .padding() // Properly close VStack here
+            } // Properly close ScrollView here
         }
     }
 }
@@ -77,22 +102,22 @@ struct ProgressCard: View {
     let title: String
     let value: String
     let color: Color
-    
+
     var body: some View {
-        VStack() {
+        VStack {
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(color)
-            
+
             Text(title)
                 .font(.caption)
                 .foregroundColor(.white)
         }
         .frame(maxWidth: .infinity)
         .padding(.all, 12.0)
-        .background(Color(red: 0.108, green: 0.108, blue: 0.114))
-        
+        .background(Color(red: 0.108, green: 0.108, blue: 0.114)) // Dark background
+        .cornerRadius(10) // Rounded corners
     }
 }
 
@@ -100,7 +125,7 @@ struct ProgressCard: View {
 struct LineGraph: View {
     let data: [Double]
     let color: Color
-    
+
     var body: some View {
         GeometryReader { geometry in
             Path { path in
@@ -108,9 +133,9 @@ struct LineGraph: View {
                 let height = geometry.size.height
                 let step = width / CGFloat(data.count - 1)
                 let maxValue = data.max() ?? 1
-                
+
                 path.move(to: CGPoint(x: 0, y: height - CGFloat(data[0]) / CGFloat(maxValue) * height))
-                
+
                 for index in 1..<data.count {
                     let x = CGFloat(index) * step
                     let y = height - CGFloat(data[index]) / CGFloat(maxValue) * height
@@ -126,22 +151,40 @@ struct LineGraph: View {
 struct AchievementBadge: View {
     let title: String
     let icon: String
-    let color: Color
-    
+    let gradient: LinearGradient
+    let shadowColor: Color
+
     var body: some View {
         VStack {
-            Image(systemName: icon)
-                .font(.largeTitle)
-                .foregroundColor(.white)
-                .padding()
-                .background(color)
-                .clipShape(Circle())
-            
+            ZStack {
+                // Outer glow effect
+                Circle()
+                    .fill(gradient)
+                    .frame(width: 80, height: 80)
+                    .shadow(color: shadowColor.opacity(0.45), radius: 7.5, x: 0, y: 5)
+                // Inner Circle for 3D effect
+                Circle()
+                    .fill(LinearGradient(
+                        gradient: Gradient(colors: [.white.opacity(0.4), .clear]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    ))
+                    .frame(width: 70, height: 70)
+                    .blendMode(.overlay)
+
+                // Badge Icon
+                Image(systemName: icon)
+                    .font(.title)
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+            }
+
+            // Badge Title
             Text(title)
                 .font(.caption)
                 .foregroundColor(.gray)
                 .multilineTextAlignment(.center)
-                .padding(.all, 0.2)
+                .padding(.top, 5)
         }
     }
 }

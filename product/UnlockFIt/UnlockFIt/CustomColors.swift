@@ -36,7 +36,7 @@ struct CustomColors {
     static let ringBlue2 = Color(hex: "#002666")
 
     // Nike Run Club Neon
-    static let neonYellow = Color(hex: "#E3FF38")
+    static let neonYellow = Color(hex: "#CFE640")
     static let neonYellow2 = Color(hex: "#66731A")
 
     // Badges - Primary

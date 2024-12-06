@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ProfileView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    
     @State private var profileImage: UIImage? = UIImage(named: "placeholder") // Default image
     @State private var isImagePickerPresented = false // For photo picker
 
@@ -155,5 +157,6 @@ struct ImagePicker: UIViewControllerRepresentable {
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
+            .environmentObject(ThemeManager()) // Provide a basic ThemeManager
     }
 }

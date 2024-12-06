@@ -5,12 +5,12 @@
 //  Created by woozy on 06/12/2024.
 //
 
-
 import SwiftUI
 
 class ThemeManager: ObservableObject {
     @Published var selectedTheme: String = "Default" {
         didSet {
+            saveTheme() // Save the theme whenever it changes
             applyTheme()
         }
     }
@@ -18,8 +18,14 @@ class ThemeManager: ObservableObject {
     var accentColor: Color {
         selectedTheme == "Neon" ? CustomColors.neonYellow : .purple
     }
+
     var accentColor2: Color {
         selectedTheme == "Neon" ? CustomColors.neonYellow2 : .pink
+    }
+
+    init() {
+        loadTheme() // Load the saved theme during initialization
+        applyTheme() // Apply the loaded theme
     }
 
     func applyTheme() {
@@ -43,6 +49,18 @@ class ThemeManager: ObservableObject {
                 window.rootViewController = rootViewController
                 window.makeKeyAndVisible()
             }
+        }
+    }
+
+    // Save the theme to UserDefaults
+    private func saveTheme() {
+        UserDefaults.standard.set(selectedTheme, forKey: "SelectedTheme")
+    }
+
+    // Load the theme from UserDefaults
+    private func loadTheme() {
+        if let savedTheme = UserDefaults.standard.string(forKey: "SelectedTheme") {
+            selectedTheme = savedTheme
         }
     }
 }

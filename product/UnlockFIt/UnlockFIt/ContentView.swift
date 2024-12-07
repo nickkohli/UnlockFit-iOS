@@ -8,45 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
-    @EnvironmentObject var themeManager: ThemeManager
-
-    init() {
-        // Set the appearance of the Tab Bar globally
-        UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray
-    }
-
     var body: some View {
-        ZStack {
-            // Set the background color based on the theme
-            Color.black.edgesIgnoringSafeArea(.all)
-
-            TabView {
-                FitnessView()
-                    .tabItem {
-                        Image(systemName: "figure.walk")
-                        Text("Fitness")
-                    }
-
-                ScreenTimeView()
-                    .tabItem {
-                        Image(systemName: "clock")
-                        Text("Screen Time")
-                    }
-
-                ProgressView()
-                    .tabItem {
-                        Image(systemName: "chart.bar")
-                        Text("Progress")
-                    }
-
-                ProfileView()
-                    .tabItem {
-                        Image(systemName: "person.crop.circle")
-                        Text("Profile")
-                    }
-            }
-            .accentColor(themeManager.accentColor) // Selected tab icon color
-        }
+        LoginView() // Start with LoginView
     }
 }
 

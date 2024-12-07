@@ -1,14 +1,9 @@
-//
-//  FitnessView.swift
-//  UnlockFit
-//
-//  Created by woozy on 05/12/2024.
-//
-
 import SwiftUI
 
 struct FitnessView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @State private var animateRings: Bool = false // State to control animation
+    @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
     
     var body: some View {
         ZStack {
@@ -28,14 +23,13 @@ struct FitnessView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                     
-                
                 Spacer().frame(height: 20)
                 
                 // Progress Rings Section
                 HStack(spacing: 30) {
                     ProgressRingView(
                         title: "Steps",
-                        progress: 0.75,
+                        progress: animateRings ? 0.75 : 0, // Animate progress
                         gradient: LinearGradient(
                             gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
                             startPoint: .topLeading,
@@ -44,7 +38,7 @@ struct FitnessView: View {
                     )
                     ProgressRingView(
                         title: "Calories",
-                        progress: 0.5,
+                        progress: animateRings ? 0.5 : 0, // Animate progress
                         gradient: LinearGradient(
                             gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]),
                             startPoint: .topLeading,
@@ -53,7 +47,7 @@ struct FitnessView: View {
                     )
                     ProgressRingView(
                         title: "Minutes",
-                        progress: 0.9,
+                        progress: animateRings ? 0.9 : 0, // Animate progress
                         gradient: LinearGradient(
                             gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]),
                             startPoint: .topLeading,
@@ -85,46 +79,57 @@ struct FitnessView: View {
             .padding()
         }
         .navigationTitle("Fitness")
-    }
-}
-
-// Reusable Progress Ring View
-struct ProgressRingView: View {
-    let title: String
-    let progress: Double
-    let gradient: LinearGradient
-    
-    var body: some View {
-        VStack {
-            ZStack {
-                Circle()
-                    .stroke(lineWidth: 17)
-                    .opacity(0.2)
-                    .foregroundColor(.gray) // Background ring color
-
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(min(progress, 1.0)))
-                    .stroke(gradient, style: StrokeStyle(lineWidth: 17, lineCap: .round))
-                    .rotationEffect(Angle(degrees: 270))
-                    .animation(.easeInOut, value: progress)
-
-                Text("\(Int(progress * 100))%")
-                    .font(.headline)
-                    .foregroundColor(.white) // Percentage text color
+        .onAppear {
+            if !hasAnimated {
+                triggerAnimation()
+                hasAnimated = true
             }
-            .frame(width: 90.78, height: 100)
+        }
+    }
 
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.white) // Title text color
-                .padding(.top, 5)
+    private func triggerAnimation() {
+        DispatchQueue.main.async {
+            animateRings = false // Reset animation
+            withAnimation(.easeInOut(duration: 2.5)) { // Adjust duration here
+                animateRings = true
+            }
         }
     }
 }
 
-struct FitnessView_Previews: PreviewProvider {
-    static var previews: some View {
-        FitnessView()
-            .environmentObject(ThemeManager()) // Provide a basic ThemeManager
+struct ProgressRingView: View {
+    let title: String
+    let progress: Double
+    let gradient: LinearGradient
+
+    var body: some View {
+        VStack {
+            ZStack {
+                // Background ring
+                Circle()
+                    .stroke(lineWidth: 17)
+                    .opacity(0.2)
+                    .foregroundColor(.gray)
+
+                // Animated progress ring
+                Circle()
+                    .trim(from: 0.0, to: CGFloat(min(progress, 1.0)))
+                    .stroke(gradient, style: StrokeStyle(lineWidth: 17, lineCap: .round))
+                    .rotationEffect(Angle(degrees: 270))
+                    .animation(.easeInOut(duration: 2.5), value: progress) // Smooth animation
+
+                // Percentage text
+                Text("\(Int(progress * 100))%")
+                    .font(.headline)
+                    .foregroundColor(.white)
+            }
+            .frame(width: 90.78, height: 100)
+
+            // Title below the ring
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.white)
+                .padding(.top, 5)
+        }
     }
 }

@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct LoginView: View {
+    @EnvironmentObject var appState: AppState // Access AppState
     @State private var username: String = "" // Username input
     @State private var password: String = "" // Password input
-    @State private var isLoggedIn: Bool = false // Track login state
 
     var body: some View {
         NavigationView {
@@ -35,7 +35,7 @@ struct LoginView: View {
 
                     // Log In Button
                     Button(action: {
-                        isLoggedIn = true // Simulate login
+                        appState.isLoggedIn = true // Update AppState on login
                     }) {
                         Text("Log In")
                             .frame(maxWidth: .infinity)
@@ -66,9 +66,6 @@ struct LoginView: View {
                 .padding()
                 .navigationBarHidden(true) // Hide navigation bar
             }
-            .fullScreenCover(isPresented: $isLoggedIn) {
-                MainTabView() // Navigate to MainTabView after login
-            }
         }
     }
 }
@@ -77,5 +74,6 @@ struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView()
             .environmentObject(ThemeManager())
+            .environmentObject(AppState())
     }
 }

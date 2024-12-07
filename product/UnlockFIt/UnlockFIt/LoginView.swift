@@ -12,11 +12,32 @@ struct LoginView: View {
 
                 VStack(spacing: 20) {
                     // App Title
-                    Text("UnlockFit")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-                        .padding(.bottom, 40)
+                    HStack(spacing: 0) {
+                        // "Unlock" in white
+                        Text("Unlock")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+
+                        // "Fit" with gradient
+                        Text("Fit")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                            .overlay(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [.purple, .pink]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                .mask(
+                                    Text("Fit")
+                                        .font(.largeTitle)
+                                        .fontWeight(.bold)
+                                )
+                            )
+                    }
+                    .padding(.bottom, 40)
 
                     // Username Field
                     ZStack(alignment: .leading) {
@@ -58,7 +79,7 @@ struct LoginView: View {
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(LinearGradient(
-                                gradient: Gradient(colors: [.purple, .pink]),
+                                gradient: Gradient(colors: [.purple, .pink, ]),
                                 startPoint: .leading,
                                 endPoint: .trailing
                             ))
@@ -92,8 +113,5 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
-            .onAppear {
-                // Simulate any required state changes
-            }
     }
 }

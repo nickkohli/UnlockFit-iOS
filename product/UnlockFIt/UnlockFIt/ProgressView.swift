@@ -40,7 +40,7 @@ struct ProgressView: View {
                         Text("Fitness Trends")
                             .font(.headline)
                             .foregroundColor(.white)
-                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: themeManager.accentColor) // Use dynamic accent color
+                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: themeManager.accentColor) // Animated graph
                             .frame(height: 200)
                     }
                     .padding()
@@ -91,8 +91,8 @@ struct ProgressView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                 }
-                .padding() // Properly close VStack here
-            } // Properly close ScrollView here
+                .padding()
+            }
         }
     }
 }
@@ -121,10 +121,12 @@ struct ProgressCard: View {
     }
 }
 
-// Placeholder Line Graph
+// Placeholder Line Graph with Animation
 struct LineGraph: View {
     let data: [Double]
     let color: Color
+
+    @State private var graphProgress: CGFloat = 0.0 // For animating the graph
 
     var body: some View {
         GeometryReader { geometry in
@@ -142,17 +144,24 @@ struct LineGraph: View {
                     path.addLine(to: CGPoint(x: x, y: y))
                 }
             }
+            .trim(from: 0.0, to: graphProgress) // Draw progressively
             .stroke(color, lineWidth: 2)
+            .animation(.easeInOut(duration: 2.5), value: graphProgress) // Smooth animation
+        }
+        .onAppear {
+            graphProgress = 1.0 // Animate graph on appear
         }
     }
 }
 
-// Reusable Achievement Badge
+// Reusable Achievement Badge with Single Jump Animation
 struct AchievementBadge: View {
     let title: String
     let icon: String
     let gradient: LinearGradient
     let shadowColor: Color
+
+    @State private var scale: CGFloat = 1.0 // For jump animation
 
     var body: some View {
         VStack {
@@ -177,6 +186,19 @@ struct AchievementBadge: View {
                     .font(.title)
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+            }
+            .scaleEffect(scale) // Apply scale animation
+            .onAppear {
+                withAnimation(
+                    Animation.easeInOut(duration: 0.5) // One jump animation
+                ) {
+                    scale = 1.1 // Slightly grow
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    withAnimation(Animation.easeInOut(duration: 0.5)) {
+                        scale = 1.0 // Return to normal size
+                    }
+                }
             }
 
             // Badge Title

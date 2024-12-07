@@ -1,16 +1,10 @@
-//
-//  ScreenTimeView.swift
-//  UnlockFIt
-//
-//  Created by woozy on 05/12/2024.
-//
-
-
 import SwiftUI
 
 struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
-    
+    @State private var animatedProgress: Double = 0.0 // State to manage progress animation
+    @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
@@ -39,7 +33,7 @@ struct ScreenTimeView: View {
                     Text("Time Saved by Fitness")
                         .font(.headline)
                         .foregroundColor(.white)
-                    ProgressBarView(progress: 0.6, color: .green)
+                    ProgressBarView(progress: animatedProgress, color: .green)
                         .frame(height: 20)
                 }
                 .padding(.vertical)
@@ -65,6 +59,21 @@ struct ScreenTimeView: View {
                 .padding(.horizontal)
             }
             .padding()
+        }
+        .onAppear {
+            if !hasAnimated {
+                triggerAnimation()
+                hasAnimated = true
+            }
+        }
+    }
+
+    private func triggerAnimation() {
+        DispatchQueue.main.async {
+            animatedProgress = 0.0 // Reset progress
+            withAnimation(.easeInOut(duration: 4.0)) { // Slow down animation duration
+                animatedProgress = 0.6 // Target progress
+            }
         }
     }
 }
@@ -109,7 +118,7 @@ struct ProgressBarView: View {
                 Rectangle()
                     .frame(width: CGFloat(progress) * geometry.size.width, height: geometry.size.height)
                     .foregroundColor(color)
-                    .animation(.linear, value: progress)
+                    .animation(.easeInOut(duration: 2.0), value: progress) // Matches the duration of the animation
             }
             .cornerRadius(geometry.size.height / 2)
         }

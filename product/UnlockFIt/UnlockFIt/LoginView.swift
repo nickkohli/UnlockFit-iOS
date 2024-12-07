@@ -19,23 +19,40 @@ struct LoginView: View {
                         .padding(.bottom, 40)
 
                     // Username Field
-                    TextField("Username", text: $username)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
-                        .foregroundColor(.white)
-                        .autocapitalization(.none)
+                    ZStack(alignment: .leading) {
+                        if username.isEmpty {
+                            Text("Username")
+                                .foregroundColor(Color.white.opacity(0.5)) // Lightened placeholder text color
+                                .padding(.leading, 15)
+                        }
+                        TextField("", text: $username)
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                            .foregroundColor(.white)
+                            .autocapitalization(.none)
+                    }
 
                     // Password Field
-                    SecureField("Password", text: $password)
-                        .padding()
-                        .background(Color.gray.opacity(0.2))
-                        .cornerRadius(10)
-                        .foregroundColor(.white)
+                    ZStack(alignment: .leading) {
+                        if password.isEmpty {
+                            Text("Password")
+                                .foregroundColor(Color.white.opacity(0.5)) // Lightened placeholder text color
+                                .padding(.leading, 15)
+                        }
+                        SecureField("", text: $password)
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                            .foregroundColor(.white)
+                    }
 
                     // Log In Button
                     Button(action: {
-                        appState.isLoggedIn = true // Update AppState on login
+                        DispatchQueue.main.async {
+                            appState.isLoggedIn = true // Update AppState on login
+                            print("isLoggedIn set to: \(appState.isLoggedIn)")
+                        }
                     }) {
                         Text("Log In")
                             .frame(maxWidth: .infinity)
@@ -75,5 +92,8 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
+            .onAppear {
+                // Simulate any required state changes
+            }
     }
 }

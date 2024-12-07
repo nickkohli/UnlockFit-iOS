@@ -9,7 +9,8 @@ import SwiftUI
 
 struct ProfileView: View {
     @EnvironmentObject var themeManager: ThemeManager
-    
+    @EnvironmentObject var appState: AppState // Access AppState
+
     @State private var profileImage: UIImage? = UIImage(named: "placeholder") // Default image
     @State private var isImagePickerPresented = false // For photo picker
 
@@ -62,12 +63,12 @@ struct ProfileView: View {
                                 Label("Health Details", systemImage: "heart.fill")
                                     .foregroundColor(.pink)
                             }
-                            
+
                             NavigationLink(destination: Text("Change Move Goal")) {
                                 Label("Change Move Goal", systemImage: "figure.walk")
                                     .foregroundColor(.green)
                             }
-                            
+
                             NavigationLink(destination: Text("Units of Measure")) {
                                 Label("Units of Measure", systemImage: "ruler.fill")
                                     .foregroundColor(.blue)
@@ -80,7 +81,7 @@ struct ProfileView: View {
                                 Label("Notifications", systemImage: "bell.fill")
                                     .foregroundColor(.yellow)
                             }
-                            
+
                             NavigationLink(destination: ThemesView()) {
                                 Label("Themes", systemImage: "paintpalette.fill")
                                     .foregroundColor(.orange)
@@ -97,6 +98,26 @@ struct ProfileView: View {
                         .listRowBackground(Color.gray.opacity(0.2))
                     }
                     .scrollContentBackground(.hidden) // Hides the default list background
+
+                    Spacer() // Push logout button to the bottom
+
+                    // Logout Button
+                    Button(action: {
+                        appState.isLoggedIn = false // Log out and return to LoginView
+                    }) {
+                        Text("Log Out")
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(LinearGradient(
+                                gradient: Gradient(colors: [.red, .pink]),
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            ))
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .padding(.bottom, 10) // Add padding at the bottom
+                    }
                 }
             }
             .sheet(isPresented: $isImagePickerPresented) {

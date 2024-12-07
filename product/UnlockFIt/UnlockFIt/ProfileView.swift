@@ -1,5 +1,5 @@
 //
-//  FitnessView.swift
+//  ProfileView.swift
 //  UnlockFit
 //
 //  Created by woozy on 05/12/2024.
@@ -18,7 +18,7 @@ struct ProfileView: View {
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all) // Black background
 
-                VStack {
+                VStack(spacing: 0) { // Removed extra spacing
                     // Profile Section
                     HStack {
                         ZStack {
@@ -58,42 +58,33 @@ struct ProfileView: View {
                     // Settings Section
                     List {
                         Section(header: Text("Health Settings").foregroundColor(.gray)) {
-                            
                             NavigationLink(destination: Text("Health Details")) {
                                 Label("Health Details", systemImage: "heart.fill")
                                     .foregroundColor(.pink)
                             }
-                            .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
                             
                             NavigationLink(destination: Text("Change Move Goal")) {
                                 Label("Change Move Goal", systemImage: "figure.walk")
                                     .foregroundColor(.green)
                             }
-                            .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
                             
                             NavigationLink(destination: Text("Units of Measure")) {
                                 Label("Units of Measure", systemImage: "ruler.fill")
                                     .foregroundColor(.blue)
                             }
-                            .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
-                            
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
                         Section(header: Text("App Settings").foregroundColor(.gray)) {
-                            
                             NavigationLink(destination: Text("Notifications Settings")) {
                                 Label("Notifications", systemImage: "bell.fill")
                                     .foregroundColor(.yellow)
                             }
-                            .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
                             
                             NavigationLink(destination: ThemesView()) {
                                 Label("Themes", systemImage: "paintpalette.fill")
                                     .foregroundColor(.orange)
                             }
-                                .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
-                            
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
@@ -102,14 +93,12 @@ struct ProfileView: View {
                                 Label("Apple Fitness Privacy", systemImage: "lock.fill")
                                     .foregroundColor(.purple)
                             }
-                            .foregroundColor(Color.gray.opacity(0.6)) // Change arrow color
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
                     }
                     .scrollContentBackground(.hidden) // Hides the default list background
                 }
             }
-            .navigationTitle("Profile")
             .sheet(isPresented: $isImagePickerPresented) {
                 ImagePicker(selectedImage: $profileImage)
             }

@@ -4,26 +4,26 @@ struct FitnessView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @State private var animateRings: Bool = false // State to control animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
-    
+
     var body: some View {
         ZStack {
             // Dark Background
             Color.black
                 .edgesIgnoringSafeArea(.all)
             
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 10) { // Adjusted spacing
                 // Greeting and Date Header
                 Text("Let’s get moving, Nick!")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white) // Text color on dark background
-                    .padding(.vertical, 2.0)
                 
                 Text(Date(), style: .date)
                     .font(.subheadline)
                     .foregroundColor(.gray)
-                    
-                Spacer().frame(height: 20)
+                    .padding(.bottom)
+                
+                // Removed the Spacer().frame(height: 20)
                 
                 // Progress Rings Section
                 HStack(spacing: 30) {
@@ -61,24 +61,28 @@ struct FitnessView: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
                 
-                Spacer().frame(height: 20)
+                // Removed another Spacer().frame(height: 20)
                 
                 // Action Buttons
                 Button(action: {
                     // Action for setting fitness goals
                 }) {
                     Text("Set a Step Goal")
+                        .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
                         .frame(maxWidth: .infinity)
-                        .padding()
                         .background(LinearGradient(gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]), startPoint: .leading, endPoint: .trailing))
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
-                .padding(.horizontal)
+                .padding(.all)
+                
+                Spacer() // Added a Spacer at the bottom to fill remaining space
             }
-            .padding()
+            .padding(.horizontal) // Added horizontal padding for better alignment
+            .padding(.top, 10) // Adjusted the padding at the top
         }
-        .navigationTitle("Fitness")
+        .navigationTitle("")
+        .navigationBarHidden(true) // Hide the navigation bar title to save space
         .onAppear {
             if !hasAnimated {
                 triggerAnimation()
@@ -131,5 +135,12 @@ struct ProgressRingView: View {
                 .foregroundColor(.white)
                 .padding(.top, 5)
         }
+    }
+}
+
+struct FitnessView_Previews: PreviewProvider {
+    static var previews: some View {
+        FitnessView()
+            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
     }
 }

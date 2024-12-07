@@ -8,11 +8,13 @@ struct ScreenTimeView: View {
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
-            VStack(alignment: .leading, spacing: 20) {
+            VStack(alignment: .leading, spacing: 15) { // Adjusted spacing
+                // Header
                 Text("Today's Screen Time")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
+                    .padding(.bottom, 5) // Reduced bottom padding
 
                 // Screen Time Summary Card
                 VStack(alignment: .leading) {
@@ -36,7 +38,6 @@ struct ScreenTimeView: View {
                     ProgressBarView(progress: animatedProgress, color: .green)
                         .frame(height: 20)
                 }
-                .padding(.vertical)
                 .padding()
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
@@ -57,9 +58,14 @@ struct ScreenTimeView: View {
                         .cornerRadius(10)
                 }
                 .padding(.horizontal)
+
+                Spacer() // Fills remaining space at the bottom
             }
-            .padding()
+            .padding(.horizontal) // Horizontal padding for alignment
+            .padding(.top, 10) // Slight top padding to ensure it’s not too close
         }
+        .navigationTitle("")
+        .navigationBarHidden(true) // Remove the navigation bar to save space
         .onAppear {
             if !hasAnimated {
                 triggerAnimation()

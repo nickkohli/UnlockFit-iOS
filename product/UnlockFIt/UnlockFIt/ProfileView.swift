@@ -1,10 +1,3 @@
-//
-//  ProfileView.swift
-//  UnlockFit
-//
-//  Created by woozy on 05/12/2024.
-//
-
 import SwiftUI
 
 struct ProfileView: View {

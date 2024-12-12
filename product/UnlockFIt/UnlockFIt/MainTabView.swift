@@ -1,11 +1,3 @@
-//
-//  MainTabView.swift
-//  UnlockFIt
-//
-//  Created by woozy on 07/12/2024.
-//
-
-
 import SwiftUI
 
 struct MainTabView: View {

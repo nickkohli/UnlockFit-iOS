@@ -2,6 +2,11 @@
 
 ---
 
+## **13th December 2024**
+The `README.md` file was updated today, with all relevant information up to date.
+
+---
+
 ## **12th December 2024**
 Today, I focused on cleaning up unnecessary code comments across the project. This small yet significant task improved code readability and maintainability, making the codebase more professional and easier to navigate. Final visual updates were applied across all views, ensuring the app looked polished and presentable for the interim review.
 

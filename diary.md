@@ -35,7 +35,7 @@ In `FitnessView`, I added interactive progress rings and goal tracking to make t
 
 ---
 
-## **20th November 2024**
+## **4th December 2024**
 The GitLab repository for UnlockFit was set up today to ensure proper version control and a structured development process. The repository includes:
 - `diary.md` for tracking weekly progress.
 - A `product/` folder to store the core project files for the app.

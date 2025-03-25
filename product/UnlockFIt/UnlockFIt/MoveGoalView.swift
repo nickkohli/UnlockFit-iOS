@@ -4,15 +4,9 @@ struct MoveGoalView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
 
-    @State private var stepGoal: Int
-    @State private var calorieGoal: Int
-    @State private var minuteGoal: Int
-
-    init() {
-        _stepGoal = State(initialValue: 10000)
-        _calorieGoal = State(initialValue: 500)
-        _minuteGoal = State(initialValue: 30)
-    }
+    @State private var stepGoal: Int = 10000
+    @State private var calorieGoal: Int = 500
+    @State private var minuteGoal: Int = 30
 
     var body: some View {
         ZStack {
@@ -62,6 +56,11 @@ struct MoveGoalView: View {
                 }
             }
             .padding()
+            .onAppear {
+                stepGoal = appState.stepGoal
+                calorieGoal = appState.calorieGoal
+                minuteGoal = appState.minuteGoal
+            }
         }
     }
 
@@ -75,18 +74,21 @@ struct MoveGoalView: View {
                     .foregroundColor(.white)
             }
 
-            Slider(value: Binding(
-                get: { Double(value.wrappedValue) },
-                set: { value.wrappedValue = Int($0) }
-            ), in: Double(range.lowerBound)...Double(range.upperBound))
-            .accentColor(.clear)
-            .overlay(
-                gradient
-                    .mask(
-                        Slider(value: .constant(0.5))
-                            .opacity(0)
-                    )
-            )
+            ZStack(alignment: .leading) {
+                GeometryReader { geometry in
+                    gradient
+                        .frame(width: CGFloat(value.wrappedValue - range.lowerBound) / CGFloat(range.upperBound - range.lowerBound) * geometry.size.width, height: 4)
+                        .cornerRadius(2)
+                        .offset(y: 14)
+                }
+
+                Slider(value: Binding(
+                    get: { Double(value.wrappedValue) },
+                    set: { value.wrappedValue = Int($0) }
+                ), in: Double(range.lowerBound)...Double(range.upperBound))
+                .accentColor(.clear)
+            }
+            .frame(height: 30)
         }
     }
 }

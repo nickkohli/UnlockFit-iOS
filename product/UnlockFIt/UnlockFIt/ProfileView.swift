@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 struct ProfileView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -57,7 +58,7 @@ struct ProfileView: View {
                                     .foregroundColor(.pink)
                             }
 
-                            NavigationLink(destination: Text("Change Move Goal")) {
+                            NavigationLink(destination: MoveGoalView()) {
                                 Label("Change Move Goal", systemImage: "figure.walk")
                                     .foregroundColor(.green)
                             }

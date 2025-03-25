@@ -16,7 +16,8 @@ class APIModule {
         
         let readTypes: Set = [
             HKObjectType.quantityType(forIdentifier: .stepCount)!,
-            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!
         ]
         
         healthStore.requestAuthorization(toShare: nil, read: readTypes) { success, error in
@@ -63,6 +64,27 @@ class APIModule {
             completion(sum.doubleValue(for: .kilocalorie()))
         }
         
+        healthStore.execute(query)
+    }
+    
+    // Fetch today's exercise minutes
+    func fetchTodayExerciseMinutes(completion: @escaping (Double) -> Void) {
+        guard let exerciseType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime) else {
+            completion(0.0)
+            return
+        }
+
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
+
+        let query = HKStatisticsQuery(quantityType: exerciseType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            guard let result = result, let sum = result.sumQuantity() else {
+                completion(0.0)
+                return
+            }
+            completion(sum.doubleValue(for: .minute()))
+        }
+
         healthStore.execute(query)
     }
 }

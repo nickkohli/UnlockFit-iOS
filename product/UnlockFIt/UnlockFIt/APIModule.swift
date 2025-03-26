@@ -87,4 +87,15 @@ class APIModule {
 
         healthStore.execute(query)
     }
+    func getStepsToday(completion: @escaping (Double) -> Void) {
+        fetchTodayStepCount(completion: completion)
+    }
+
+    func getCaloriesBurnedToday(completion: @escaping (Double) -> Void) {
+        fetchTodayCalories(completion: completion)
+    }
+
+    func getExerciseMinutesToday(completion: @escaping (Double) -> Void) {
+        fetchTodayExerciseMinutes(completion: completion)
+    }
 }

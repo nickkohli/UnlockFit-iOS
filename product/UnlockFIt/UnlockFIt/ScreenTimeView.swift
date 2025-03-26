@@ -135,5 +135,6 @@ struct ScreenTimeView_Previews: PreviewProvider {
     static var previews: some View {
         ScreenTimeView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(GoalManager()) 
     }
 }

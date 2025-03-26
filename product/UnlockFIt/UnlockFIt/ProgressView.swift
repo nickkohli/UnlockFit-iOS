@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ProgressView: View {
     @EnvironmentObject var themeManager: ThemeManager // Inject ThemeManager
+    @EnvironmentObject var goalManager: GoalManager
 
     var body: some View {
         ZStack {
@@ -19,9 +20,9 @@ struct ProgressView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                         HStack {
-                            ProgressCard(title: "Steps", value: "56,000", color: CustomColors.ringRed)
-                            ProgressCard(title: "Calories", value: "3,500", color: CustomColors.ringGreen)
-                            ProgressCard(title: "Time Saved", value: "5h 20m", color: CustomColors.ringBlue)
+                            ProgressCard(title: "Steps", value: "\(goalManager.stepsToday)", color: CustomColors.ringRed)
+                            ProgressCard(title: "Calories", value: "\(Int(goalManager.caloriesBurned))", color: CustomColors.ringGreen)
+                            ProgressCard(title: "Minutes", value: "\(Int(goalManager.minutesExercised))", color: CustomColors.ringBlue)
                         }
                     }
                     .padding()
@@ -208,5 +209,6 @@ struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
         ProgressView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(GoalManager())
     }
 }

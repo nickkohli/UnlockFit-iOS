@@ -162,5 +162,6 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(ThemeManager()) // Provide a basic ThemeManager
+            .environmentObject(GoalManager()) 
     }
 }

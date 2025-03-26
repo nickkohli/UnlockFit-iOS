@@ -31,5 +31,6 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
+            .environmentObject(GoalManager()) 
     }
 }

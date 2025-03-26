@@ -113,5 +113,6 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
+            .environmentObject(GoalManager()) 
     }
 }

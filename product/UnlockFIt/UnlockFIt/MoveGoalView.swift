@@ -98,5 +98,6 @@ struct MoveGoalView_Previews: PreviewProvider {
         MoveGoalView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
+            .environmentObject(GoalManager()) 
     }
 }

@@ -142,5 +142,6 @@ struct FitnessView_Previews: PreviewProvider {
     static var previews: some View {
         FitnessView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(GoalManager()) 
     }
 }

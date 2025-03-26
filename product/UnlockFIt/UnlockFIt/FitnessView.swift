@@ -2,8 +2,55 @@ import SwiftUI
 
 struct FitnessView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var goalManager: GoalManager
+    @EnvironmentObject var appState: AppState
     @State private var animateRings: Bool = false // State to control animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+
+    private var greetingSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Let’s get moving, Nick!")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+
+            Text(Date(), style: .date)
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .padding(.bottom)
+        }
+    }
+
+    private var progressRingsSection: some View {
+        HStack(spacing: 30) {
+            ProgressRingView(
+                title: "Steps",
+                progress: animateRings
+                    ? min(goalManager.stepsToday / Double(appState.stepGoal), 1.0)
+                    : 0,
+                gradient: LinearGradient(
+                    gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+            )
+            ProgressRingView(
+                title: "Calories",
+                progress: animateRings ? min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0) : 0,
+                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            ProgressRingView(
+                title: "Minutes",
+                progress: animateRings ? min(goalManager.minutesExercised / Double(appState.minuteGoal), 1.0) : 0,
+                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical)
+        .padding()
+        .background(Color.gray.opacity(0.2))
+        .cornerRadius(10)
+    }
 
     var body: some View {
         ZStack {
@@ -13,55 +60,10 @@ struct FitnessView: View {
             
             VStack(alignment: .leading, spacing: 10) { // Adjusted spacing
                 // Greeting and Date Header
-                Text("Let’s get moving, Nick!")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white) // Text color on dark background
-                
-                Text(Date(), style: .date)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                    .padding(.bottom)
-                
-                // Removed the Spacer().frame(height: 20)
+                greetingSection
                 
                 // Progress Rings Section
-                HStack(spacing: 30) {
-                    ProgressRingView(
-                        title: "Steps",
-                        progress: animateRings ? 0.75 : 0, // Animate progress
-                        gradient: LinearGradient(
-                            gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    ProgressRingView(
-                        title: "Calories",
-                        progress: animateRings ? 0.5 : 0, // Animate progress
-                        gradient: LinearGradient(
-                            gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                    ProgressRingView(
-                        title: "Minutes",
-                        progress: animateRings ? 0.9 : 0, // Animate progress
-                        gradient: LinearGradient(
-                            gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]),
-                            startPoint: .topLeading,
-                            endPoint: .bottomTrailing
-                        )
-                    )
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical)
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                
-                // Removed another Spacer().frame(height: 20)
+                progressRingsSection
                 
                 // Action Buttons
                 Button(action: {
@@ -142,6 +144,7 @@ struct FitnessView_Previews: PreviewProvider {
     static var previews: some View {
         FitnessView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
-            .environmentObject(GoalManager()) 
+            .environmentObject(GoalManager())
+            .environmentObject(AppState())
     }
 }

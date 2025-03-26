@@ -321,6 +321,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -378,6 +380,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -400,6 +404,8 @@
 				DEVELOPMENT_TEAM = ZRNY2B5Z2B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -430,6 +436,8 @@
 				DEVELOPMENT_TEAM = ZRNY2B5Z2B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

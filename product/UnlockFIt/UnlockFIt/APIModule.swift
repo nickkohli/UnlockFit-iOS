@@ -7,6 +7,22 @@ class APIModule {
     
     private init() {}
     
+    // MARK: - HealthKit Authorisation
+    func requestAuthorization(completion: @escaping (Bool) -> Void) {
+        let typesToRead: Set = [
+            HKQuantityType.quantityType(forIdentifier: .stepCount)!,
+            HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
+            HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
+        ]
+
+        healthStore.requestAuthorization(toShare: nil, read: typesToRead) { success, error in
+            if let error = error {
+                print("❌ HealthKit Authorization Error: \(error.localizedDescription)")
+            }
+            completion(success)
+        }
+    }
+    
     // Request HealthKit authorization
     func requestHealthKitAuthorization(completion: @escaping (Bool, Error?) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else {

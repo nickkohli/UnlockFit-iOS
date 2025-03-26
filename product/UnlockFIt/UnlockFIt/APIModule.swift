@@ -103,6 +103,7 @@ class APIModule {
 
         healthStore.execute(query)
     }
+    
     func getStepsToday(completion: @escaping (Double) -> Void) {
         fetchTodayStepCount(completion: completion)
     }
@@ -113,5 +114,34 @@ class APIModule {
 
     func getExerciseMinutesToday(completion: @escaping (Double) -> Void) {
         fetchTodayExerciseMinutes(completion: completion)
+    }
+
+    func getSteps(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
+        fetchSumQuantity(for: stepType, unit: HKUnit.count(), from: startDate, to: endDate, completion: completion)
+    }
+
+    func getCalories(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let calorieType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
+        fetchSumQuantity(for: calorieType, unit: HKUnit.kilocalorie(), from: startDate, to: endDate, completion: completion)
+    }
+
+    func getMinutes(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let exerciseType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
+        fetchSumQuantity(for: exerciseType, unit: HKUnit.minute(), from: startDate, to: endDate, completion: completion)
+    }
+
+    private func fetchSumQuantity(for type: HKQuantityType, unit: HKUnit, from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
+        let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in
+            var total = 0.0
+            if let quantity = result?.sumQuantity() {
+                total = quantity.doubleValue(for: unit)
+            }
+            DispatchQueue.main.async {
+                completion(total)
+            }
+        }
+        healthStore.execute(query)
     }
 }

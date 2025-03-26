@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct ProgressView: View {
-    @EnvironmentObject var themeManager: ThemeManager // Inject ThemeManager
+    @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         ZStack {
@@ -20,9 +21,9 @@ struct ProgressView: View {
                             .font(.headline)
                             .foregroundColor(.white)
                         HStack {
-                            ProgressCard(title: "Steps", value: "\(goalManager.stepsToday)", color: CustomColors.ringRed)
-                            ProgressCard(title: "Calories", value: "\(Int(goalManager.caloriesBurned))", color: CustomColors.ringGreen)
-                            ProgressCard(title: "Minutes", value: "\(Int(goalManager.minutesExercised))", color: CustomColors.ringBlue)
+                            ProgressCard(title: "Steps", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklySteps.reduce(0, +))), number: .decimal), color: CustomColors.ringRed)
+                            ProgressCard(title: "Calories", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklyCalories.reduce(0, +))), number: .decimal), color: CustomColors.ringGreen)
+                            ProgressCard(title: "Minutes", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklyMinutes.reduce(0, +))), number: .decimal), color: CustomColors.ringBlue)
                         }
                     }
                     .padding()
@@ -34,8 +35,12 @@ struct ProgressView: View {
                         Text("Fitness Trends")
                             .font(.headline)
                             .foregroundColor(.white)
-                        LineGraph(data: [50, 70, 90, 85, 95, 100, 110], color: themeManager.accentColor) // Animated graph
-                            .frame(height: 200)
+                        MultiLineGraph(
+                            stepData: goalManager.weeklySteps,
+                            calorieData: goalManager.weeklyCalories,
+                            minuteData: goalManager.weeklyMinutes
+                        )
+                        .frame(height: 200)
                     }
                     .padding()
                     .background(Color.gray.opacity(0.2))
@@ -91,7 +96,54 @@ struct ProgressView: View {
     }
 }
 
-// Reusable Progress Card
+// MultiLineGraph to display multiple data series
+struct MultiLineGraph: View {
+    let stepData: [Double]
+    let calorieData: [Double]
+    let minuteData: [Double]
+    @State private var graphProgress: CGFloat = 0.0
+
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                LinePath(data: stepData, color: CustomColors.ringRed, progress: graphProgress, geometry: geometry)
+                LinePath(data: calorieData, color: CustomColors.ringGreen, progress: graphProgress, geometry: geometry)
+                LinePath(data: minuteData, color: CustomColors.ringBlue, progress: graphProgress, geometry: geometry)
+            }
+            .onAppear {
+                withAnimation(.easeInOut(duration: 2.5)) {
+                    graphProgress = 1.0
+                }
+            }
+        }
+    }
+}
+
+struct LinePath: View {
+    let data: [Double]
+    let color: Color
+    let progress: CGFloat
+    let geometry: GeometryProxy
+
+    var body: some View {
+        Path { path in
+            guard let max = data.max(), max > 0 else { return }
+            let step = geometry.size.width / CGFloat(data.count - 1)
+            let height = geometry.size.height
+
+            path.move(to: CGPoint(x: 0, y: height - CGFloat(data[0] / max) * height))
+
+            for i in 1..<data.count {
+                let x = CGFloat(i) * step
+                let y = height - CGFloat(data[i] / max) * height
+                path.addLine(to: CGPoint(x: x, y: y))
+            }
+        }
+        .trim(from: 0.0, to: progress)
+        .stroke(color, lineWidth: 2)
+    }
+}
+
 struct ProgressCard: View {
     let title: String
     let value: String
@@ -110,62 +162,27 @@ struct ProgressCard: View {
         }
         .frame(maxWidth: .infinity)
         .padding(.all, 12.0)
-        .background(Color(red: 0.108, green: 0.108, blue: 0.114)) // Dark background
-        .cornerRadius(10) // Rounded corners
+        .background(Color(red: 0.108, green: 0.108, blue: 0.114))
+        .cornerRadius(10)
     }
 }
 
-// Placeholder Line Graph with Animation
-struct LineGraph: View {
-    let data: [Double]
-    let color: Color
-
-    @State private var graphProgress: CGFloat = 0.0 // For animating the graph
-
-    var body: some View {
-        GeometryReader { geometry in
-            Path { path in
-                let width = geometry.size.width
-                let height = geometry.size.height
-                let step = width / CGFloat(data.count - 1)
-                let maxValue = data.max() ?? 1
-
-                path.move(to: CGPoint(x: 0, y: height - CGFloat(data[0]) / CGFloat(maxValue) * height))
-
-                for index in 1..<data.count {
-                    let x = CGFloat(index) * step
-                    let y = height - CGFloat(data[index]) / CGFloat(maxValue) * height
-                    path.addLine(to: CGPoint(x: x, y: y))
-                }
-            }
-            .trim(from: 0.0, to: graphProgress) // Draw progressively
-            .stroke(color, lineWidth: 2)
-            .animation(.easeInOut(duration: 2.5), value: graphProgress) // Smooth animation
-        }
-        .onAppear {
-            graphProgress = 1.0 // Animate graph on appear
-        }
-    }
-}
-
-// Reusable Achievement Badge with Single Jump Animation
 struct AchievementBadge: View {
     let title: String
     let icon: String
     let gradient: LinearGradient
     let shadowColor: Color
 
-    @State private var scale: CGFloat = 1.0 // For jump animation
+    @State private var scale: CGFloat = 1.0
 
     var body: some View {
         VStack {
             ZStack {
-                // Outer glow effect
                 Circle()
                     .fill(gradient)
                     .frame(width: 80, height: 80)
                     .shadow(color: shadowColor.opacity(0.45), radius: 7.5, x: 0, y: 5)
-                // Inner Circle for 3D effect
+
                 Circle()
                     .fill(LinearGradient(
                         gradient: Gradient(colors: [.white.opacity(0.4), .clear]),
@@ -175,27 +192,23 @@ struct AchievementBadge: View {
                     .frame(width: 70, height: 70)
                     .blendMode(.overlay)
 
-                // Badge Icon
                 Image(systemName: icon)
                     .font(.title)
                     .foregroundColor(.white)
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
             }
-            .scaleEffect(scale) // Apply scale animation
+            .scaleEffect(scale)
             .onAppear {
-                withAnimation(
-                    Animation.easeInOut(duration: 0.5) // One jump animation
-                ) {
-                    scale = 1.1 // Slightly grow
+                withAnimation(Animation.easeInOut(duration: 0.5)) {
+                    scale = 1.1
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                     withAnimation(Animation.easeInOut(duration: 0.5)) {
-                        scale = 1.0 // Return to normal size
+                        scale = 1.0
                     }
                 }
             }
 
-            // Badge Title
             Text(title)
                 .font(.caption)
                 .foregroundColor(.gray)
@@ -208,7 +221,8 @@ struct AchievementBadge: View {
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
         ProgressView()
-            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(ThemeManager())
             .environmentObject(GoalManager())
+            .environmentObject(AppState())
     }
 }

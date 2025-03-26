@@ -2,6 +2,22 @@
 
 ---
 
+## **26th March 2025**
+Started wiring up HealthKit to weekly trend data for steps, calories, and minutes. Created a new `GoalManager` function to retrieve the past 7 days’ worth of data for each metric. Integrated that into the `ProgressView`, replacing the placeholder graph with a live, animated, multi-line graph.
+
+Added new logic to display total weekly stats at the top of the screen in the "Weekly Overview" section. Used Swift’s number formatting to make large values easier to read (e.g. 12,450 steps instead of 12450).
+
+Spent a lot of time debugging HealthKit issues — especially making sure the Info.plist was correctly configured and the data appeared when running on a real device. The app now requests permissions properly and displays live HealthKit data in both the fitness rings and the progress graph.
+
+---
+
+## **25th March 2025**
+Kicked off the HealthKit API integration today. Created a dedicated `APIModule.swift` to manage API calls and set up the initial authorisation and step/calorie fetching functions. Got it running on my actual device to confirm that authorisation was working properly.
+
+Also implemented a new `GoalManager` class that acts as the bridge between `APIModule` and the views. Hooked it up to `FitnessView` to update the ring animations with real data from HealthKit. Finally, I made sure the app requested HealthKit permissions and built cleanly with environment object injection working.
+
+---
+
 ## **13th December 2024**
 The `README.md` file was updated today, with all relevant information up to date.
 

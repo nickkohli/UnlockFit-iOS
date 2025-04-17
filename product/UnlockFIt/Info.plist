@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>UnlockFit requires access to your health data to track your steps, calories, and exercise time.</string>
+
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>UnlockFit uses your activity data to personalise your fitness goals and progress rings.</string>
+
+	<key>NSSystemExtensionUsageDescription</key>
+	<string>UnlockFit uses system extension capabilities to limit distractions by monitoring app usage.</string>
+
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app needs access to screen time usage to help improve your focus and fitness goals.</string>
+</dict>
+</plist>

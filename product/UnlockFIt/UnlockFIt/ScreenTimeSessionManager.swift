@@ -56,6 +56,7 @@ class ScreenTimeSessionManager: ObservableObject {
         content.title = "UnlockFit Timer"
         content.body = "Your screen time session has ended. Please return to UnlockFit."
         content.sound = .default
+        content.interruptionLevel = .timeSensitive
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: sessionDuration, repeats: false)
         let request = UNNotificationRequest(identifier: "ScreenTimeSessionEnded", content: content, trigger: trigger)

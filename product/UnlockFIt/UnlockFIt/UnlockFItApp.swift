@@ -1,6 +1,6 @@
-//
 import SwiftUI
 import UIKit
+import UserNotifications
 
 @main
 struct UnlockFitApp: App {
@@ -11,11 +11,22 @@ struct UnlockFitApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(themeManager)
-                .environmentObject(appState)
-                .environmentObject(goalManager)
-                .environmentObject(screenTimeManager)
+            Group {
+                ContentView()
+                    .environmentObject(themeManager)
+                    .environmentObject(appState)
+                    .environmentObject(goalManager)
+                    .environmentObject(screenTimeManager)
+            }
+            .onAppear {
+                UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+                    if let error = error {
+                        print("❌ Notification permission error: \(error.localizedDescription)")
+                    } else {
+                        print("🔔 Notification permission granted: \(granted)")
+                    }
+                }
+            }
         }
     }
 }

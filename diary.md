@@ -2,6 +2,17 @@
 
 ---
 
+## **17th April 2025**
+Finally finished the full Live Activity integration. Got the rotating ring in the Dynamic Island working and animating based on the timer progress — had some strange clipping issues at first but sorted it by adjusting padding and ring sizing. Also added a red flashing ring when the timer ends, which took a lot of trial and error to get the flashing to work properly with SwiftUI.
+
+Set up time-sensitive notifications when a session ends to prompt the user to return to the app. I had to tweak the `UNNotificationContent` to make it bypass scheduled summary and appear instantly. I also tested this with a shorter 3 second timer to make testing easier.
+
+Earlier today I managed to get the whole ScreenTimeLiveActivity component built and displaying on the Dynamic Island. At first, the visuals wouldn’t show unless the widget was added to the homescreen, but adding the `NSSupportsLiveActivities` key fixed that.
+
+Session manager now has full start/pause/resume logic and the timer updates both locally and in the Live Activity. It was a big push today but everything’s feeling really smooth now.
+
+---
+
 ## **26th March 2025**
 Started wiring up HealthKit to weekly trend data for steps, calories, and minutes. Created a new `GoalManager` function to retrieve the past 7 days’ worth of data for each metric. Integrated that into the `ProgressView`, replacing the placeholder graph with a live, animated, multi-line graph.
 

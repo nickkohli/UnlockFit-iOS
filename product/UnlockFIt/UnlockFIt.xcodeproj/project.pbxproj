@@ -70,6 +70,14 @@
 			);
 			target = E29B0DF72DB17BAC001ECEFC /* UnlockFItWidgetExtension */;
 		};
+		E29B0E182DB18CEE001ECEFC /* Exceptions for "UnlockFIt" folder in "UnlockFItWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ScreenTimeActivityAttributes.swift,
+				ScreenTimeLiveActivity.swift,
+			);
+			target = E29B0DF72DB17BAC001ECEFC /* UnlockFItWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -83,6 +91,9 @@
 		};
 		E2C382792D019AEE00071E9B /* UnlockFIt */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E29B0E182DB18CEE001ECEFC /* Exceptions for "UnlockFIt" folder in "UnlockFItWidgetExtension" target */,
+			);
 			path = UnlockFIt;
 			sourceTree = "<group>";
 		};

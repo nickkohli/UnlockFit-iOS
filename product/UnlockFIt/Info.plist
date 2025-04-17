@@ -13,5 +13,8 @@
 
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app needs access to screen time usage to help improve your focus and fitness goals.</string>
+
+	<key>NSSupportsLiveActivities</key>
+	<true/>
 </dict>
 </plist>

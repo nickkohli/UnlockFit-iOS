@@ -14,5 +14,6 @@ struct UnlockFItWidgetBundle: WidgetBundle {
         UnlockFItWidget()
         UnlockFItWidgetControl()
         UnlockFItWidgetLiveActivity()
+        ScreenTimeLiveActivity()
     }
 }

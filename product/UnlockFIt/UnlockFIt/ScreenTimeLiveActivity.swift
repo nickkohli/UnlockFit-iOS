@@ -10,16 +10,29 @@ struct ScreenTimeLiveActivity: Widget {
             DynamicIsland {
                 // Expanded view
                 DynamicIslandExpandedRegion(.leading) {
-                    LiveActivityView(context: context)
+                    let progress = max(min(context.state.timeRemaining / context.attributes.sessionDuration, 1.0), 0.0)
+                    ZStack {
+                        RotatingRingView(progress: progress)
+                            .frame(width: 20, height: 20)
+                            .padding(4)
+                    }
                 }
             } compactLeading: {
-                RotatingRingView()
-                    .frame(width: 20, height: 20)
+                let progress = max(min(context.state.timeRemaining / context.attributes.sessionDuration, 1.0), 0.0)
+                ZStack {
+                    RotatingRingView(progress: progress)
+                        .frame(width: 20, height: 20)
+                        .padding(4)
+                }
             } compactTrailing: {
                 TimerText(timeRemaining: context.state.timeRemaining, isTimeUp: context.state.isTimeUp)
             } minimal: {
-                RotatingRingView()
-                    .frame(width: 20, height: 20)
+                let progress = max(min(context.state.timeRemaining / context.attributes.sessionDuration, 1.0), 0.0)
+                ZStack {
+                    RotatingRingView(progress: progress)
+                        .frame(width: 20, height: 20)
+                        .padding(4)
+                }
             }
         }
     }
@@ -30,8 +43,8 @@ struct LiveActivityView: View {
 
     var body: some View {
         HStack(spacing: 8) {
-            RotatingRingView()
-                .frame(width: 24, height: 24)
+            let progress = max(min(context.state.timeRemaining / context.attributes.sessionDuration, 1.0), 0.0)
+            RotatingRingView(progress: progress)
 
             TimerText(timeRemaining: context.state.timeRemaining, isTimeUp: context.state.isTimeUp)
                 .font(.headline)
@@ -41,22 +54,21 @@ struct LiveActivityView: View {
 }
 
 struct RotatingRingView: View {
-    @State private var rotation: Angle = .degrees(0)
+    var progress: Double // from 1.0 (full circle) to 0.0 (empty)
 
     var body: some View {
         Circle()
-            .trim(from: 0.0, to: 0.75)
-            .stroke(AngularGradient(
-                gradient: Gradient(colors: [.pink, .purple]),
-                center: .center),
-                style: StrokeStyle(lineWidth: 3, lineCap: .round)
+            .trim(from: 0.0, to: CGFloat(progress))
+            .stroke(
+                AngularGradient(
+                    gradient: Gradient(colors: [.pink, .purple]),
+                    center: .center
+                ),
+                style: StrokeStyle(lineWidth: 4, lineCap: .round)
             )
-            .rotationEffect(rotation)
-            .onAppear {
-                withAnimation(.linear(duration: 2.0).repeatForever(autoreverses: false)) {
-                    rotation = .degrees(360)
-                }
-            }
+            .frame(width: 20, height: 20)
+            .rotationEffect(.degrees(270)) // Start from top
+            .animation(.linear(duration: 0.2), value: progress)
     }
 }
 

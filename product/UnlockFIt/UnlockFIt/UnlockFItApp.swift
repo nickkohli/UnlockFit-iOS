@@ -7,6 +7,7 @@ struct UnlockFitApp: App {
     @StateObject private var themeManager = ThemeManager()
     @StateObject private var appState = AppState()
     @StateObject private var goalManager = GoalManager()
+    @StateObject private var screenTimeManager = ScreenTimeSessionManager()
 
     var body: some Scene {
         WindowGroup {
@@ -14,6 +15,7 @@ struct UnlockFitApp: App {
                 .environmentObject(themeManager)
                 .environmentObject(appState)
                 .environmentObject(goalManager)
+                .environmentObject(screenTimeManager)
         }
     }
 }

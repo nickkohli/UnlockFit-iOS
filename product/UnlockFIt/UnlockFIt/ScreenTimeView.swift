@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
 
@@ -42,22 +43,86 @@ struct ScreenTimeView: View {
                 .background(Color.gray.opacity(0.2))
                 .cornerRadius(10)
 
-                // Button
-                Button(action: {
-                    // Action
-                }) {
-                    Text("Manage App Restrictions")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(LinearGradient(
-                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                if true {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Custom Screen Time Session")
+                            .font(.headline)
+                            .foregroundColor(.white)
+
+                        VStack(alignment: .leading) {
+                            Text("Duration: \(Int(screenTimeManager.sessionDuration / 60)) min")
+                                .foregroundColor(.gray)
+                            Slider(value: Binding(
+                                get: { screenTimeManager.sessionDuration / 60 },
+                                set: { screenTimeManager.sessionDuration = $0 * 60 }
+                            ), in: 0.05...60, step: 5)
+                                .accentColor(themeManager.accentColor)
+                                .onAppear {
+                                    if screenTimeManager.sessionDuration < 300 {
+                                        screenTimeManager.sessionDuration = 300
+                                    }
+                                }
+                        }
+
+                        if screenTimeManager.isSessionActive {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(screenTimeManager.timeRemaining > 0 ?
+                                     "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
+                                     "🛑 Time's up! Tap 'Stop Session' to clock out.")
+                                    .foregroundColor(.white)
+                                    .font(.subheadline)
+                                    .padding(.bottom, 5)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+
+                                if screenTimeManager.timeRemaining > 0 {
+                                    Button(action: {
+                                        if screenTimeManager.isPaused {
+                                            screenTimeManager.resumeSession()
+                                        } else {
+                                            screenTimeManager.pauseSession()
+                                        }
+                                    }) {
+                                        Text(screenTimeManager.isPaused ? "Resume Session" : "Pause Session")
+                                            .frame(maxWidth: .infinity)
+                                            .padding()
+                                            .background(Color(red: 0.2, green: 0.2, blue: 0.2))
+                                            .foregroundColor(.white)
+                                            .cornerRadius(10)
+                                    }
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
+                            }
+                            .animation(.easeInOut(duration: 0.4), value: screenTimeManager.timeRemaining)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+
+                        Button(action: {
+                            if screenTimeManager.isSessionActive {
+                                screenTimeManager.stopSession()
+                            } else {
+                                if screenTimeManager.sessionDuration >= 3 {
+                                    screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
+                                }
+                            }
+                        }) {
+                            Text(screenTimeManager.isSessionActive ? "Stop Session" : "Start Session")
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(LinearGradient(
+                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ))
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+                    .transition(.opacity.combined(with: .move(edge: .top)))
+                    .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isSessionActive)
                 }
-                .padding(.horizontal)
 
                 Spacer() // Fills remaining space at the bottom
             }
@@ -135,6 +200,6 @@ struct ScreenTimeView_Previews: PreviewProvider {
     static var previews: some View {
         ScreenTimeView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
-            .environmentObject(GoalManager()) 
+            .environmentObject(GoalManager())
     }
 }

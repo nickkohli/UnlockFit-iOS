@@ -8,11 +8,13 @@ class ScreenTimeSessionManager: ObservableObject {
     @Published var isPaused: Bool = false
     @Published var sessionDuration: TimeInterval = 0 // Duration in seconds
     @Published var timeRemaining: TimeInterval = 0
+    @Published var isFlashing: Bool = false
 
     private var timer: Timer?
     private var sessionStartDate: Date?
     private var cancellables = Set<AnyCancellable>()
     private var liveActivity: Activity<ScreenTimeActivityAttributes>?
+    private var flashingTimer: Timer?
 
     func startSession(duration: TimeInterval) {
         sessionDuration = duration
@@ -30,6 +32,7 @@ class ScreenTimeSessionManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         isSessionActive = false
+        stopFlashing()
         endLiveActivity()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
@@ -43,7 +46,7 @@ class ScreenTimeSessionManager: ObservableObject {
                 self.timer = nil
                 self.timeRemaining = 0
                 self.isPaused = false
-                // The session remains active, user must manually stop it
+                self.startFlashing()
             }
         }
     }
@@ -64,7 +67,8 @@ class ScreenTimeSessionManager: ObservableObject {
         let attributes = ScreenTimeActivityAttributes(sessionDuration: sessionDuration)
         let initialState = ScreenTimeActivityAttributes.ContentState(
             timeRemaining: timeRemaining,
-            isTimeUp: false
+            isTimeUp: false,
+            isFlashingRing: false
         )
 
         do {
@@ -81,7 +85,7 @@ class ScreenTimeSessionManager: ObservableObject {
 
     private func endLiveActivity() {
         Task {
-            let finalContent = ScreenTimeActivityAttributes.ContentState(timeRemaining: 0, isTimeUp: true)
+            let finalContent = ScreenTimeActivityAttributes.ContentState(timeRemaining: 0, isTimeUp: true, isFlashingRing: true)
             await liveActivity?.end(
                 ActivityContent(state: finalContent, staleDate: nil),
                 dismissalPolicy: .immediate
@@ -92,9 +96,28 @@ class ScreenTimeSessionManager: ObservableObject {
     
     private func updateLiveActivity() {
         Task {
-            let updatedContent = ScreenTimeActivityAttributes.ContentState(timeRemaining: timeRemaining, isTimeUp: timeRemaining <= 0)
+            let updatedContent = ScreenTimeActivityAttributes.ContentState(
+                timeRemaining: timeRemaining,
+                isTimeUp: timeRemaining <= 0,
+                isFlashingRing: isFlashing
+            )
             await liveActivity?.update(ActivityContent(state: updatedContent, staleDate: nil))
         }
+    }
+
+    private func startFlashing() {
+        flashingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            DispatchQueue.main.async {
+                self.isFlashing.toggle()
+                self.updateLiveActivity()
+            }
+        }
+    }
+
+    private func stopFlashing() {
+        flashingTimer?.invalidate()
+        flashingTimer = nil
+        isFlashing = false
     }
 
     func pauseSession() {

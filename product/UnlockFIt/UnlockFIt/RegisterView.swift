@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseAuth
+import FirebaseFirestore
 
 struct RegisterView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -111,6 +112,11 @@ struct RegisterView: View {
                             }
 
                             print("✅ Successfully registered user: \(email)")
+                            
+                            if let uid = result?.user.uid {
+                                FirestoreManager.shared.saveNewUser(uid: uid, email: email, nickname: nickname)
+                                print("📝 Firestore saveNewUser called for UID: \(uid)")
+                            }
                         }
                     }) {
                         Text("Register")

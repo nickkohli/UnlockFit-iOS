@@ -2,6 +2,12 @@ import SwiftUI
 import UserNotifications
 
 struct NotificationSetupView: View {
+    @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var appState: AppState
+    @EnvironmentObject var goalManager: GoalManager
+    @EnvironmentObject var screenTimeSessionManager: ScreenTimeSessionManager
+    @EnvironmentObject var screenTimeHistoryManager: ScreenTimeHistoryManager
+
     @State private var notificationsEnabled = false
     @State private var deliverySet = false
     @State private var bannerSet = false
@@ -41,12 +47,12 @@ struct NotificationSetupView: View {
                                 Text("Turn on notifications for UnlockFit to receive reminders and updates.")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
-                                Image("placeholder1")
+                                Image("notif_toggle")
                                     .resizable()
                                     .scaledToFit()
-                                    .frame(height: 150)
+                                    .frame(height: 67)
                                     .cornerRadius(10)
-                                    .opacity(notificationsEnabled ? 0.3 : 1.0)
+                                    .opacity(deliverySet ? 0.3 : (notificationsEnabled ? 1.0 : 0.3))
 
                                 Button(action: {
                                     UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -85,7 +91,7 @@ struct NotificationSetupView: View {
                                 Text("Make sure notifications are delivered immediately instead of being scheduled.")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
-                                Image("placeholder2")
+                                Image("notif_delivery")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(height: 150)
@@ -123,7 +129,7 @@ struct NotificationSetupView: View {
                                 Text("Set notification banners to persistent so they stay until viewed.")
                                     .font(.subheadline)
                                     .foregroundColor(.gray)
-                                Image("placeholder3")
+                                Image("notif_banner")
                                     .resizable()
                                     .scaledToFit()
                                     .frame(height: 150)
@@ -152,7 +158,18 @@ struct NotificationSetupView: View {
                                 .multilineTextAlignment(.center)
 
                             Button(action: {
-                                showWelcome = true
+                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                                   let window = windowScene.windows.first {
+                                    let welcomeView = WelcomeView()
+                                        .environmentObject(themeManager)
+                                        .environmentObject(appState)
+                                        .environmentObject(goalManager)
+                                        .environmentObject(screenTimeSessionManager)
+                                        .environmentObject(screenTimeHistoryManager)
+                                    let hostingController = UIHostingController(rootView: welcomeView)
+                                    window.rootViewController = hostingController
+                                    window.makeKeyAndVisible()
+                                }
                             }) {
                                 Text("Continue")
                                     .padding()
@@ -174,29 +191,6 @@ struct NotificationSetupView: View {
                                     .cornerRadius(10)
                             }
                             .disabled(!(notificationsEnabled && deliverySet && bannerSet))
-                            .navigationDestination(isPresented: $showWelcome) {
-                                WelcomeView()
-                            }
-                            
-                            Button(action: {
-                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                   let window = windowScene.windows.first {
-                                    window.rootViewController = UIHostingController(rootView: LoginView()
-                                        .environmentObject(ThemeManager())
-                                        .environmentObject(AppState())
-                                        .environmentObject(GoalManager())
-                                        .environmentObject(ScreenTimeSessionManager())
-                                        .environmentObject(ScreenTimeHistoryManager()))
-                                    window.makeKeyAndVisible()
-                                }
-                            }) {
-                                Text("Return to Login")
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.red.opacity(0.3))
-                                    .foregroundColor(.white)
-                                    .cornerRadius(10)
-                            }
                         }
                     }
                 }
@@ -210,15 +204,5 @@ struct NotificationSetupView: View {
                 }
             }
         }
-    }
-}
-
-struct WelcomeView: View {
-    var body: some View {
-        Text("🎉 Welcome to UnlockFit!")
-            .font(.largeTitle)
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.black.ignoresSafeArea())
     }
 }

@@ -12,8 +12,12 @@ struct UnlockFitApp: App {
     @StateObject private var screenTimeHistory = ScreenTimeHistoryManager()
 
     init() {
-        FirebaseApp.configure()
-        print("✅ Firebase configured")
+        if FirebaseApp.app() == nil {
+            FirebaseApp.configure()
+            print("✅ Firebase configured")
+        } else {
+            print("⚠️ Firebase already configured")
+        }
     }
 
     var body: some Scene {

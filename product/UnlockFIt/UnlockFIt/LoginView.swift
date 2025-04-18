@@ -111,6 +111,32 @@ struct LoginView: View {
                                 print("⚠️ Firebase Auth Error: \(error.localizedDescription)")
                             } else if authResult != nil {
                                 appState.isLoggedIn = true
+                                
+                                guard let uid = authResult?.user.uid else {
+                                    print("❌ Could not find UID after login")
+                                    return
+                                }
+
+                                FirestoreManager.shared.fetchUserData(uid: uid) { userData, error in
+                                    if let error = error {
+                                        print("❌ Failed to fetch user data: \(error.localizedDescription)")
+                                        return
+                                    }
+                                    if let data = userData {
+                                        appState.stepGoal = data["stepGoal"] as? Int ?? appState.stepGoal
+                                        appState.calorieGoal = data["calorieGoal"] as? Int ?? appState.calorieGoal
+                                        appState.minuteGoal = data["minuteGoal"] as? Int ?? appState.minuteGoal
+                                        
+                                        if let theme = data["theme"] as? String {
+                                            themeManager.selectedTheme = theme
+                                        }
+
+                                        print("☁️ User profile loaded and applied from Firestore.")
+                                    } else {
+                                        print("⚠️ No user data found in Firestore.")
+                                    }
+                                }
+                                
                                 print("✅ Login successful. isLoggedIn set to true")
                             } else {
                                 loginError = "Unknown login error occurred."

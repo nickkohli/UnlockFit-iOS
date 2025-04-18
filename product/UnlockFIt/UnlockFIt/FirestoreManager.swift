@@ -26,4 +26,24 @@ class FirestoreManager {
             completion?(error)
         }
     }
+    
+    func fetchUserData(uid: String, completion: @escaping ([String: Any]?, Error?) -> Void) {
+        db.collection("users").document(uid).getDocument { documentSnapshot, error in
+            if let error = error {
+                print("❌ Failed to fetch user data: \(error.localizedDescription)")
+                completion(nil, error)
+                return
+            }
+            
+            guard let document = documentSnapshot, document.exists,
+                  let data = document.data() else {
+                print("⚠️ No user data found for UID: \(uid)")
+                completion(nil, nil)
+                return
+            }
+            
+            print("✅ User data fetched: \(data)")
+            completion(data, nil)
+        }
+    }
 }

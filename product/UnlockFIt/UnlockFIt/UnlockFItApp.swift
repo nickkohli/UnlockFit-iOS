@@ -11,6 +11,11 @@ struct UnlockFitApp: App {
     @StateObject private var screenTimeManager = ScreenTimeSessionManager()
     @StateObject private var screenTimeHistory = ScreenTimeHistoryManager()
 
+    init() {
+        FirebaseApp.configure()
+        print("✅ Firebase configured")
+    }
+
     var body: some Scene {
         WindowGroup {
             Group {
@@ -22,8 +27,6 @@ struct UnlockFitApp: App {
                     .environmentObject(screenTimeHistory)
             }
             .onAppear {
-                FirebaseApp.configure()
-                print("✅ Firebase configured")
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                     if let error = error {
                         print("❌ Notification permission error: \(error.localizedDescription)")

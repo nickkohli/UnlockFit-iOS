@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAuth
 
 struct RegisterView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -56,9 +57,46 @@ struct RegisterView: View {
                     }
 
                     Button(action: {
-                        // TODO: Validate input and call Firebase registration
-                        // if passwords match && email valid:
-                        // Auth.auth().createUser...
+                        guard !email.isEmpty, !password.isEmpty, !confirmPassword.isEmpty, !nickname.isEmpty else {
+                            errorMessage = "Please fill in all fields."
+                            showError = true
+                            return
+                        }
+
+                        guard email.contains("@"), email.contains(".") else {
+                            errorMessage = "Please enter a valid email address."
+                            showError = true
+                            return
+                        }
+
+                        let nicknamePattern = "^[a-zA-Z0-9]{1,16}$"
+                        let nicknameRegex = try! NSRegularExpression(pattern: nicknamePattern)
+                        let range = NSRange(location: 0, length: nickname.utf16.count)
+                        guard nicknameRegex.firstMatch(in: nickname, options: [], range: range) != nil else {
+                            errorMessage = "Nickname must be 1-16 characters with no special symbols."
+                            showError = true
+                            return
+                        }
+
+                        guard password == confirmPassword else {
+                            errorMessage = "Passwords do not match."
+                            showError = true
+                            return
+                        }
+
+                        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+                            if let error = error {
+                                errorMessage = error.localizedDescription
+                                showError = true
+                                return
+                            }
+
+                            let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+                            changeRequest?.displayName = nickname
+                            changeRequest?.commitChanges(completion: nil)
+
+                            print("✅ Successfully registered user: \(email)")
+                        }
                     }) {
                         Text("Register")
                             .frame(maxWidth: .infinity)
@@ -76,6 +114,16 @@ struct RegisterView: View {
                 .padding()
             }
         }
+    }
+}
+
+struct NotificationSetupView: View {
+    var body: some View {
+        Text("Let's set up your notifications!")
+            .font(.title)
+            .padding()
+            .foregroundColor(.white)
+            .background(Color.black.edgesIgnoringSafeArea(.all))
     }
 }
 

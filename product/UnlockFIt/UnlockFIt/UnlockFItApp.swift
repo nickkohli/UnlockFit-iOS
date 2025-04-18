@@ -39,7 +39,31 @@ struct UnlockFitApp: App {
                     }
                 }
                 screenTimeManager.historyManager = screenTimeHistory
+                // Delay needed to ensure UIWindow is fully available
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    UnlockFitApp.resetApp()
+                }
             }
         }
+    }
+    
+    static func resetApp() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("❌ Failed to access main window.")
+            return
+        }
+
+        let newRootView = ContentView()
+            .environmentObject(ThemeManager())
+            .environmentObject(AppState())
+            .environmentObject(GoalManager())
+            .environmentObject(ScreenTimeSessionManager())
+            .environmentObject(ScreenTimeHistoryManager())
+
+        window.rootViewController = UIHostingController(rootView: newRootView)
+        window.makeKeyAndVisible()
+
+        print("🔁 App reset to LoginView with new state.")
     }
 }

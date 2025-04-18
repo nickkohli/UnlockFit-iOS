@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import UserNotifications
+import Firebase
 
 @main
 struct UnlockFitApp: App {
@@ -21,6 +22,8 @@ struct UnlockFitApp: App {
                     .environmentObject(screenTimeHistory)
             }
             .onAppear {
+                FirebaseApp.configure()
+                print("✅ Firebase configured")
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                     if let error = error {
                         print("❌ Notification permission error: \(error.localizedDescription)")

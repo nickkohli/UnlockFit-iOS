@@ -1,4 +1,5 @@
 import SwiftUI
+import Firebase
 
 struct LoginView: View {
     @EnvironmentObject var appState: AppState // Access AppState
@@ -88,9 +89,7 @@ struct LoginView: View {
                     }
 
                     // Register Button
-                    Button(action: {
-                        // Placeholder action for Register
-                    }) {
+                    NavigationLink(destination: RegisterView()) {
                         Text("Register")
                             .frame(maxWidth: .infinity)
                             .padding()
@@ -113,6 +112,6 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
-            .environmentObject(GoalManager()) 
+            .environmentObject(GoalManager())
     }
 }

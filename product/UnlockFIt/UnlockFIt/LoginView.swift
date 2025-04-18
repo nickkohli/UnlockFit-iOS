@@ -3,6 +3,7 @@ import Firebase
 
 struct LoginView: View {
     @EnvironmentObject var appState: AppState // Access AppState
+    @EnvironmentObject var themeManager: ThemeManager
     @State private var username: String = "" // Username input
     @State private var password: String = "" // Password input
 

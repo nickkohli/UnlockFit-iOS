@@ -6,6 +6,7 @@ struct LoginView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @State private var username: String = "" // Email input
     @State private var password: String = "" // Password input
+    @State private var showRegister = false
 
     var body: some View {
         NavigationView {
@@ -90,13 +91,20 @@ struct LoginView: View {
                     }
 
                     // Register Button
-                    NavigationLink(destination: RegisterView()) {
+                    Button(action: {
+                        showRegister = true
+                    }) {
                         Text("Register")
                             .frame(maxWidth: .infinity)
                             .padding()
                             .background(Color.gray.opacity(0.2))
                             .foregroundColor(.white)
                             .cornerRadius(10)
+                    }
+                    .fullScreenCover(isPresented: $showRegister) {
+                        RegisterView()
+                            .environmentObject(themeManager)
+                            .environmentObject(appState)
                     }
 
                     Spacer() // Fills remaining space at the bottom

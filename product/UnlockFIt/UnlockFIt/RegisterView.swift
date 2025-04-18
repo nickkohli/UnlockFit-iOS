@@ -10,6 +10,9 @@ struct RegisterView: View {
     @State private var nickname: String = ""
     @State private var errorMessage: String = ""
     @State private var showError: Bool = false
+    @State private var showSuccess = false
+    @State private var progressWidth: CGFloat = 0
+    @State private var showSetupScreen = false
 
     var body: some View {
         NavigationStack {
@@ -57,6 +60,10 @@ struct RegisterView: View {
                     }
 
                     Button(action: {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                        showError = false
+                        errorMessage = ""
+
                         guard !email.isEmpty, !password.isEmpty, !confirmPassword.isEmpty, !nickname.isEmpty else {
                             errorMessage = "Please fill in all fields."
                             showError = true
@@ -95,6 +102,10 @@ struct RegisterView: View {
                             changeRequest?.displayName = nickname
                             changeRequest?.commitChanges(completion: nil)
 
+                            DispatchQueue.main.async {
+                                showSuccess = true
+                            }
+
                             print("✅ Successfully registered user: \(email)")
                         }
                     }) {
@@ -109,21 +120,85 @@ struct RegisterView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                    
+                    Button(action: {
+                        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                           let window = windowScene.windows.first {
+                            window.rootViewController?.dismiss(animated: true, completion: nil)
+                        }
+                    }) {
+                        Text("Already have an account? Log In")
+                            .foregroundColor(.white.opacity(0.7))
+                            .underline()
+                            .font(.footnote)
+                            .padding(.top, 10)
+                    }
+                    
                     Spacer()
+                    
+                    Button("Test Success Overlay") {
+                        showSuccess = true
+                    }
+                    .foregroundColor(.gray)
+                    .padding(.top, 10)
+
                 }
                 .padding()
             }
-        }
-    }
-}
+            .overlay(
+                Group {
+                    if showSuccess {
+                        Color.black.opacity(0.85).edgesIgnoringSafeArea(.all)
+                        VStack {
+                            VStack(spacing: 10) {
+                                Text("✅ Account Created")
+                                    .font(.title2)
+                                    .foregroundColor(.white)
+                                    .padding(.bottom, 5)
+                                Text("Let’s get you set up.")
+                                    .foregroundColor(.white.opacity(0.8))
+                                    .font(.subheadline)
 
-struct NotificationSetupView: View {
-    var body: some View {
-        Text("Let's set up your notifications!")
-            .font(.title)
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.black.edgesIgnoringSafeArea(.all))
+                                ZStack(alignment: .leading) {
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .frame(height: 6)
+                                        .foregroundColor(Color.white.opacity(0.3))
+
+                                    RoundedRectangle(cornerRadius: 5)
+                                        .frame(width: progressWidth, height: 6)
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                gradient: Gradient(colors: [.purple, .pink]),
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                }
+                                .frame(width: UIScreen.main.bounds.width * 0.6)
+                            }
+                            .padding()
+                            .background(RoundedRectangle(cornerRadius: 15).fill(Color.gray.opacity(0.3)))
+                            .transition(.scale)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .ignoresSafeArea()
+                        .onAppear {
+                            progressWidth = 0
+                            withAnimation(.easeInOut(duration: 3)) {
+                                progressWidth = UIScreen.main.bounds.width * 0.6
+                            }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                                showSuccess = false
+                                showSetupScreen = true
+                            }
+            }
+            .fullScreenCover(isPresented: $showSetupScreen) {
+                NotificationSetupView()
+            }
+        }
+                }
+            )
+        }
     }
 }
 

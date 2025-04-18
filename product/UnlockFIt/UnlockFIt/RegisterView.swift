@@ -184,20 +184,20 @@ struct RegisterView: View {
                         .ignoresSafeArea()
                         .onAppear {
                             progressWidth = 0
-                            withAnimation(.easeInOut(duration: 3)) {
+                            withAnimation(.easeInOut(duration: 2.25)) {
                                 progressWidth = UIScreen.main.bounds.width * 0.6
                             }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                 showSuccess = false
                                 showSetupScreen = true
                             }
-            }
+                        }
+                    }
+                }
+            )
             .fullScreenCover(isPresented: $showSetupScreen) {
                 NotificationSetupView()
             }
-        }
-                }
-            )
         }
     }
 }

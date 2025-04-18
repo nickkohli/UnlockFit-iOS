@@ -4,7 +4,7 @@ import Firebase
 struct LoginView: View {
     @EnvironmentObject var appState: AppState // Access AppState
     @EnvironmentObject var themeManager: ThemeManager
-    @State private var username: String = "" // Username input
+    @State private var username: String = "" // Email input
     @State private var password: String = "" // Password input
 
     var body: some View {
@@ -41,10 +41,10 @@ struct LoginView: View {
                     }
                     .padding(.bottom, 40)
 
-                    // Username Field
+                    // Username Field (Email)
                     ZStack(alignment: .leading) {
                         if username.isEmpty {
-                            Text("Username")
+                            Text("Email")
                                 .foregroundColor(Color.white.opacity(0.5)) // Lightened placeholder text color
                                 .padding(.leading, 15)
                         }

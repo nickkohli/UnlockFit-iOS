@@ -6,6 +6,7 @@ struct RegisterView: View {
     @State private var email: String = ""
     @State private var password: String = ""
     @State private var confirmPassword: String = ""
+    @State private var nickname: String = ""
     @State private var errorMessage: String = ""
     @State private var showError: Bool = false
 
@@ -21,6 +22,12 @@ struct RegisterView: View {
                         .foregroundColor(.white)
 
                     Group {
+                        TextField("", text: $nickname, prompt: Text("Nickname").foregroundColor(.white.opacity(0.6)))
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                            .foregroundColor(.white)
+                        
                         TextField("", text: $email, prompt: Text("Email").foregroundColor(.white.opacity(0.6)))
                             .keyboardType(.emailAddress)
                             .autocapitalization(.none)

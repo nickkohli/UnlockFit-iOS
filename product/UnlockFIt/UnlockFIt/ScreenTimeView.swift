@@ -3,8 +3,37 @@ import SwiftUI
 struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
+    @EnvironmentObject var historyManager: ScreenTimeHistoryManager
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+
+    var totalTime: TimeInterval {
+        historyManager.totalTimeToday()
+    }
+
+    var totalHours: Int {
+        Int(totalTime) / 3600
+    }
+    
+    var totalMinutes: Int {
+        (Int(totalTime) % 3600) / 60
+    }
+    
+    var totalSeconds: Int {
+        Int(totalTime) % 60
+    }
+    
+    var formattedPercentage: String {
+        String(format: "%.2f", (totalTime / 18000.0) * 100)
+    }
+
+    var totalSessions: Int {
+        historyManager.sessionHistory.filter { Calendar.current.isDateInToday($0.date) }.count
+    }
+
+    var progress: Double {
+        min(max(1.0 - (totalTime / 18000.0), 0.0), 1.0)
+    }
 
     var body: some View {
         ZStack {
@@ -17,15 +46,16 @@ struct ScreenTimeView: View {
                     .foregroundColor(.white)
                     .padding(.bottom, 5) // Reduced bottom padding
 
+                // Removed old computed properties in favor of new ones
+
                 // Screen Time Summary Card
-                VStack(alignment: .leading) {
-                    Text("Total Screen Time: 3h 45m")
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
                         .font(.headline)
                         .foregroundColor(.white)
-                    HStack {
-                        AppUsageView(appName: "Instagram", usage: "1h 30m", color: .purple)
-                        AppUsageView(appName: "TikTok", usage: "1h", color: .pink)
-                    }
+                    Text("Sessions Today: \(totalSessions)")
+                        .font(.subheadline)
+                        .foregroundColor(.gray)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -33,11 +63,14 @@ struct ScreenTimeView: View {
 
                 // Progress Bar
                 VStack(alignment: .leading) {
-                    Text("Time Saved by Fitness")
+                    Text("Time Saved Compared to Average")
                         .font(.headline)
                         .foregroundColor(.white)
-                    ProgressBarView(progress: animatedProgress, color: .green)
+                    ProgressBarView(progress: progress, color: .green)
                         .frame(height: 20)
+                    Text("You’ve used screen time for \(totalHours)h \(totalMinutes)m \(totalSeconds)s across \(totalSessions) session(s) today — that’s just \(formattedPercentage)% of the average adult.")
+                        .font(.caption)
+                        .foregroundColor(.gray)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -68,7 +101,7 @@ struct ScreenTimeView: View {
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(screenTimeManager.timeRemaining > 0 ?
                                      "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
-                                     "🛑 Time's up! Tap 'Stop Session' to clock out.")
+                                     "🛑 Time's up! But we’re still counting ⏱️ Tap 'Stop Session' to log your screen time.")
                                     .foregroundColor(.white)
                                     .font(.subheadline)
                                     .padding(.bottom, 5)
@@ -96,26 +129,36 @@ struct ScreenTimeView: View {
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
 
-                        Button(action: {
-                            if screenTimeManager.isSessionActive {
-                                screenTimeManager.stopSession()
+                        VStack {
+                            if screenTimeManager.isPaused {
+                                Color.clear
+                                    .frame(height: 0) // Keeps the spacing consistent even when button is hidden
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
                             } else {
-                                if screenTimeManager.sessionDuration >= 3 {
-                                    screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
+                                Button(action: {
+                                    if screenTimeManager.isSessionActive {
+                                        screenTimeManager.stopSession()
+                                    } else {
+                                        if screenTimeManager.sessionDuration >= 3 {
+                                            screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
+                                        }
+                                    }
+                                }) {
+                                    Text(screenTimeManager.isSessionActive ? "Stop Session" : "Start Session")
+                                        .frame(maxWidth: .infinity)
+                                        .padding()
+                                        .background(LinearGradient(
+                                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        ))
+                                        .foregroundColor(.white)
+                                        .cornerRadius(10)
                                 }
+                                .transition(.opacity.combined(with: .move(edge: .top)))
                             }
-                        }) {
-                            Text(screenTimeManager.isSessionActive ? "Stop Session" : "Start Session")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(LinearGradient(
-                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ))
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
                         }
+                        .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isPaused)
                     }
                     .padding()
                     .background(Color.gray.opacity(0.2))

@@ -9,12 +9,15 @@ class ScreenTimeSessionManager: ObservableObject {
     @Published var sessionDuration: TimeInterval = 0 // Duration in seconds
     @Published var timeRemaining: TimeInterval = 0
     @Published var isFlashing: Bool = false
+    @Published var historyManager: ScreenTimeHistoryManager?
 
     private var timer: Timer?
     private var sessionStartDate: Date?
     private var cancellables = Set<AnyCancellable>()
     private var liveActivity: Activity<ScreenTimeActivityAttributes>?
     private var flashingTimer: Timer?
+    private var pauseStartDate: Date?
+    private var totalPausedTime: TimeInterval = 0
 
     func startSession(duration: TimeInterval) {
         sessionDuration = duration
@@ -22,8 +25,13 @@ class ScreenTimeSessionManager: ObservableObject {
         sessionStartDate = Date()
         isSessionActive = true
         isPaused = false
+        totalPausedTime = 0
+        pauseStartDate = nil
 
         startTimer()
+        if isPaused {
+            pauseSession()
+        }
         scheduleNotification()
         startLiveActivity()
     }
@@ -32,6 +40,12 @@ class ScreenTimeSessionManager: ObservableObject {
         timer?.invalidate()
         timer = nil
         isSessionActive = false
+        
+        if let startDate = sessionStartDate {
+            let actualDuration = Date().timeIntervalSince(startDate) - totalPausedTime
+            historyManager?.addSession(duration: actualDuration)
+        }
+        
         stopFlashing()
         endLiveActivity()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
@@ -54,7 +68,7 @@ class ScreenTimeSessionManager: ObservableObject {
     private func scheduleNotification() {
         let content = UNMutableNotificationContent()
         content.title = "UnlockFit Timer"
-        content.body = "Your screen time session has ended. Please return to UnlockFit."
+        content.body = "⏳ Your screen time session ended, but we’re still counting! Return to UnlockFit to log it properly."
         content.sound = .default
         content.interruptionLevel = .timeSensitive
 
@@ -124,10 +138,17 @@ class ScreenTimeSessionManager: ObservableObject {
     func pauseSession() {
         timer?.invalidate()
         isPaused = true
+        pauseStartDate = Date()
     }
 
     func resumeSession() {
-        isPaused = false
-        startTimer()
+        if isPaused {
+            isPaused = false
+            if let pauseStart = pauseStartDate {
+                totalPausedTime += Date().timeIntervalSince(pauseStart)
+                pauseStartDate = nil
+            }
+            startTimer()
+        }
     }
 }

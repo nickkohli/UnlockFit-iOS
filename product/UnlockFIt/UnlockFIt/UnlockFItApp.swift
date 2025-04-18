@@ -8,6 +8,7 @@ struct UnlockFitApp: App {
     @StateObject private var appState = AppState()
     @StateObject private var goalManager = GoalManager()
     @StateObject private var screenTimeManager = ScreenTimeSessionManager()
+    @StateObject private var screenTimeHistory = ScreenTimeHistoryManager()
 
     var body: some Scene {
         WindowGroup {
@@ -17,6 +18,7 @@ struct UnlockFitApp: App {
                     .environmentObject(appState)
                     .environmentObject(goalManager)
                     .environmentObject(screenTimeManager)
+                    .environmentObject(screenTimeHistory)
             }
             .onAppear {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
@@ -26,6 +28,7 @@ struct UnlockFitApp: App {
                         print("🔔 Notification permission granted: \(granted)")
                     }
                 }
+                screenTimeManager.historyManager = screenTimeHistory
             }
         }
     }

@@ -1,5 +1,7 @@
 import SwiftUI
 import FirebaseAuth
+import UIKit
+import ConfettiSwiftUI
 
 struct MoveGoalView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -8,6 +10,11 @@ struct MoveGoalView: View {
     @State private var stepGoal: Int = 10000
     @State private var calorieGoal: Int = 500
     @State private var minuteGoal: Int = 30
+
+    @State private var showSuccessMessage = false
+    @State private var confettiCounter = 0
+    @State private var isButtonDisabled = false
+    @State private var animationProgress: CGFloat = 1.0
 
     var body: some View {
         ZStack {
@@ -37,6 +44,16 @@ struct MoveGoalView: View {
                     endPoint: .trailing
                 ))
 
+                if showSuccessMessage {
+                    Text("Goals updated successfully!")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+
                 Spacer()
 
                 Button(action: {
@@ -51,19 +68,45 @@ struct MoveGoalView: View {
                             calorieGoal: calorieGoal,
                             minuteGoal: minuteGoal
                         )
+                        let generator = UINotificationFeedbackGenerator()
+                        generator.notificationOccurred(.success)
+                        isButtonDisabled = true
+                        animationProgress = 0.0
+                        withAnimation(.linear(duration: 3)) {
+                            animationProgress = 1.0
+                        }
+                        withAnimation {
+                            showSuccessMessage = true
+                            confettiCounter += 1
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                            isButtonDisabled = false
+                        }
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            withAnimation {
+                                showSuccessMessage = false
+                            }
+                        }
                     }
                 }) {
                     Text("Save Changes")
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(LinearGradient(
-                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ))
+                        .background(
+                            GeometryReader { geometry in
+                                LinearGradient(
+                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                                .opacity(0.4 + 0.7 * animationProgress)
+                                .clipped()
+                            }
+                        )
                         .foregroundColor(.white)
                         .cornerRadius(10)
                 }
+                .disabled(isButtonDisabled)
             }
             .padding()
             .onAppear {
@@ -71,6 +114,7 @@ struct MoveGoalView: View {
                 calorieGoal = appState.calorieGoal
                 minuteGoal = appState.minuteGoal
             }
+            .confettiCannon(trigger: $confettiCounter, repetitions: 1, repetitionInterval: 0.5)
         }
     }
 
@@ -108,6 +152,6 @@ struct MoveGoalView_Previews: PreviewProvider {
         MoveGoalView()
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
-            .environmentObject(GoalManager()) 
+            .environmentObject(GoalManager())
     }
 }

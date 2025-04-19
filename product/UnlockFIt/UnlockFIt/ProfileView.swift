@@ -1,5 +1,8 @@
 import SwiftUI
 import Foundation
+import FirebaseStorage
+import FirebaseFirestore
+import FirebaseAuth
 
 struct ProfileView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -7,6 +10,8 @@ struct ProfileView: View {
 
     @State private var profileImage: UIImage? = UIImage(named: "placeholder") // Default image
     @State private var isImagePickerPresented = false // For photo picker
+    @State private var nickname: String = ""
+    @State private var email: String = ""
 
     var body: some View {
         NavigationView {
@@ -36,10 +41,10 @@ struct ProfileView: View {
                         }
 
                         VStack(alignment: .leading) {
-                            Text("Nick Kohli")
+                            Text(nickname)
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            Text("zlac300@live.rhul.ac.uk")
+                            Text(email)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -114,6 +119,30 @@ struct ProfileView: View {
                     }
                 }
             }
+            .onAppear {
+                guard let uid = Auth.auth().currentUser?.uid else { return }
+
+                let docRef = Firestore.firestore().collection("users").document(uid)
+                docRef.getDocument { document, error in
+                    if let document = document, document.exists {
+                        self.nickname = document.data()?["nickname"] as? String ?? "No Name"
+                        self.email = document.data()?["email"] as? String ?? "No Email"
+                        
+                        if let profileURLString = document.data()?["profileImageURL"] as? String,
+                           let profileURL = URL(string: profileURLString) {
+                            URLSession.shared.dataTask(with: profileURL) { data, _, _ in
+                                if let data = data, let image = UIImage(data: data) {
+                                    DispatchQueue.main.async {
+                                        self.profileImage = image
+                                    }
+                                }
+                            }.resume()
+                        }
+                    } else {
+                        print("❌ Error fetching user info: \(error?.localizedDescription ?? "Unknown error")")
+                    }
+                }
+            }
             .sheet(isPresented: $isImagePickerPresented) {
                 ImagePicker(selectedImage: $profileImage)
             }
@@ -148,6 +177,39 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let uiImage = info[.editedImage] as? UIImage {
                 parent.selectedImage = uiImage
+
+                guard let imageData = uiImage.jpegData(compressionQuality: 0.7),
+                      let uid = Auth.auth().currentUser?.uid else {
+                    print("❌ Failed to get image data or user ID")
+                    return
+                }
+
+                let storageRef = Storage.storage().reference().child("profile_images/\(uid).jpg")
+                storageRef.putData(imageData, metadata: nil) { metadata, error in
+                    if let error = error {
+                        print("❌ Upload failed: \(error.localizedDescription)")
+                        return
+                    }
+
+                    storageRef.downloadURL { url, error in
+                        if let error = error {
+                            print("❌ Failed to get download URL: \(error.localizedDescription)")
+                            return
+                        }
+
+                        guard let downloadURL = url else { return }
+
+                        Firestore.firestore().collection("users").document(uid).updateData([
+                            "profileImageURL": downloadURL.absoluteString
+                        ]) { err in
+                            if let err = err {
+                                print("❌ Firestore update error: \(err.localizedDescription)")
+                            } else {
+                                print("✅ Profile image URL updated successfully")
+                            }
+                        }
+                    }
+                }
             }
             picker.dismiss(animated: true)
         }
@@ -162,6 +224,6 @@ struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView()
             .environmentObject(ThemeManager()) // Provide a basic ThemeManager
-            .environmentObject(GoalManager()) 
+            .environmentObject(GoalManager())
     }
 }

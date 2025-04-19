@@ -46,4 +46,20 @@ class FirestoreManager {
             completion(data, nil)
         }
     }
+    
+    func saveUserGoals(uid: String, stepGoal: Int, calorieGoal: Int, minuteGoal: Int) {
+        let goals: [String: Any] = [
+            "stepGoal": stepGoal,
+            "calorieGoal": calorieGoal,
+            "minuteGoal": minuteGoal
+        ]
+        
+        Firestore.firestore().collection("users").document(uid).updateData(goals) { error in
+            if let error = error {
+                print("❌ Failed to save user goals: \(error.localizedDescription)")
+            } else {
+                print("✅ User goals updated successfully in Firestore!")
+            }
+        }
+    }
 }

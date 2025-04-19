@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAuth
 
 struct MoveGoalView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -42,6 +43,15 @@ struct MoveGoalView: View {
                     appState.stepGoal = stepGoal
                     appState.calorieGoal = calorieGoal
                     appState.minuteGoal = minuteGoal
+
+                    if let uid = Auth.auth().currentUser?.uid {
+                        FirestoreManager.shared.saveUserGoals(
+                            uid: uid,
+                            stepGoal: stepGoal,
+                            calorieGoal: calorieGoal,
+                            minuteGoal: minuteGoal
+                        )
+                    }
                 }) {
                     Text("Save Changes")
                         .frame(maxWidth: .infinity)

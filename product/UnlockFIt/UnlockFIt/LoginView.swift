@@ -8,6 +8,8 @@ struct LoginView: View {
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
     
+    @ObservedObject var profileViewModel: ProfileViewModel
+    
     @State private var username: String = "" // Email input
     @State private var password: String = "" // Password input
     @State private var showRegister = false
@@ -108,6 +110,9 @@ struct LoginView: View {
 
                                 print("⚠️ Firebase Auth Error: \(error.localizedDescription)")
                             } else if authResult != nil {
+                                
+                                profileViewModel.fetchUserData()
+                                
                                 appState.isLoggedIn = true
                                 
                                 guard let uid = authResult?.user.uid else {
@@ -228,7 +233,7 @@ struct ProgressCircle: View {
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(profileViewModel: ProfileViewModel())
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
             .environmentObject(GoalManager())

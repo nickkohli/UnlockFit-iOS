@@ -5,13 +5,10 @@ import FirebaseFirestore
 import FirebaseAuth
 
 struct ProfileView: View {
+    @ObservedObject var viewModel: ProfileViewModel
     @EnvironmentObject var themeManager: ThemeManager
-    @EnvironmentObject var appState: AppState // Access AppState
-
-    @State private var profileImage: UIImage? = UIImage(named: "placeholder") // Default image
-    @State private var isImagePickerPresented = false // For photo picker
-    @State private var nickname: String = ""
-    @State private var email: String = ""
+    @EnvironmentObject var appState: AppState
+    @State private var isImagePickerPresented = false
 
     var body: some View {
         NavigationView {
@@ -22,7 +19,7 @@ struct ProfileView: View {
                     // Profile Section
                     HStack {
                         ZStack {
-                            if let profileImage = profileImage {
+                            if let profileImage = viewModel.profileImage {
                                 Image(uiImage: profileImage)
                                     .resizable()
                                     .scaledToFill()
@@ -41,10 +38,10 @@ struct ProfileView: View {
                         }
 
                         VStack(alignment: .leading) {
-                            Text(nickname)
+                            Text(viewModel.nickname)
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            Text(email)
+                            Text(viewModel.email)
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                         }
@@ -119,32 +116,8 @@ struct ProfileView: View {
                     }
                 }
             }
-            .onAppear {
-                guard let uid = Auth.auth().currentUser?.uid else { return }
-
-                let docRef = Firestore.firestore().collection("users").document(uid)
-                docRef.getDocument { document, error in
-                    if let document = document, document.exists {
-                        self.nickname = document.data()?["nickname"] as? String ?? "No Name"
-                        self.email = document.data()?["email"] as? String ?? "No Email"
-                        
-                        if let profileURLString = document.data()?["profileImageURL"] as? String,
-                           let profileURL = URL(string: profileURLString) {
-                            URLSession.shared.dataTask(with: profileURL) { data, _, _ in
-                                if let data = data, let image = UIImage(data: data) {
-                                    DispatchQueue.main.async {
-                                        self.profileImage = image
-                                    }
-                                }
-                            }.resume()
-                        }
-                    } else {
-                        print("❌ Error fetching user info: \(error?.localizedDescription ?? "Unknown error")")
-                    }
-                }
-            }
             .sheet(isPresented: $isImagePickerPresented) {
-                ImagePicker(selectedImage: $profileImage)
+                ImagePicker(selectedImage: $viewModel.profileImage)
             }
         }
     }
@@ -222,7 +195,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        ProfileView()
+        ProfileView(viewModel: ProfileViewModel())
             .environmentObject(ThemeManager()) // Provide a basic ThemeManager
             .environmentObject(GoalManager())
     }

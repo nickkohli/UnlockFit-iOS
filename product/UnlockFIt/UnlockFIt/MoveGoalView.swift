@@ -138,7 +138,21 @@ struct MoveGoalView: View {
 
                 Slider(value: Binding(
                     get: { Double(value.wrappedValue) },
-                    set: { value.wrappedValue = Int($0) }
+                    set: {
+                        let newValue = Int($0)
+                        let step: Int
+                        switch title {
+                        case "Step Goal":
+                            step = 500
+                        case "Calorie Goal":
+                            step = 50
+                        case "Minute Goal":
+                            step = 5
+                        default:
+                            step = 1
+                        }
+                        value.wrappedValue = max(range.lowerBound, min(range.upperBound, (newValue / step) * step))
+                    }
                 ), in: Double(range.lowerBound)...Double(range.upperBound))
                 .accentColor(.clear)
             }

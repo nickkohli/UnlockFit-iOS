@@ -59,10 +59,9 @@ class GoalManager: ObservableObject {
         let dispatchGroup = DispatchGroup()
 
         for i in 0..<7 {
-            guard let start = calendar.date(byAdding: .day, value: -i, to: now),
-                  let end = calendar.date(byAdding: .day, value: -i + 1, to: now) else {
-                continue
-            }
+            guard let day = calendar.date(byAdding: .day, value: -i, to: now) else { continue }
+            let start = calendar.startOfDay(for: day)
+            let end = calendar.date(byAdding: .day, value: 1, to: start)!
 
             dispatchGroup.enter()
             healthKitManager.getSteps(from: start, to: end) { value in

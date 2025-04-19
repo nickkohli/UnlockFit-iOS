@@ -7,8 +7,6 @@ struct LoginView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
-    @EnvironmentObject var screenTimeSessionManager: ScreenTimeSessionManager
-    @EnvironmentObject var screenTimeHistoryManager: ScreenTimeHistoryManager
     
     @State private var username: String = "" // Email input
     @State private var password: String = "" // Password input
@@ -192,8 +190,6 @@ struct LoginView: View {
                             .environmentObject(themeManager)
                             .environmentObject(appState)
                             .environmentObject(goalManager)
-                            .environmentObject(screenTimeSessionManager)
-                            .environmentObject(screenTimeHistoryManager)
                     }
 
                     // Error Message

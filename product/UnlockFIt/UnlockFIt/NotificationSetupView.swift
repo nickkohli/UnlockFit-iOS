@@ -5,8 +5,6 @@ struct NotificationSetupView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
-    @EnvironmentObject var screenTimeSessionManager: ScreenTimeSessionManager
-    @EnvironmentObject var screenTimeHistoryManager: ScreenTimeHistoryManager
 
     @State private var notificationsEnabled = false
     @State private var deliverySet = false
@@ -164,8 +162,6 @@ struct NotificationSetupView: View {
                                         .environmentObject(themeManager)
                                         .environmentObject(appState)
                                         .environmentObject(goalManager)
-                                        .environmentObject(screenTimeSessionManager)
-                                        .environmentObject(screenTimeHistoryManager)
                                     let hostingController = UIHostingController(rootView: welcomeView)
                                     window.rootViewController = hostingController
                                     window.makeKeyAndVisible()

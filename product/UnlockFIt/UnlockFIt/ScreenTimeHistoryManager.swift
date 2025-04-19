@@ -29,6 +29,7 @@ class ScreenTimeHistoryManager: ObservableObject {
     private func saveSessions() {
         if let data = try? JSONEncoder().encode(sessionHistory) {
             UserDefaults.standard.set(data, forKey: "ScreenTimeHistory")
+            print("💾 Saved sessionHistory: \(sessionHistory.map(\.duration))")
         }
     }
 

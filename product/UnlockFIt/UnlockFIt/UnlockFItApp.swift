@@ -41,13 +41,42 @@ struct UnlockFitApp: App {
                 screenTimeManager.historyManager = screenTimeHistory
                 // Delay needed to ensure UIWindow is fully available
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    UnlockFitApp.resetApp()
+                    UnlockFitApp.resetApp(
+                        screenTimeManager: screenTimeManager,
+                        screenTimeHistoryManager: screenTimeHistory
+                    )
                 }
             }
         }
     }
     
-    static func resetApp() {
+    static func resetApp(
+        screenTimeManager: ScreenTimeSessionManager,
+        screenTimeHistoryManager: ScreenTimeHistoryManager
+    )
+    {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            print("❌ Failed to access main window.")
+            return
+        }
+
+        let newRootView = ContentView()
+        
+            .environmentObject(ThemeManager())
+            .environmentObject(AppState())
+            .environmentObject(GoalManager())
+        
+            .environmentObject(screenTimeManager)
+            .environmentObject(screenTimeHistoryManager)
+
+        window.rootViewController = UIHostingController(rootView: newRootView)
+        window.makeKeyAndVisible()
+
+        print("🔁 App reset to LoginView with new state.")
+    }
+    
+    static func resetAppWithoutScreenTime() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else {
             print("❌ Failed to access main window.")
@@ -58,12 +87,10 @@ struct UnlockFitApp: App {
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
             .environmentObject(GoalManager())
-            .environmentObject(ScreenTimeSessionManager())
-            .environmentObject(ScreenTimeHistoryManager())
 
         window.rootViewController = UIHostingController(rootView: newRootView)
         window.makeKeyAndVisible()
 
-        print("🔁 App reset to LoginView with new state.")
+        print("🔁 App reset to LoginView without ScreenTime state.")
     }
 }

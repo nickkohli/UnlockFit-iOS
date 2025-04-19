@@ -43,6 +43,8 @@ class ScreenTimeSessionManager: ObservableObject {
         
         if let startDate = sessionStartDate {
             let actualDuration = Date().timeIntervalSince(startDate) - totalPausedTime
+            print("🕒 sessionStartDate: \(String(describing: sessionStartDate))")
+            print("📈 Logging session duration: \(actualDuration) seconds")
             historyManager?.addSession(duration: actualDuration)
         }
         

@@ -6,8 +6,6 @@ struct RegisterView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
-    @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
-    @EnvironmentObject var screenTimeHistory: ScreenTimeHistoryManager
     
     @State private var email: String = ""
     @State private var password: String = ""
@@ -210,8 +208,6 @@ struct RegisterView: View {
                     .environmentObject(themeManager)
                     .environmentObject(appState)
                     .environmentObject(goalManager)
-                    .environmentObject(screenTimeManager)
-                    .environmentObject(screenTimeHistory)
             }
         }
     }

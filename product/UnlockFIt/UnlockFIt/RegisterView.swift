@@ -16,6 +16,8 @@ struct RegisterView: View {
     @State private var showSuccess = false
     @State private var progressWidth: CGFloat = 0
     @State private var showSetupScreen = false
+    
+    @Binding var showOnboarding: Bool
 
     var body: some View {
         NavigationStack {
@@ -204,7 +206,7 @@ struct RegisterView: View {
                 }
             )
             .fullScreenCover(isPresented: $showSetupScreen) {
-                NotificationSetupView()
+                NotificationSetupView(showOnboarding: $showOnboarding)
                     .environmentObject(themeManager)
                     .environmentObject(appState)
                     .environmentObject(goalManager)
@@ -215,7 +217,7 @@ struct RegisterView: View {
 
 struct RegisterView_Previews: PreviewProvider {
     static var previews: some View {
-        RegisterView()
+        RegisterView(showOnboarding: .constant(true))
             .environmentObject(ThemeManager())
     }
 }

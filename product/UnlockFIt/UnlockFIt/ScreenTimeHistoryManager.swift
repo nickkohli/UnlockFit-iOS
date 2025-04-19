@@ -1,4 +1,6 @@
 import Foundation
+import FirebaseFirestore
+import FirebaseAuth
 
 struct ScreenTimeSession: Codable, Identifiable {
     var id: UUID
@@ -7,36 +9,79 @@ struct ScreenTimeSession: Codable, Identifiable {
 }
 
 class ScreenTimeHistoryManager: ObservableObject {
-    @Published var sessionHistory: [ScreenTimeSession] = []
+    @Published var screenTimeSeconds: [Int] = Array(repeating: 0, count: 7)
+    @Published var screenTimeSessions: [Int] = Array(repeating: 0, count: 7)
+    private var lastUpdated: Date = Date()
 
     init() {
-        loadSessions()
+        refreshForNewDay()
+        loadFromFirestore()
+    }
+    
+    func getTodayScreenTime() -> TimeInterval {
+        return TimeInterval(screenTimeSeconds.first ?? 0)
+    }
+
+    func getTodaySessionCount() -> Int {
+        return screenTimeSessions.first ?? 0
     }
 
     func addSession(duration: TimeInterval) {
-        let session = ScreenTimeSession(id: UUID(), date: Date(), duration: duration)
-        sessionHistory.append(session)
-        saveSessions()
+        refreshForNewDay()
+        screenTimeSeconds[0] += Int(duration)
+        screenTimeSessions[0] += 1
+        saveToFirestore()
+    }
+    
+    func refreshDailyTrackingArraysIfNeeded() {
+        refreshForNewDay()
     }
 
-    func totalTimeToday() -> TimeInterval {
+    func loadScreenTimeHistory() {
+        loadFromFirestore()
+    }
+
+    func saveScreenTimeHistory() {
+        saveToFirestore()
+    }
+
+    private func refreshForNewDay() {
         let calendar = Calendar.current
-        return sessionHistory
-            .filter { calendar.isDateInToday($0.date) }
-            .reduce(0) { $0 + $1.duration }
-    }
-
-    private func saveSessions() {
-        if let data = try? JSONEncoder().encode(sessionHistory) {
-            UserDefaults.standard.set(data, forKey: "ScreenTimeHistory")
-            print("💾 Saved sessionHistory: \(sessionHistory.map(\.duration))")
+        let now = Date()
+        if !calendar.isDate(now, inSameDayAs: lastUpdated) {
+            screenTimeSeconds.insert(0, at: 0)
+            screenTimeSessions.insert(0, at: 0)
+            if screenTimeSeconds.count > 7 { screenTimeSeconds.removeLast() }
+            if screenTimeSessions.count > 7 { screenTimeSessions.removeLast() }
+            lastUpdated = now
         }
     }
 
-    private func loadSessions() {
-        if let data = UserDefaults.standard.data(forKey: "ScreenTimeHistory"),
-           let sessions = try? JSONDecoder().decode([ScreenTimeSession].self, from: data) {
-            sessionHistory = sessions
+    private func saveToFirestore() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(uid).updateData([
+            "screenTimeSeconds": screenTimeSeconds,
+            "screenTimeSessions": screenTimeSessions
+        ]) { error in
+            if let error = error {
+                print("❌ Error saving screen time: \(error.localizedDescription)")
+            } else {
+                print("✅ Screen time saved successfully.")
+            }
+        }
+    }
+
+    private func loadFromFirestore() {
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(uid).getDocument { snapshot, error in
+            if let data = snapshot?.data() {
+                self.screenTimeSeconds = data["screenTimeSeconds"] as? [Int] ?? Array(repeating: 0, count: 7)
+                self.screenTimeSessions = data["screenTimeSessions"] as? [Int] ?? Array(repeating: 0, count: 7)
+            } else if let error = error {
+                print("❌ Error loading screen time: \(error.localizedDescription)")
+            }
         }
     }
 }

@@ -14,7 +14,9 @@ class FirestoreManager {
             "stepGoal": 10000,
             "calorieGoal": 500,
             "minuteGoal": 30,
-            "theme": "Default"
+            "theme": "Default",
+            "screenTimeSeconds": [0, 0, 0, 0, 0, 0, 0],
+            "screenTimeSessions": [0, 0, 0, 0, 0, 0, 0]
         ]
         
         db.collection("users").document(uid).setData(userData) { error in

@@ -6,6 +6,8 @@ struct WelcomeView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
+    
+    @Binding var showOnboarding: Bool
 
     var body: some View {
         ZStack {
@@ -27,7 +29,7 @@ struct WelcomeView: View {
                         .padding(.bottom, 5)
 
                     Button(action: {
-                        UnlockFitApp.resetAppWithoutScreenTime()
+                        showOnboarding = false
                       }) {
                         Text("Continue to Login")
                             .padding()
@@ -56,7 +58,7 @@ struct WelcomeView: View {
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        WelcomeView()
+        WelcomeView(showOnboarding: .constant(true))
             .environmentObject(ThemeManager())
             .environmentObject(AppState())
             .environmentObject(GoalManager())

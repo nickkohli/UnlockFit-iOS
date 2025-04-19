@@ -9,7 +9,9 @@ struct NotificationSetupView: View {
     @State private var notificationsEnabled = false
     @State private var deliverySet = false
     @State private var bannerSet = false
-    @State private var showWelcome = false
+    @State private var showWelcomeFlow = false
+    
+    @Binding var showOnboarding: Bool
 
     var body: some View {
         NavigationStack {
@@ -156,16 +158,7 @@ struct NotificationSetupView: View {
                                 .multilineTextAlignment(.center)
 
                             Button(action: {
-                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                   let window = windowScene.windows.first {
-                                    let welcomeView = WelcomeView()
-                                        .environmentObject(themeManager)
-                                        .environmentObject(appState)
-                                        .environmentObject(goalManager)
-                                    let hostingController = UIHostingController(rootView: welcomeView)
-                                    window.rootViewController = hostingController
-                                    window.makeKeyAndVisible()
-                                }
+                                showWelcomeFlow = true
                             }) {
                                 Text("Continue")
                                     .padding()
@@ -187,6 +180,12 @@ struct NotificationSetupView: View {
                                     .cornerRadius(10)
                             }
                             .disabled(!(notificationsEnabled && deliverySet && bannerSet))
+                            .fullScreenCover(isPresented: $showWelcomeFlow) {
+                                WelcomeView(showOnboarding: $showOnboarding)
+                                    .environmentObject(themeManager)
+                                    .environmentObject(appState)
+                                    .environmentObject(goalManager)
+                            }
                         }
                     }
                 }

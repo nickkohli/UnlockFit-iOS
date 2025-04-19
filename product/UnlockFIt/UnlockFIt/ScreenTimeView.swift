@@ -8,7 +8,7 @@ struct ScreenTimeView: View {
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
 
     var totalTime: TimeInterval {
-        historyManager.totalTimeToday()
+        historyManager.getTodayScreenTime()
     }
 
     var totalHours: Int {
@@ -28,7 +28,7 @@ struct ScreenTimeView: View {
     }
 
     var totalSessions: Int {
-        historyManager.sessionHistory.filter { Calendar.current.isDateInToday($0.date) }.count
+        historyManager.getTodaySessionCount()
     }
 
     var progress: Double {
@@ -138,6 +138,7 @@ struct ScreenTimeView: View {
                                 Button(action: {
                                     if screenTimeManager.isSessionActive {
                                         screenTimeManager.stopSession()
+                                        historyManager.saveScreenTimeHistory()
                                     } else {
                                         if screenTimeManager.sessionDuration >= 3 {
                                             screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
@@ -179,6 +180,8 @@ struct ScreenTimeView: View {
                 triggerAnimation()
                 hasAnimated = true
             }
+            historyManager.refreshDailyTrackingArraysIfNeeded()
+            historyManager.loadScreenTimeHistory()
         }
     }
 

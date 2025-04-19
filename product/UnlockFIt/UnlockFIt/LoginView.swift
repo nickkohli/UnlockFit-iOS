@@ -12,9 +12,9 @@ struct LoginView: View {
     
     @State private var username: String = "" // Email input
     @State private var password: String = "" // Password input
-    @State private var showRegister = false
     @State private var loginError: String?
     @State private var isLoggingIn = false
+    @State private var showOnboarding = false
 
     var body: some View {
         NavigationView {
@@ -181,7 +181,7 @@ struct LoginView: View {
                     // Register Button
                     Button(action: {
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-                        showRegister = true
+                        showOnboarding = true
                     }) {
                         Text("Register")
                             .frame(maxWidth: .infinity)
@@ -190,8 +190,8 @@ struct LoginView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
-                    .fullScreenCover(isPresented: $showRegister) {
-                        RegisterView()
+                    .fullScreenCover(isPresented: $showOnboarding) {
+                        RegisterView(showOnboarding: $showOnboarding)
                             .environmentObject(themeManager)
                             .environmentObject(appState)
                             .environmentObject(goalManager)

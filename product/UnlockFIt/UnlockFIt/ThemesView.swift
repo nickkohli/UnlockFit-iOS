@@ -1,4 +1,5 @@
 import SwiftUI
+import FirebaseAuth
 
 struct ThemesView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -20,6 +21,9 @@ struct ThemesView: View {
                         set: { isOn in
                             if isOn {
                                 themeManager.selectedTheme = theme
+                                if let uid = Auth.auth().currentUser?.uid {
+                                    FirestoreManager.shared.updateUserTheme(uid: uid, theme: theme)
+                                }
                             }
                         }
                     )

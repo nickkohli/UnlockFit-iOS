@@ -3,6 +3,7 @@ import SwiftUI
 struct MainTabView: View {
     let profileViewModel: ProfileViewModel
     @EnvironmentObject var themeManager: ThemeManager
+    @EnvironmentObject var appState: AppState
 
     var body: some View {
         TabView {
@@ -32,7 +33,7 @@ struct MainTabView: View {
         }
         .accentColor(themeManager.accentColor) // Selected tab icon color
         .onAppear {
-            profileViewModel.fetchUserData()
+            profileViewModel.fetchUserData(appState: appState, themeManager: themeManager)
         }
     }
 }

@@ -62,4 +62,16 @@ class FirestoreManager {
             }
         }
     }
+    
+    func updateUserTheme(uid: String, theme: String) {
+        Firestore.firestore().collection("users").document(uid).updateData([
+            "theme": theme
+        ]) { error in
+            if let error = error {
+                print("❌ Failed to update theme: \(error.localizedDescription)")
+            } else {
+                print("🎨 Theme successfully updated to '\(theme)'")
+            }
+        }
+    }
 }

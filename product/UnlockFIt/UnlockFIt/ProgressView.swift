@@ -4,16 +4,40 @@ struct ProgressView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
     @EnvironmentObject var appState: AppState
+    @State private var lastRefreshDate = Date()
+    @State private var refreshTimer: Timer? = nil
+    @State private var isSpinning = false
 
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    Text("Your Progress")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
+                    HStack {
+                        Text("Your Progress")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Spacer()
+                        Button(action: {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            isSpinning = true
+                            goalManager.refreshWeeklyData()
+                            lastRefreshDate = Date()
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                isSpinning = false
+                            }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .rotationEffect(.degrees(isSpinning ? 360 : 0))
+                                .animation(isSpinning ? .easeInOut(duration: 1.0) : .default, value: isSpinning)
+                                .foregroundColor(.white)
+                                .padding(8)
+                                .background(Color.gray.opacity(0.3))
+                                .clipShape(Circle())
+                        }
+                    }
 
                     // Weekly Overview
                     VStack(alignment: .leading) {
@@ -91,6 +115,17 @@ struct ProgressView: View {
                     .cornerRadius(10)
                 }
                 .padding()
+                .onAppear {
+                    goalManager.refreshWeeklyData()
+                    refreshTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { _ in
+                        goalManager.refreshWeeklyData()
+                        lastRefreshDate = Date()
+                    }
+                }
+                .onDisappear {
+                    refreshTimer?.invalidate()
+                    refreshTimer = nil
+                }
             }
         }
     }

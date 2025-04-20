@@ -91,4 +91,9 @@ class GoalManager: ObservableObject {
             self.weeklyMinutes = minutes
         }
     }
+
+    func refreshWeeklyData() {
+        print("🔄 Refreshing weekly data manually or on timer...")
+        fetchWeeklyData()
+    }
 }

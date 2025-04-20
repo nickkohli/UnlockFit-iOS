@@ -66,9 +66,10 @@ struct ScreenTimeView: View {
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                         isRefreshing = true
-                        historyManager.refreshDailyTrackingArraysIfNeeded()
-                        historyManager.loadScreenTimeHistory()
-                        historyManager.saveScreenTimeHistory()
+                        historyManager.loadFromFirestore {
+                                historyManager.refreshDailyTrackingArraysIfNeeded()
+                                historyManager.saveToFirestore()
+                            }
                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                             isRefreshing = false
                         }
@@ -210,14 +211,16 @@ struct ScreenTimeView: View {
                 triggerAnimation()
                 hasAnimated = true
             }
-            historyManager.refreshDailyTrackingArraysIfNeeded()
-            historyManager.loadScreenTimeHistory()
-            historyManager.saveScreenTimeHistory()
+            historyManager.loadFromFirestore {
+                    historyManager.refreshDailyTrackingArraysIfNeeded()
+                    historyManager.saveToFirestore()
+                }
         }
         .onReceive(Timer.publish(every: 300, on: .main, in: .common).autoconnect()) { _ in
-            historyManager.refreshDailyTrackingArraysIfNeeded()
-            historyManager.loadScreenTimeHistory()
-            historyManager.saveScreenTimeHistory()
+            historyManager.loadFromFirestore {
+                    historyManager.refreshDailyTrackingArraysIfNeeded()
+                    historyManager.saveToFirestore()
+                }
         }
     }
 

@@ -46,6 +46,12 @@ class ScreenTimeHistoryManager: ObservableObject {
         saveToFirestore()
     }
 
+    func resetScreenTimeData() {
+        screenTimeSeconds = Array(repeating: 0, count: 7)
+        screenTimeSessions = Array(repeating: 0, count: 7)
+        lastSessionDate = Date()
+    }
+
     private func refreshForNewDay() {
         let calendar = Calendar.current
         let now = Date()
@@ -62,7 +68,7 @@ class ScreenTimeHistoryManager: ObservableObject {
         }
     }
 
-    private func saveToFirestore() {
+    func saveToFirestore() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         let lastSessionTimestamp = Timestamp(date: lastSessionDate)
@@ -79,7 +85,7 @@ class ScreenTimeHistoryManager: ObservableObject {
         }
     }
 
-    private func loadFromFirestore() {
+    func loadFromFirestore(completion: (() -> Void)? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         db.collection("users").document(uid).getDocument { snapshot, error in
@@ -89,9 +95,11 @@ class ScreenTimeHistoryManager: ObservableObject {
                 if let timestamp = data["lastSession"] as? Timestamp {
                     self.lastSessionDate = timestamp.dateValue()
                 }
+                print("✅ Loaded screen time from Firestore")
             } else if let error = error {
                 print("❌ Error loading screen time: \(error.localizedDescription)")
             }
+            completion?()
         }
     }
 }

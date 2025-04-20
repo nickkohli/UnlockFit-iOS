@@ -6,6 +6,7 @@ struct ScreenTimeView: View {
     @EnvironmentObject var historyManager: ScreenTimeHistoryManager
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+    @State private var isRefreshing: Bool = false
 
     var totalTime: TimeInterval {
         historyManager.getTodayScreenTime()
@@ -49,13 +50,37 @@ struct ScreenTimeView: View {
                 // Removed old computed properties in favor of new ones
 
                 // Screen Time Summary Card
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    Text("Sessions Today: \(totalSessions)")
-                        .font(.subheadline)
-                        .foregroundColor(.gray)
+                HStack {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text("Sessions Today: \(totalSessions)")
+                            .font(.subheadline)
+                            .foregroundColor(.gray)
+                    }
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                        isRefreshing = true
+                        historyManager.refreshDailyTrackingArraysIfNeeded()
+                        historyManager.loadScreenTimeHistory()
+                        historyManager.saveScreenTimeHistory()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            isRefreshing = false
+                        }
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.gray.opacity(0.3))
+                            .clipShape(Circle())
+                    }
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -109,6 +134,8 @@ struct ScreenTimeView: View {
 
                                 if screenTimeManager.timeRemaining > 0 {
                                     Button(action: {
+                                        let generator = UIImpactFeedbackGenerator(style: .light)
+                                        generator.impactOccurred()
                                         if screenTimeManager.isPaused {
                                             screenTimeManager.resumeSession()
                                         } else {
@@ -136,10 +163,13 @@ struct ScreenTimeView: View {
                                     .transition(.opacity.combined(with: .move(edge: .top)))
                             } else {
                                 Button(action: {
+                                    let generator = UINotificationFeedbackGenerator()
                                     if screenTimeManager.isSessionActive {
+                                        generator.notificationOccurred(.success)
                                         screenTimeManager.stopSession()
                                         historyManager.saveScreenTimeHistory()
                                     } else {
+                                        generator.notificationOccurred(.success)
                                         if screenTimeManager.sessionDuration >= 3 {
                                             screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
                                         }
@@ -182,6 +212,12 @@ struct ScreenTimeView: View {
             }
             historyManager.refreshDailyTrackingArraysIfNeeded()
             historyManager.loadScreenTimeHistory()
+            historyManager.saveScreenTimeHistory()
+        }
+        .onReceive(Timer.publish(every: 300, on: .main, in: .common).autoconnect()) { _ in
+            historyManager.refreshDailyTrackingArraysIfNeeded()
+            historyManager.loadScreenTimeHistory()
+            historyManager.saveScreenTimeHistory()
         }
     }
 

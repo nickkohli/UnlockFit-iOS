@@ -11,7 +11,7 @@ struct ScreenTimeSession: Codable, Identifiable {
 class ScreenTimeHistoryManager: ObservableObject {
     @Published var screenTimeSeconds: [Int] = Array(repeating: 0, count: 7)
     @Published var screenTimeSessions: [Int] = Array(repeating: 0, count: 7)
-    private var lastUpdated: Date = Date()
+    @Published var lastSessionDate: Date = Date()
 
     init() {
         refreshForNewDay()
@@ -28,6 +28,7 @@ class ScreenTimeHistoryManager: ObservableObject {
 
     func addSession(duration: TimeInterval) {
         refreshForNewDay()
+        lastSessionDate = Date()
         screenTimeSeconds[0] += Int(duration)
         screenTimeSessions[0] += 1
         saveToFirestore()
@@ -48,26 +49,32 @@ class ScreenTimeHistoryManager: ObservableObject {
     private func refreshForNewDay() {
         let calendar = Calendar.current
         let now = Date()
-        if !calendar.isDate(now, inSameDayAs: lastUpdated) {
-            screenTimeSeconds.insert(0, at: 0)
-            screenTimeSessions.insert(0, at: 0)
-            if screenTimeSeconds.count > 7 { screenTimeSeconds.removeLast() }
-            if screenTimeSessions.count > 7 { screenTimeSessions.removeLast() }
-            lastUpdated = now
+        let daysPassed = calendar.dateComponents([.day], from: calendar.startOfDay(for: lastSessionDate), to: calendar.startOfDay(for: now)).day ?? 0
+
+        if daysPassed > 0 {
+            for _ in 0..<daysPassed {
+                screenTimeSeconds.insert(0, at: 0)
+                screenTimeSessions.insert(0, at: 0)
+            }
+            if screenTimeSeconds.count > 7 { screenTimeSeconds = Array(screenTimeSeconds.prefix(7)) }
+            if screenTimeSessions.count > 7 { screenTimeSessions = Array(screenTimeSessions.prefix(7)) }
+            lastSessionDate = now
         }
     }
 
     private func saveToFirestore() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
+        let lastSessionTimestamp = Timestamp(date: lastSessionDate)
         db.collection("users").document(uid).updateData([
             "screenTimeSeconds": screenTimeSeconds,
-            "screenTimeSessions": screenTimeSessions
+            "screenTimeSessions": screenTimeSessions,
+            "lastSession": lastSessionTimestamp
         ]) { error in
             if let error = error {
                 print("❌ Error saving screen time: \(error.localizedDescription)")
             } else {
-                print("✅ Screen time saved successfully.")
+                print("✅ Screen time saved to Firestore successfully.")
             }
         }
     }
@@ -79,6 +86,9 @@ class ScreenTimeHistoryManager: ObservableObject {
             if let data = snapshot?.data() {
                 self.screenTimeSeconds = data["screenTimeSeconds"] as? [Int] ?? Array(repeating: 0, count: 7)
                 self.screenTimeSessions = data["screenTimeSessions"] as? [Int] ?? Array(repeating: 0, count: 7)
+                if let timestamp = data["lastSession"] as? Timestamp {
+                    self.lastSessionDate = timestamp.dateValue()
+                }
             } else if let error = error {
                 print("❌ Error loading screen time: \(error.localizedDescription)")
             }

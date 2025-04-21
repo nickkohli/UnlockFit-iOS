@@ -17,15 +17,15 @@ extension Color {
 }
 
 struct CustomColors {
-    // Fitness Rings - Primary
-    static let ringRed = Color(hex: "#FF4355")
-    static let ringGreen = Color(hex: "#66D966")
-    static let ringBlue = Color(hex: "#4FA0FF")
+    // Fitness Rings - Primary (Ring end)
+    static let ringRed = Color(hex: "#FF2891")
+    static let ringGreen = Color(hex: "#D8FF00")
+    static let ringBlue = Color(hex: "#00FFA9")
 
-    // Fitness Rings - Secondary (Much Darker)
-    static let ringRed2 = Color(hex: "#660019")
-    static let ringGreen2 = Color(hex: "#0D330D")
-    static let ringBlue2 = Color(hex: "#002666")
+    // Fitness Rings - Secondary (Ring start)
+    static let ringRed2 = Color(hex: "#F52615")
+    static let ringGreen2 = Color(hex: "#90F600")
+    static let ringBlue2 = Color(hex: "#00C8CF")
 
     // Nike Run Club Neon
     static let neonYellow = Color(hex: "#CFE640")

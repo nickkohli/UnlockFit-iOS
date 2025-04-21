@@ -31,7 +31,13 @@ struct MainTabView: View {
                     Text("Profile")
                 }
         }
-        .accentColor(themeManager.accentColor) // Selected tab icon color
+        .accentColor(
+            Color(
+                red: (themeManager.accentColor.components.red + themeManager.accentColor2.components.red) / 2,
+                green: (themeManager.accentColor.components.green + themeManager.accentColor2.components.green) / 2,
+                blue: (themeManager.accentColor.components.blue + themeManager.accentColor2.components.blue) / 2
+            )
+        ) // Selected tab icon color
         .onAppear {
             let appearance = UITabBarAppearance()
             appearance.configureWithDefaultBackground()
@@ -51,5 +57,16 @@ struct MainTabView_Previews: PreviewProvider {
         MainTabView(profileViewModel: ProfileViewModel())
             .environmentObject(ThemeManager())
             .environmentObject(GoalManager())
+    }
+}
+
+extension Color {
+    var components: (red: Double, green: Double, blue: Double) {
+        let uiColor = UIColor(self)
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: nil)
+        return (Double(r), Double(g), Double(b))
     }
 }

@@ -5,11 +5,13 @@ import Combine
 class GoalManager: ObservableObject {
     @Published var stepsToday: Double = 0
     @Published var caloriesBurned: Double = 0
-    @Published var minutesExercised: Double = 0
+    @Published var flightsClimbed: Double = 0
 
     @Published var weeklySteps: [Double] = Array(repeating: 0.0, count: 7)
     @Published var weeklyCalories: [Double] = Array(repeating: 0.0, count: 7)
-    @Published var weeklyMinutes: [Double] = Array(repeating: 0.0, count: 7)
+    @Published var weeklyFlightsClimbed: [Double] = Array(repeating: 0.0, count: 7)
+
+    @Published var isHealthPermissionMissing: Bool = false
 
     private var healthKitManager = APIModule.shared
 
@@ -17,10 +19,12 @@ class GoalManager: ObservableObject {
         healthKitManager.requestAuthorization { [weak self] success in
             if success {
                 print("✅ HealthKit authorization granted")
+                self?.verifyHealthPermissions()
                 self?.updateGoalsFromHealthKit()
                 self?.fetchWeeklyData()
             } else {
                 print("❌ HealthKit authorization denied or failed")
+                self?.isHealthPermissionMissing = true
             }
         }
     }
@@ -40,10 +44,10 @@ class GoalManager: ObservableObject {
             }
         }
 
-        healthKitManager.getExerciseMinutesToday { [weak self] minutes in
+        healthKitManager.getFlightsClimbedToday { [weak self] flights in
             DispatchQueue.main.async {
-                print("⏱️ Minutes Exercised Today: \(minutes)")
-                self?.minutesExercised = minutes
+                print("🧗‍♂️ Flights Climbed Today: \(flights)")
+                self?.flightsClimbed = flights
             }
         }
     }
@@ -54,7 +58,7 @@ class GoalManager: ObservableObject {
 
         var steps: [Double] = Array(repeating: 0.0, count: 7)
         var calories: [Double] = Array(repeating: 0.0, count: 7)
-        var minutes: [Double] = Array(repeating: 0.0, count: 7)
+        var flights: [Double] = Array(repeating: 0.0, count: 7)
 
         let dispatchGroup = DispatchGroup()
 
@@ -76,8 +80,8 @@ class GoalManager: ObservableObject {
             }
 
             dispatchGroup.enter()
-            healthKitManager.getMinutes(from: start, to: end) { value in
-                minutes[6 - i] = value
+            healthKitManager.getFlightsClimbed(from: start, to: end) { value in
+                flights[6 - i] = value
                 dispatchGroup.leave()
             }
         }
@@ -85,10 +89,10 @@ class GoalManager: ObservableObject {
         dispatchGroup.notify(queue: .main) {
             print("📆 Weekly Steps: \(steps)")
             print("📆 Weekly Calories: \(calories)")
-            print("📆 Weekly Minutes: \(minutes)")
+            print("🧗‍♂️ Weekly Flights Climbed: \(flights)")
             self.weeklySteps = steps
             self.weeklyCalories = calories
-            self.weeklyMinutes = minutes
+            self.weeklyFlightsClimbed = flights
         }
     }
 
@@ -96,5 +100,27 @@ class GoalManager: ObservableObject {
         print("🔄 Refreshing weekly data manually or on timer...")
         updateGoalsFromHealthKit()
         fetchWeeklyData()
+    }
+    private func verifyHealthPermissions() {
+        let healthStore = HKHealthStore()
+
+        let requiredTypes: [HKObjectType?] = [
+            HKObjectType.quantityType(forIdentifier: .stepCount),
+            HKObjectType.quantityType(forIdentifier: .activeEnergyBurned),
+            HKObjectType.quantityType(forIdentifier: .flightsClimbed)
+        ]
+
+        let readTypes = requiredTypes.compactMap { $0 }
+
+        healthStore.getRequestStatusForAuthorization(toShare: [], read: Set(readTypes)) { [weak self] status, _ in
+            DispatchQueue.main.async {
+                if status != .unnecessary {
+                    print("⚠️ Missing one or more Health permissions.")
+                    self?.isHealthPermissionMissing = true
+                } else {
+                    self?.isHealthPermissionMissing = false
+                }
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ class APIModule {
         let typesToRead: Set = [
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
             HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!,
-            HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
+            HKQuantityType.quantityType(forIdentifier: .flightsClimbed)!
         ]
 
         healthStore.requestAuthorization(toShare: nil, read: typesToRead) { success, error in
@@ -33,7 +33,7 @@ class APIModule {
         let readTypes: Set = [
             HKObjectType.quantityType(forIdentifier: .stepCount)!,
             HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
-            HKObjectType.quantityType(forIdentifier: .appleExerciseTime)!
+            HKObjectType.quantityType(forIdentifier: .flightsClimbed)!
         ]
         
         healthStore.requestAuthorization(toShare: nil, read: readTypes) { success, error in
@@ -83,26 +83,27 @@ class APIModule {
         healthStore.execute(query)
     }
     
-    // Fetch today's exercise minutes
-    func fetchTodayExerciseMinutes(completion: @escaping (Double) -> Void) {
-        guard let exerciseType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime) else {
+    // Fetch today's flights climbed
+    func fetchTodayFlightsClimbed(completion: @escaping (Double) -> Void) {
+        guard let flightsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed) else {
             completion(0.0)
             return
         }
-
+        
         let startOfDay = Calendar.current.startOfDay(for: Date())
         let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
-
-        let query = HKStatisticsQuery(quantityType: exerciseType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+        
+        let query = HKStatisticsQuery(quantityType: flightsType, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
             guard let result = result, let sum = result.sumQuantity() else {
                 completion(0.0)
                 return
             }
-            completion(sum.doubleValue(for: .minute()))
+            completion(sum.doubleValue(for: .count()))
         }
-
+        
         healthStore.execute(query)
     }
+    
     
     func getStepsToday(completion: @escaping (Double) -> Void) {
         fetchTodayStepCount(completion: completion)
@@ -111,9 +112,9 @@ class APIModule {
     func getCaloriesBurnedToday(completion: @escaping (Double) -> Void) {
         fetchTodayCalories(completion: completion)
     }
-
-    func getExerciseMinutesToday(completion: @escaping (Double) -> Void) {
-        fetchTodayExerciseMinutes(completion: completion)
+    
+    func getFlightsClimbedToday(completion: @escaping (Double) -> Void) {
+        fetchTodayFlightsClimbed(completion: completion)
     }
 
     func getSteps(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
@@ -125,10 +126,10 @@ class APIModule {
         let calorieType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned)!
         fetchSumQuantity(for: calorieType, unit: HKUnit.kilocalorie(), from: startDate, to: endDate, completion: completion)
     }
-
-    func getMinutes(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
-        let exerciseType = HKQuantityType.quantityType(forIdentifier: .appleExerciseTime)!
-        fetchSumQuantity(for: exerciseType, unit: HKUnit.minute(), from: startDate, to: endDate, completion: completion)
+    
+    func getFlightsClimbed(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
+        let flightsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed)!
+        fetchSumQuantity(for: flightsType, unit: HKUnit.count(), from: startDate, to: endDate, completion: completion)
     }
 
     private func fetchSumQuantity(for type: HKQuantityType, unit: HKUnit, from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {

@@ -13,7 +13,7 @@ class FirestoreManager {
             "nickname": nickname,
             "stepGoal": 10000,
             "calorieGoal": 500,
-            "minuteGoal": 30,
+            "flightsClimbedGoal": 10,
             "theme": "Default",
             "screenTimeSeconds": [0, 0, 0, 0, 0, 0, 0],
             "screenTimeSessions": [0, 0, 0, 0, 0, 0, 0],
@@ -50,11 +50,11 @@ class FirestoreManager {
         }
     }
     
-    func saveUserGoals(uid: String, stepGoal: Int, calorieGoal: Int, minuteGoal: Int) {
+    func saveUserGoals(uid: String, stepGoal: Int, calorieGoal: Int, flightsClimbedGoal: Int) {
         let goals: [String: Any] = [
             "stepGoal": stepGoal,
             "calorieGoal": calorieGoal,
-            "minuteGoal": minuteGoal
+            "flightsClimbedGoal": flightsClimbedGoal
         ]
         
         Firestore.firestore().collection("users").document(uid).updateData(goals) { error in

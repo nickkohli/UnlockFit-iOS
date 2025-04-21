@@ -618,8 +618,12 @@
 				DEVELOPMENT_TEAM = ZRNY2B5Z2B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and flights climbed.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
+				INFOPLIST_KEY_NSSensorKitUsageDescription = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "UnlockFit uses system extension capabilities to limit distractions by monitoring app usage.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This app needs access to screen time usage to help improve your focus and fitness goals.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -650,8 +654,12 @@
 				DEVELOPMENT_TEAM = ZRNY2B5Z2B;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and exercise time.";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "UnlockFit requires access to your health data to track your steps, calories, and flights climbed.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "UnlockFit uses your activity data to personalise your fitness goals and progress rings.";
+				INFOPLIST_KEY_NSSensorKitUsageDescription = "";
+				INFOPLIST_KEY_NSSupportsLiveActivities = YES;
+				INFOPLIST_KEY_NSSystemExtensionUsageDescription = "UnlockFit uses system extension capabilities to limit distractions by monitoring app usage.";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This app needs access to screen time usage to help improve your focus and fitness goals.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

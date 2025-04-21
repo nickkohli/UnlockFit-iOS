@@ -14,7 +14,8 @@ struct FitnessView: View {
     @State private var showGreeting: Bool = false
     @State private var lastSteps: Double = 0
     @State private var lastCalories: Double = 0
-    @State private var lastMinutes: Double = 0
+    @State private var lastFlights: Double = 0
+    @State private var showPermissionScreen: Bool = false
 
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -82,8 +83,8 @@ struct FitnessView: View {
                 gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             )
             ProgressRingView(
-                title: "Minutes",
-                progress: animateRings ? min(goalManager.minutesExercised / Double(appState.minuteGoal), 1.0) : 0,
+                title: "Flights",
+                progress: animateRings ? min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0) : 0,
                 gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
             )
         }
@@ -150,6 +151,9 @@ struct FitnessView: View {
                 }
             }
         }
+        .fullScreenCover(isPresented: $showPermissionScreen) {
+            HealthPermissionView(isVisible: $showPermissionScreen)
+        }
         .navigationTitle("")
         .navigationBarHidden(true) // Hide the navigation bar title to save space
         .onAppear {
@@ -162,6 +166,7 @@ struct FitnessView: View {
                 }
             }
             goalManager.refreshWeeklyData()
+            showPermissionScreen = goalManager.isHealthPermissionMissing
             isActive = true
             print("🔄 FitnessView appeared: refreshing ring data immediately.")
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -188,17 +193,17 @@ struct FitnessView: View {
     private func refreshAndAnimateIfNeeded(force: Bool = false) {
         let currentSteps = goalManager.stepsToday
         let currentCalories = goalManager.caloriesBurned
-        let currentMinutes = goalManager.minutesExercised
+        let currentFlights = goalManager.flightsClimbed
 
-        print("🔍 Refresh check – Steps: \(currentSteps) (was \(lastSteps)), Calories: \(currentCalories) (was \(lastCalories)), Minutes: \(currentMinutes) (was \(lastMinutes))")
+        print("🔍 Refresh check – Steps: \(currentSteps) (was \(lastSteps)), Calories: \(currentCalories) (was \(lastCalories)), Flights: \(currentFlights) (was \(lastFlights))")
 
-        let didChange = currentSteps != lastSteps || currentCalories != lastCalories || currentMinutes != lastMinutes
+        let didChange = currentSteps != lastSteps || currentCalories != lastCalories || currentFlights != lastFlights
 
         if didChange || force {
             print("✅ Data changed – triggering animation.")
             lastSteps = currentSteps
             lastCalories = currentCalories
-            lastMinutes = currentMinutes
+            lastFlights = currentFlights
             withAnimation(.easeInOut(duration: 2.5)) {
                 animateRings = true
             }

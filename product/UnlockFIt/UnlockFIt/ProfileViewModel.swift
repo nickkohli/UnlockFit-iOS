@@ -63,7 +63,7 @@ class ProfileViewModel: ObservableObject {
                     if let appState = appState {
                         appState.stepGoal = data["stepGoal"] as? Int ?? appState.stepGoal
                         appState.calorieGoal = data["calorieGoal"] as? Int ?? appState.calorieGoal
-                        appState.minuteGoal = data["minuteGoal"] as? Int ?? appState.minuteGoal
+                        appState.flightsClimbedGoal = data["flightsClimbedGoal"] as? Int ?? appState.flightsClimbedGoal
                     }
 
                     if let theme = data["theme"] as? String {

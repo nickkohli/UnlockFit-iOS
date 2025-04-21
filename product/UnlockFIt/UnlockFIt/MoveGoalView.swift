@@ -9,7 +9,7 @@ struct MoveGoalView: View {
 
     @State private var stepGoal: Int = 10000
     @State private var calorieGoal: Int = 500
-    @State private var minuteGoal: Int = 30
+    @State private var flightsClimbedGoal: Int = 30
 
     @State private var showSuccessMessage = false
     @State private var confettiCounter = 0
@@ -38,7 +38,7 @@ struct MoveGoalView: View {
                     endPoint: .trailing
                 ))
 
-                goalSlider(title: "Minute Goal", value: $minuteGoal, range: 10...180, gradient: LinearGradient(
+                    goalSlider(title: "Flights Climbed Goal", value: $flightsClimbedGoal, range: 1...30, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]),
                     startPoint: .leading,
                     endPoint: .trailing
@@ -59,14 +59,14 @@ struct MoveGoalView: View {
                 Button(action: {
                     appState.stepGoal = stepGoal
                     appState.calorieGoal = calorieGoal
-                    appState.minuteGoal = minuteGoal
+                    appState.flightsClimbedGoal = flightsClimbedGoal
 
                     if let uid = Auth.auth().currentUser?.uid {
                         FirestoreManager.shared.saveUserGoals(
                             uid: uid,
                             stepGoal: stepGoal,
                             calorieGoal: calorieGoal,
-                            minuteGoal: minuteGoal
+                            flightsClimbedGoal: flightsClimbedGoal
                         )
                         let generator = UINotificationFeedbackGenerator()
                         generator.notificationOccurred(.success)
@@ -109,11 +109,11 @@ struct MoveGoalView: View {
                 .disabled(isButtonDisabled)
             }
             .padding()
-            .onAppear {
-                stepGoal = appState.stepGoal
-                calorieGoal = appState.calorieGoal
-                minuteGoal = appState.minuteGoal
-            }
+                .onAppear {
+                    stepGoal = appState.stepGoal
+                    calorieGoal = appState.calorieGoal
+                    flightsClimbedGoal = appState.flightsClimbedGoal
+                }
             .confettiCannon(trigger: $confettiCounter, repetitions: 1, repetitionInterval: 0.5)
         }
     }
@@ -146,8 +146,8 @@ struct MoveGoalView: View {
                             step = 500
                         case "Calorie Goal":
                             step = 50
-                        case "Minute Goal":
-                            step = 5
+                        case "Flights Climbed Goal":
+                            step = 1
                         default:
                             step = 1
                         }

@@ -49,7 +49,7 @@ struct ProgressView: View {
                         HStack {
                             ProgressCard(title: "Steps", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklySteps.reduce(0, +))), number: .decimal), color: CustomColors.ringRed)
                             ProgressCard(title: "Calories", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklyCalories.reduce(0, +))), number: .decimal), color: CustomColors.ringGreen)
-                            ProgressCard(title: "Minutes", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklyMinutes.reduce(0, +))), number: .decimal), color: CustomColors.ringBlue)
+                            ProgressCard(title: "Flights", value: NumberFormatter.localizedString(from: NSNumber(value: Int(goalManager.weeklyFlightsClimbed.reduce(0, +))), number: .decimal), color: CustomColors.ringBlue)
                         }
                     }
                     .padding()
@@ -64,7 +64,7 @@ struct ProgressView: View {
                         MultiLineGraph(
                             stepData: goalManager.weeklySteps,
                             calorieData: goalManager.weeklyCalories,
-                            minuteData: goalManager.weeklyMinutes
+                            flightsClimbedData: goalManager.weeklyFlightsClimbed
                         )
                         .frame(height: 200)
                     }
@@ -155,7 +155,7 @@ struct ProgressView: View {
 struct MultiLineGraph: View {
     let stepData: [Double]
     let calorieData: [Double]
-    let minuteData: [Double]
+    let flightsClimbedData: [Double]
     @State private var graphProgress: CGFloat = 0.0
 
     var body: some View {
@@ -163,7 +163,7 @@ struct MultiLineGraph: View {
             ZStack {
                 LinePath(data: stepData, color: CustomColors.ringRed, progress: graphProgress, geometry: geometry)
                 LinePath(data: calorieData, color: CustomColors.ringGreen, progress: graphProgress, geometry: geometry)
-                LinePath(data: minuteData, color: CustomColors.ringBlue, progress: graphProgress, geometry: geometry)
+                LinePath(data: flightsClimbedData, color: CustomColors.ringBlue, progress: graphProgress, geometry: geometry)
             }
             .onAppear {
                 withAnimation(.easeInOut(duration: 2.5)) {

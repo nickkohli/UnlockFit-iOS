@@ -60,7 +60,8 @@ struct ScreenTimeView: View {
         let secondsArray = (0..<7).map { historyManager.screenTimeSeconds[6 - $0] }
         let sessionsArray = (0..<7).map { historyManager.screenTimeSessions[6 - $0] }
         let dataArray = chartType == .seconds ? secondsArray : sessionsArray
-        let maxVal = dataArray.max() ?? 1
+        let nonZeroMax = dataArray.max() ?? 0
+        let maxVal = nonZeroMax > 0 ? nonZeroMax : 1
 
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
@@ -136,79 +137,94 @@ struct ScreenTimeView: View {
                             .cornerRadius(10)
                             
                             VStack(alignment: .leading) {
-                                HStack {
-                                    Text(chartType == .seconds ? "Screen Time (last 7 days)" : "Sessions (last 7 days)")
-                                        .font(.headline)
-                                        .foregroundColor(.white)
-                                    Spacer()
-                                    Button(action: {
-                                        chartType = chartType == .seconds ? .sessions : .seconds
-                                    }) {
-                                        Image(systemName: "arrow.left.arrow.right")
-                                            .foregroundColor(.white)
-                                    }
-                                }
-                                
-                                HStack(alignment: .bottom, spacing: 6) {
-                                    ForEach(0..<7, id: \.self) { i in
-                                        let val = dataArray[i]
-                                        let barHeight = CGFloat(val) / CGFloat(maxVal) * 100
-                                        VStack {
-                                            RoundedRectangle(cornerRadius: 5)
-                                                .fill(
-                                                    LinearGradient(
-                                                        gradient: Gradient(colors: selectedIndex == i
-                                                                           ? [themeManager.accentColor2, themeManager.accentColor]
-                                                                           : [Color.gray.opacity(0.4), Color.gray.opacity(0.4)]),
-                                                        startPoint: .top,
-                                                        endPoint: .bottom
-                                                    )
-                                                )
-                                                .frame(height: barHeight)
-                                                .onTapGesture {
-                                                    withAnimation(.easeInOut(duration: 0.3)) {
-                                                        selectedIndex = selectedIndex == i ? nil : i
-                                                        scrollAnchor = .bottom
-                                                        scrollID = "ScrollBottom"
-                                                    }
-                                                }
-                                            
-                                            Text(weekLabels[i])
-                                                .font(.caption2)
+                                let hasNonZero = dataArray.contains(where: { $0 > 0 })
+                                Group {
+                                    if hasNonZero {
+                                        HStack {
+                                            Text(chartType == .seconds ? "Screen Time (last 7 days)" : "Sessions (last 7 days)")
+                                                .font(.headline)
                                                 .foregroundColor(.white)
+                                            Spacer()
+                                            Button(action: {
+                                                chartType = chartType == .seconds ? .sessions : .seconds
+                                            }) {
+                                                Image(systemName: "arrow.left.arrow.right")
+                                                    .foregroundColor(.white)
+                                            }
+                                        }
+                                        
+                                        HStack(alignment: .bottom, spacing: 6) {
+                                            ForEach(0..<7, id: \.self) { i in
+                                                let val = dataArray[i]
+                                                let barHeight = hasNonZero ? CGFloat(val) / CGFloat(maxVal) * 100 : 0.001
+                                                VStack {
+                                                    RoundedRectangle(cornerRadius: 5)
+                                                        .fill(
+                                                            LinearGradient(
+                                                                gradient: Gradient(colors: selectedIndex == i
+                                                                                   ? [themeManager.accentColor2, themeManager.accentColor]
+                                                                                   : [Color.gray.opacity(0.4), Color.gray.opacity(0.4)]),
+                                                                startPoint: .top,
+                                                                endPoint: .bottom
+                                                            )
+                                                        )
+                                                        .frame(height: barHeight)
+                                                        .onTapGesture {
+                                                            withAnimation(.easeInOut(duration: 0.3)) {
+                                                                selectedIndex = selectedIndex == i ? nil : i
+                                                                scrollAnchor = .bottom
+                                                                scrollID = "ScrollBottom"
+                                                            }
+                                                        }
+                                                    
+                                                    Text(weekLabels[i])
+                                                        .font(.caption2)
+                                                        .foregroundColor(.white)
+                                                }
+                                            }
+                                        }
+                                        .frame(height: 120)
+                                        .animation(.easeInOut(duration: 0.4), value: chartType)
+                                        
+                                        if let index = selectedIndex {
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(weekLabels[index])
+                                                    .font(.caption)
+                                                    .foregroundColor(.white)
+                                                if chartType == .seconds {
+                                                    let h = dataArray[index] / 3600
+                                                    let m = (dataArray[index] % 3600) / 60
+                                                    let s = dataArray[index] % 60
+                                                    Text("Time: \(h)h \(m)m \(s)s")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.gray)
+                                                } else {
+                                                    Text("Sessions: \(dataArray[index]) session\(dataArray[index] == 1 ? "" : "s")")
+                                                        .font(.caption2)
+                                                        .foregroundColor(.gray)
+                                                }
+                                            }
+                                            .padding(.top, 4)
+                                            .transition(.opacity.combined(with: .move(edge: .top)))
+                                            .animation(.easeInOut(duration: 0.3), value: selectedIndex)
                                         }
                                     }
-                                }
-                                .frame(height: 120)
-                                .animation(.easeInOut(duration: 0.4), value: chartType)
-                                
-                                if let index = selectedIndex {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text(weekLabels[index])
-                                            .font(.caption)
-                                            .foregroundColor(.white)
-                                        if chartType == .seconds {
-                                            let h = dataArray[index] / 3600
-                                            let m = (dataArray[index] % 3600) / 60
-                                            let s = dataArray[index] % 60
-                                            Text("Time: \(h)h \(m)m \(s)s")
-                                                .font(.caption2)
-                                                .foregroundColor(.gray)
-                                        } else {
-                                            Text("Sessions: \(dataArray[index]) session\(dataArray[index] == 1 ? "" : "s")")
-                                                .font(.caption2)
-                                                .foregroundColor(.gray)
-                                        }
+                                    if !hasNonZero {
+                                        Text("No screen time data available yet.\nStart a session to begin tracking.")
+                                            .foregroundColor(.gray)
+                                            .font(.subheadline)
+                                            .frame(maxWidth: .infinity, minHeight: 120)
+                                            .multilineTextAlignment(.center)
+                                            .transition(.opacity.combined(with: .move(edge: .top)))
                                     }
-                                    .padding(.top, 4)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                                    .animation(.easeInOut(duration: 0.3), value: selectedIndex)
                                 }
+                                // animation/transition modifiers go here
                             }
                             .padding()
                             .background(Color.gray.opacity(0.2))
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            .animation(.easeInOut(duration: 0.4), value: dataArray.contains(where: { $0 > 0 }))
                             .cornerRadius(10)
-                            .transition(.opacity)
                             
                             if true {
                                 VStack(alignment: .leading, spacing: 10) {

@@ -65,28 +65,6 @@ struct FitnessView: View {
                 // Greeting and Date Header
                 greetingSection
                 
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        isRefreshing = true
-                        goalManager.refreshWeeklyData()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            isRefreshing = false
-                        }
-                    }) {
-                        Image(systemName: "arrow.clockwise")
-                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
-                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                }
-                .padding(.bottom, -10)
-
                 // Progress Rings Section
                 progressRingsSection
                 
@@ -107,6 +85,32 @@ struct FitnessView: View {
             }
             .padding(.horizontal) // Added horizontal padding for better alignment
             .padding(.top, 10) // Adjusted the padding at the top
+            
+            // Refresh Button floating bottom right
+            VStack {
+                Spacer()
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                        isRefreshing = true
+                        goalManager.refreshWeeklyData()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            isRefreshing = false
+                        }
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
+                            .foregroundColor(.white)
+                            .padding(12)
+                            .background(Color.gray.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                    .padding()
+                }
+            }
         }
         .navigationTitle("")
         .navigationBarHidden(true) // Hide the navigation bar title to save space

@@ -118,6 +118,7 @@ struct ProgressView: View {
                 .padding()
                 .onAppear {
                     isActive = true
+                    print("🔄 ProgressView appeared: refreshing weekly data immediately.")
                     goalManager.refreshWeeklyData()
                     refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
                         if isActive {

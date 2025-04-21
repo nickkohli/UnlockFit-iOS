@@ -334,6 +334,7 @@ struct ScreenTimeView: View {
                 triggerAnimation()
                 hasAnimated = true
             }
+            print("🔄 ScreenTimeView appeared: refreshing screen data immediately.")
             historyManager.loadFromFirestore {
                     historyManager.refreshDailyTrackingArraysIfNeeded()
                     historyManager.saveToFirestore()

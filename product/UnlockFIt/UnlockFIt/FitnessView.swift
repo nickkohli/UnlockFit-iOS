@@ -6,6 +6,9 @@ struct FitnessView: View {
     @EnvironmentObject var appState: AppState
     @State private var animateRings: Bool = false // State to control animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+    @State private var isActive: Bool = true
+    @State private var refreshTimer: Timer? = nil
+    @State private var isRefreshing: Bool = false
 
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -62,6 +65,28 @@ struct FitnessView: View {
                 // Greeting and Date Header
                 greetingSection
                 
+                HStack {
+                    Spacer()
+                    Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                        isRefreshing = true
+                        goalManager.refreshWeeklyData()
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                            isRefreshing = false
+                        }
+                    }) {
+                        Image(systemName: "arrow.clockwise")
+                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
+                            .foregroundColor(.white)
+                            .padding(8)
+                            .background(Color.gray.opacity(0.3))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.bottom, -10)
+
                 // Progress Rings Section
                 progressRingsSection
                 
@@ -90,6 +115,23 @@ struct FitnessView: View {
                 triggerAnimation()
                 hasAnimated = true
             }
+            isActive = true
+            print("🔄 FitnessView appeared: refreshing ring data immediately.")
+            goalManager.refreshWeeklyData()
+            refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                if isActive {
+                    print("⏰ FitnessView timer: refreshing ring data.")
+                    goalManager.refreshWeeklyData()
+                } else {
+                    print("🛑 FitnessView timer skipped – view not visible.")
+                }
+            }
+        }
+        .onDisappear {
+            print("👋 Left FitnessView – stopping timer.")
+            isActive = false
+            refreshTimer?.invalidate()
+            refreshTimer = nil
         }
     }
 

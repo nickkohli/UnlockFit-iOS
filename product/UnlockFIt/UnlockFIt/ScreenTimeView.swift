@@ -8,6 +8,16 @@ struct ScreenTimeView: View {
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
     @State private var isRefreshing: Bool = false
 
+    // MARK: - Weekly Bar Chart
+
+    enum ChartType {
+        case seconds, sessions
+    }
+
+    @State private var chartType: ChartType = .seconds
+    @State private var selectedIndex: Int? = nil
+
+
     var totalTime: TimeInterval {
         historyManager.getTodayScreenTime()
     }
@@ -37,172 +47,261 @@ struct ScreenTimeView: View {
     }
 
     var body: some View {
+        let calendar = Calendar.current
+        let todayIndex = calendar.component(.weekday, from: Date()) - 1 // 0 = Sunday
+        let allWeekdays = calendar.shortWeekdaySymbols // ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        let weekLabels = (0..<7).map { i in
+            let index = (todayIndex - (6 - i) + 7) % 7
+            return i == 6 ? "TODAY" : allWeekdays[index].uppercased()
+        }
+        let secondsArray = (0..<7).map { historyManager.screenTimeSeconds[6 - $0] }
+        let sessionsArray = (0..<7).map { historyManager.screenTimeSessions[6 - $0] }
+        let dataArray = chartType == .seconds ? secondsArray : sessionsArray
+        let maxVal = dataArray.max() ?? 1
+
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
-            VStack(alignment: .leading, spacing: 15) { // Adjusted spacing
+            
+            VStack(spacing: 0) {
                 // Header
                 Text("Today's Screen Time")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
-                    .padding(.bottom, 5) // Reduced bottom padding
-
-                // Removed old computed properties in favor of new ones
-
-                // Screen Time Summary Card
-                HStack {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Text("Sessions Today: \(totalSessions)")
-                            .font(.subheadline)
-                            .foregroundColor(.gray)
-                    }
-                    
-                    Spacer()
-                    
-                    Button(action: {
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        isRefreshing = true
-                        historyManager.loadFromFirestore {
-                                historyManager.refreshDailyTrackingArraysIfNeeded()
-                                historyManager.saveToFirestore()
-                            }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            isRefreshing = false
-                        }
-                    }) {
-                        Image(systemName: "arrow.clockwise")
-                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
-                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
-                            .foregroundColor(.white)
-                            .padding(8)
-                            .background(Color.gray.opacity(0.3))
-                            .clipShape(Circle())
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-
-                // Progress Bar
-                VStack(alignment: .leading) {
-                    Text("Time Saved Compared to Average")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                    ProgressBarView(progress: progress, color: .green)
-                        .frame(height: 20)
-                    Text("You’ve used screen time for \(totalHours)h \(totalMinutes)m \(totalSeconds)s across \(totalSessions) session(s) today — that’s just \(formattedPercentage)% of the average adult.")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-
-                if true {
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Custom Screen Time Session")
-                            .font(.headline)
-                            .foregroundColor(.white)
-
-                        VStack(alignment: .leading) {
-                            Text("Duration: \(Int(screenTimeManager.sessionDuration / 60)) min")
-                                .foregroundColor(.gray)
-                            Slider(value: Binding(
-                                get: { screenTimeManager.sessionDuration / 60 },
-                                set: { screenTimeManager.sessionDuration = $0 * 60 }
-                            ), in: 0.05...60, step: 5)
-                                .accentColor(themeManager.accentColor)
-                                .onAppear {
-                                    if screenTimeManager.sessionDuration < 300 {
-                                        screenTimeManager.sessionDuration = 300
-                                    }
-                                }
-                        }
-
-                        if screenTimeManager.isSessionActive {
-                            VStack(alignment: .leading, spacing: 10) {
-                                Text(screenTimeManager.timeRemaining > 0 ?
-                                     "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
-                                     "🛑 Time's up! But we’re still counting ⏱️ Tap 'Stop Session' to log your screen time.")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 17)
+                    .padding(.top, 10) // Add safe area space
+                    .padding(.bottom, 15)
+                    .background(Color.black)
+                
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 15) {
+                        
+                        // Screen Time Summary Card
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
+                                    .font(.headline)
                                     .foregroundColor(.white)
+                                Text("Sessions Today: \(totalSessions)")
                                     .font(.subheadline)
-                                    .padding(.bottom, 5)
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-
-                                if screenTimeManager.timeRemaining > 0 {
-                                    Button(action: {
-                                        let generator = UIImpactFeedbackGenerator(style: .light)
-                                        generator.impactOccurred()
-                                        if screenTimeManager.isPaused {
-                                            screenTimeManager.resumeSession()
-                                        } else {
-                                            screenTimeManager.pauseSession()
-                                        }
-                                    }) {
-                                        Text(screenTimeManager.isPaused ? "Resume Session" : "Pause Session")
-                                            .frame(maxWidth: .infinity)
-                                            .padding()
-                                            .background(Color(red: 0.2, green: 0.2, blue: 0.2))
-                                            .foregroundColor(.white)
-                                            .cornerRadius(10)
-                                    }
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                                }
+                                    .foregroundColor(.gray)
                             }
-                            .animation(.easeInOut(duration: 0.4), value: screenTimeManager.timeRemaining)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
+                                isRefreshing = true
+                                historyManager.loadFromFirestore {
+                                    historyManager.refreshDailyTrackingArraysIfNeeded()
+                                    historyManager.saveToFirestore()
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                    isRefreshing = false
+                                }
+                            }) {
+                                Image(systemName: "arrow.clockwise")
+                                    .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                                    .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
+                                    .foregroundColor(.white)
+                                    .padding(8)
+                                    .background(Color.gray.opacity(0.3))
+                                    .clipShape(Circle())
+                            }
                         }
-
-                        VStack {
-                            if screenTimeManager.isPaused {
-                                Color.clear
-                                    .frame(height: 0) // Keeps the spacing consistent even when button is hidden
-                                    .transition(.opacity.combined(with: .move(edge: .top)))
-                            } else {
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                        
+                        // Progress Bar
+                        VStack(alignment: .leading) {
+                            Text("Time Saved Compared to Average")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            ProgressBarView(progress: progress, color: .green)
+                                .frame(height: 20)
+                            Text("You’ve used screen time for \(totalHours)h \(totalMinutes)m \(totalSeconds)s across \(totalSessions) session(s) today — that’s just \(formattedPercentage)% of the average adult.")
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                        
+                        VStack(alignment: .leading) {
+                            HStack {
+                                Text(chartType == .seconds ? "Screen Time (last 7 days)" : "Sessions (last 7 days)")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                Spacer()
                                 Button(action: {
-                                    let generator = UINotificationFeedbackGenerator()
-                                    if screenTimeManager.isSessionActive {
-                                        generator.notificationOccurred(.success)
-                                        screenTimeManager.stopSession()
-                                        historyManager.saveScreenTimeHistory()
-                                    } else {
-                                        generator.notificationOccurred(.success)
-                                        if screenTimeManager.sessionDuration >= 3 {
-                                            screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
-                                        }
-                                    }
+                                    chartType = chartType == .seconds ? .sessions : .seconds
                                 }) {
-                                    Text(screenTimeManager.isSessionActive ? "Stop Session" : "Start Session")
-                                        .frame(maxWidth: .infinity)
-                                        .padding()
-                                        .background(LinearGradient(
-                                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
-                                            startPoint: .leading,
-                                            endPoint: .trailing
-                                        ))
+                                    Image(systemName: "arrow.left.arrow.right")
                                         .foregroundColor(.white)
-                                        .cornerRadius(10)
                                 }
-                                .transition(.opacity.combined(with: .move(edge: .top)))
+                            }
+                            
+                            HStack(alignment: .bottom, spacing: 6) {
+                                ForEach(0..<7, id: \.self) { i in
+                                    let val = dataArray[i]
+                                    let barHeight = CGFloat(val) / CGFloat(maxVal) * 100
+                                    VStack {
+                                        RoundedRectangle(cornerRadius: 5)
+                                            .fill(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: selectedIndex == i
+                                                                       ? [themeManager.accentColor2, themeManager.accentColor]
+                                                                       : [Color.gray.opacity(0.4), Color.gray.opacity(0.4)]),
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                )
+                                            )
+                                            .frame(height: barHeight)
+                                            .onTapGesture {
+                                                selectedIndex = selectedIndex == i ? nil : i
+                                            }
+                                        
+                                        Text(weekLabels[i])
+                                            .font(.caption2)
+                                            .foregroundColor(.white)
+                                    }
+                                }
+                            }
+                            .frame(height: 120)
+                            .animation(.easeInOut(duration: 0.4), value: chartType)
+                            
+                            if let index = selectedIndex {
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text(weekLabels[index])
+                                        .font(.caption)
+                                        .foregroundColor(.white)
+                                    if chartType == .seconds {
+                                        let h = dataArray[index] / 3600
+                                        let m = (dataArray[index] % 3600) / 60
+                                        let s = dataArray[index] % 60
+                                        Text("Time: \(h)h \(m)m \(s)s")
+                                            .font(.caption2)
+                                            .foregroundColor(.gray)
+                                    } else {
+                                        Text("Sessions: \(dataArray[index]) session\(dataArray[index] == 1 ? "" : "s")")
+                                            .font(.caption2)
+                                            .foregroundColor(.gray)
+                                    }
+                                }
+                                .padding(.top, 4)
                             }
                         }
-                        .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isPaused)
+                        .padding()
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
+                        .transition(.opacity)
+                        
+                        if true {
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text("Custom Screen Time Session")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                
+                                VStack(alignment: .leading) {
+                                    Text("Duration: \(Int(screenTimeManager.sessionDuration / 60)) min")
+                                        .foregroundColor(.gray)
+                                    Slider(value: Binding(
+                                        get: { screenTimeManager.sessionDuration / 60 },
+                                        set: { screenTimeManager.sessionDuration = $0 * 60 }
+                                    ), in: 0.05...60, step: 5)
+                                    .accentColor(themeManager.accentColor)
+                                    .onAppear {
+                                        if screenTimeManager.sessionDuration < 300 {
+                                            screenTimeManager.sessionDuration = 300
+                                        }
+                                    }
+                                }
+                                
+                                if screenTimeManager.isSessionActive {
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Text(screenTimeManager.timeRemaining > 0 ?
+                                             "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
+                                                "🛑 Time's up! But we’re still counting ⏱️ Tap 'Stop Session' to log your screen time.")
+                                        .foregroundColor(.white)
+                                        .font(.subheadline)
+                                        .padding(.bottom, 5)
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                        
+                                        if screenTimeManager.timeRemaining > 0 {
+                                            Button(action: {
+                                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                                generator.impactOccurred()
+                                                if screenTimeManager.isPaused {
+                                                    screenTimeManager.resumeSession()
+                                                } else {
+                                                    screenTimeManager.pauseSession()
+                                                }
+                                            }) {
+                                                Text(screenTimeManager.isPaused ? "Resume Session" : "Pause Session")
+                                                    .frame(maxWidth: .infinity)
+                                                    .padding()
+                                                    .background(Color(red: 0.2, green: 0.2, blue: 0.2))
+                                                    .foregroundColor(.white)
+                                                    .cornerRadius(10)
+                                            }
+                                            .transition(.opacity.combined(with: .move(edge: .top)))
+                                        }
+                                    }
+                                    .animation(.easeInOut(duration: 0.4), value: screenTimeManager.timeRemaining)
+                                    .transition(.opacity.combined(with: .move(edge: .top)))
+                                }
+                                
+                                VStack {
+                                    if screenTimeManager.isPaused {
+                                        Color.clear
+                                            .frame(height: 0) // Keeps the spacing consistent even when button is hidden
+                                            .transition(.opacity.combined(with: .move(edge: .top)))
+                                    } else {
+                                        Button(action: {
+                                            let generator = UINotificationFeedbackGenerator()
+                                            if screenTimeManager.isSessionActive {
+                                                generator.notificationOccurred(.success)
+                                                screenTimeManager.stopSession()
+                                                historyManager.saveScreenTimeHistory()
+                                            } else {
+                                                generator.notificationOccurred(.success)
+                                                if screenTimeManager.sessionDuration >= 3 {
+                                                    screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
+                                                }
+                                            }
+                                        }) {
+                                            Text(screenTimeManager.isSessionActive ? "Stop Session" : "Start Session")
+                                                .frame(maxWidth: .infinity)
+                                                .padding()
+                                                .background(LinearGradient(
+                                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                                    startPoint: .leading,
+                                                    endPoint: .trailing
+                                                ))
+                                                .foregroundColor(.white)
+                                                .cornerRadius(10)
+                                        }
+                                        .transition(.opacity.combined(with: .move(edge: .top)))
+                                    }
+                                }
+                                .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isPaused)
+                            }
+                            .padding()
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isSessionActive)
+                        }
+                        
+                        Spacer() // Fills remaining space at the bottom
                     }
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
-                    .animation(.easeInOut(duration: 0.4), value: screenTimeManager.isSessionActive)
+                    .padding(.horizontal) // Horizontal padding for alignment
+                    .padding(.bottom, 20) // Add a bit of bottom padding so it doesn't clash with tab bar
                 }
-
-                Spacer() // Fills remaining space at the bottom
             }
-            .padding(.horizontal) // Horizontal padding for alignment
-            .padding(.top, 10) // Slight top padding to ensure it’s not too close
         }
         .navigationTitle("")
         .navigationBarHidden(true) // Remove the navigation bar to save space
@@ -216,11 +315,12 @@ struct ScreenTimeView: View {
                     historyManager.saveToFirestore()
                 }
         }
-        .onReceive(Timer.publish(every: 300, on: .main, in: .common).autoconnect()) { _ in
+        .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
+            print("⏰ Timer triggered: refreshing screen time data.")
             historyManager.loadFromFirestore {
-                    historyManager.refreshDailyTrackingArraysIfNeeded()
-                    historyManager.saveToFirestore()
-                }
+                historyManager.refreshDailyTrackingArraysIfNeeded()
+                historyManager.saveToFirestore()
+            }
         }
     }
 

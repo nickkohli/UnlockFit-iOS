@@ -4,7 +4,7 @@ import FirebaseAuth
 struct ThemesView: View {
     @EnvironmentObject var themeManager: ThemeManager
 
-    let themes = ["Default", "Neon"]
+    let themes = ["Default", "Neon", "Ulku"]
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {

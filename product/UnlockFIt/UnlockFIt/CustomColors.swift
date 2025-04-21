@@ -30,6 +30,10 @@ struct CustomColors {
     // Nike Run Club Neon
     static let neonYellow = Color(hex: "#CFE640")
     static let neonYellow2 = Color(hex: "#66731A")
+    
+    // Ulku Theme - Hatsune Miku Blue
+    static let ulkuBlue = Color(hex: "#39C5BB")
+    static let ulkuBlue2 = Color(hex: "#006D7A")
 
     // Badges - Primary
     static let bronze = Color(hex: "#CC8040")

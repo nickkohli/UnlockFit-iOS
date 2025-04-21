@@ -9,11 +9,25 @@ class ThemeManager: ObservableObject {
     }
 
     var accentColor: Color {
-        selectedTheme == "Neon" ? CustomColors.neonYellow : .purple
+        switch selectedTheme {
+        case "Neon":
+            return CustomColors.neonYellow
+        case "Ulku":
+            return CustomColors.ulkuBlue
+        default:
+            return .purple
+        }
     }
 
     var accentColor2: Color {
-        selectedTheme == "Neon" ? CustomColors.neonYellow2 : .pink
+        switch selectedTheme {
+        case "Neon":
+            return CustomColors.neonYellow2
+        case "Ulku":
+            return CustomColors.ulkuBlue2
+        default:
+            return .pink
+        }
     }
 
     init() {
@@ -25,6 +39,8 @@ class ThemeManager: ObservableObject {
         switch selectedTheme {
         case "Neon":
             UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.neonYellow2)
+        case "Ulku":
+            UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.ulkuBlue2)
         default:
             UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray
         }

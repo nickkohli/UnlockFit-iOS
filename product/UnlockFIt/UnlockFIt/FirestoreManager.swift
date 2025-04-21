@@ -16,7 +16,8 @@ class FirestoreManager {
             "minuteGoal": 30,
             "theme": "Default",
             "screenTimeSeconds": [0, 0, 0, 0, 0, 0, 0],
-            "screenTimeSessions": [0, 0, 0, 0, 0, 0, 0]
+            "screenTimeSessions": [0, 0, 0, 0, 0, 0, 0],
+            "profileImageURL": "https://firebasestorage.googleapis.com/v0/b/unlockfit-956fc.firebasestorage.app/o/profile_images%2Fdeafult.jpg?alt=media&token=8b2ed802-8c39-44cd-9cd8-8072f7f91bab"
         ]
         
         db.collection("users").document(uid).setData(userData) { error in

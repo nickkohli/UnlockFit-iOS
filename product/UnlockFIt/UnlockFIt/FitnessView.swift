@@ -1,27 +1,63 @@
+import Firebase
 import SwiftUI
 
 struct FitnessView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
     @EnvironmentObject var appState: AppState
+    @StateObject var profileViewModel = ProfileViewModel()
     @State private var animateRings: Bool = false // State to control animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
     @State private var isActive: Bool = true
     @State private var refreshTimer: Timer? = nil
     @State private var isRefreshing: Bool = false
+    @State private var showGreeting: Bool = false
 
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Let’s get moving, Nick!")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+            HStack(spacing: 0) {
+                Text("Let’s move")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+
+                if !profileViewModel.nickname.isEmpty {
+                    Text(", ")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+
+                    Text(profileViewModel.nickname)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [themeManager.accentColor, themeManager.accentColor2],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+
+                    Text("!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                } else {
+                    Text("!")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                }
+            }
 
             Text(Date(), style: .date)
                 .font(.subheadline)
                 .foregroundColor(.gray)
                 .padding(.bottom)
         }
+        .opacity(showGreeting ? 1 : 0)
+        .offset(x: showGreeting ? 0 : -40)
+        .animation(.easeOut(duration: 1.0), value: showGreeting)
     }
 
     private var progressRingsSection: some View {
@@ -119,6 +155,10 @@ struct FitnessView: View {
             if !hasAnimated {
                 triggerAnimation()
                 hasAnimated = true
+                profileViewModel.fetchNickname { _ in }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    showGreeting = true
+                }
             }
             isActive = true
             print("🔄 FitnessView appeared: refreshing ring data immediately.")

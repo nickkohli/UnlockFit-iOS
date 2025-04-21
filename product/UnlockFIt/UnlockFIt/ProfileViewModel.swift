@@ -8,7 +8,36 @@ class ProfileViewModel: ObservableObject {
     @Published var nickname = ""
     @Published var email = ""
     @Published var profileImage: UIImage? = nil
+    
+    func fetchNickname(completion: @escaping (String?) -> Void) {
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("❌ fetchNickname failed: no UID found.")
+            completion(nil)
+            return
+        }
 
+        let docRef = Firestore.firestore().collection("users").document(uid)
+        docRef.getDocument { document, error in
+            if let error = error {
+                print("❌ fetchNickname Firestore error: \(error.localizedDescription)")
+                completion(nil)
+                return
+            }
+
+            if let data = document?.data(),
+               let nickname = data["nickname"] as? String {
+                print("✅ fetchNickname success: \(nickname)")
+                DispatchQueue.main.async {
+                    self.nickname = nickname // <- update the @Published var here
+                }
+                completion(nickname)
+            } else {
+                print("⚠️ fetchNickname: nickname not found in document.")
+                completion(nil)
+            }
+        }
+    }
+    
     func fetchUserData(appState: AppState? = nil, themeManager: ThemeManager? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
 

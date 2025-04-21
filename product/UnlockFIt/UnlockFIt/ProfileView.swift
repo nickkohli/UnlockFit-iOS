@@ -116,6 +116,10 @@ struct ProfileView: View {
                     }
                 }
             }
+            .onAppear {
+                print("\n")
+                print("👤 ProfileView appeared")
+            }
             .sheet(isPresented: $isImagePickerPresented) {
                 ImagePicker(selectedImage: $viewModel.profileImage)
             }

@@ -8,6 +8,7 @@ struct ProgressView: View {
     @State private var refreshTimer: Timer? = nil
     @State private var isSpinning = false
     @State private var isActive: Bool = true
+    @State private var hasAppearedOnce = false
 
     var body: some View {
         ZStack {
@@ -117,17 +118,26 @@ struct ProgressView: View {
                 }
                 .padding()
                 .onAppear {
+                    print("\n")
+                    print("🔄 ProgressView appeared")
                     isActive = true
-                    print("🔄 ProgressView appeared: refreshing weekly data immediately.")
-                    goalManager.refreshWeeklyData()
-                    refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-                        if isActive {
-                            print("⏰ ProgressView timer: refreshing weekly data.")
-                            goalManager.refreshWeeklyData()
-                            lastRefreshDate = Date()
-                        } else {
-                            print("🛑 ProgressView timer skipped – view not visible.")
+                    if !hasAppearedOnce {
+                        hasAppearedOnce = true
+                        print("🔁 First appearance: refreshing weekly data.")
+                        goalManager.refreshWeeklyData()
+                    }
+                    if refreshTimer == nil {
+                        refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                            if isActive {
+                                print("⏰ ProgressView timer: refreshing weekly data.")
+                                goalManager.refreshWeeklyData()
+                                lastRefreshDate = Date()
+                            } else {
+                                print("🛑 ProgressView timer skipped – view not visible.")
+                            }
                         }
+                    } else {
+                        print("⚠️ ProgressView timer already running.")
                     }
                 }
                 .onDisappear {

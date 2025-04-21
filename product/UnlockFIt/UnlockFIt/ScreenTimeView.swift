@@ -329,6 +329,7 @@ struct ScreenTimeView: View {
         .navigationTitle("")
         .navigationBarHidden(true) // Remove the navigation bar to save space
         .onAppear {
+            print("\n")
             isActive = true
             if !hasAnimated {
                 triggerAnimation()

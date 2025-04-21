@@ -115,6 +115,7 @@ struct FitnessView: View {
         .navigationTitle("")
         .navigationBarHidden(true) // Hide the navigation bar title to save space
         .onAppear {
+            print("\n")
             if !hasAnimated {
                 triggerAnimation()
                 hasAnimated = true

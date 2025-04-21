@@ -94,6 +94,7 @@ class GoalManager: ObservableObject {
 
     func refreshWeeklyData() {
         print("🔄 Refreshing weekly data manually or on timer...")
+        updateGoalsFromHealthKit()
         fetchWeeklyData()
     }
 }

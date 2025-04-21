@@ -12,6 +12,9 @@ struct FitnessView: View {
     @State private var refreshTimer: Timer? = nil
     @State private var isRefreshing: Bool = false
     @State private var showGreeting: Bool = false
+    @State private var lastSteps: Double = 0
+    @State private var lastCalories: Double = 0
+    @State private var lastMinutes: Double = 0
 
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -132,9 +135,8 @@ struct FitnessView: View {
                         generator.impactOccurred()
                         isRefreshing = true
                         goalManager.refreshWeeklyData()
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                            isRefreshing = false
-                        }
+                        refreshAndAnimateIfNeeded()
+                        isRefreshing = false
                     }) {
                         Image(systemName: "arrow.clockwise")
                             .rotationEffect(.degrees(isRefreshing ? 360 : 0))
@@ -159,14 +161,17 @@ struct FitnessView: View {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     showGreeting = true
                 }
+            } else {
+                goalManager.refreshWeeklyData()
             }
             isActive = true
             print("🔄 FitnessView appeared: refreshing ring data immediately.")
-            goalManager.refreshWeeklyData()
+            refreshAndAnimateIfNeeded()
             refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
                 if isActive {
                     print("⏰ FitnessView timer: refreshing ring data.")
                     goalManager.refreshWeeklyData()
+                    refreshAndAnimateIfNeeded()
                 } else {
                     print("🛑 FitnessView timer skipped – view not visible.")
                 }
@@ -177,6 +182,31 @@ struct FitnessView: View {
             isActive = false
             refreshTimer?.invalidate()
             refreshTimer = nil
+        }
+    }
+
+    private func refreshAndAnimateIfNeeded() {
+        let currentSteps = goalManager.stepsToday
+        let currentCalories = goalManager.caloriesBurned
+        let currentMinutes = goalManager.minutesExercised
+
+        print("🔍 Refresh check – Steps: \(currentSteps) (was \(lastSteps)), Calories: \(currentCalories) (was \(lastCalories)), Minutes: \(currentMinutes) (was \(lastMinutes))")
+
+        let didChange = currentSteps != lastSteps || currentCalories != lastCalories || currentMinutes != lastMinutes
+
+        if didChange {
+            print("✅ Data changed – triggering animation.")
+            lastSteps = currentSteps
+            lastCalories = currentCalories
+            lastMinutes = currentMinutes
+            animateRings = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.easeInOut(duration: 2.5)) {
+                    animateRings = true
+                }
+            }
+        } else {
+            print("⏸ No data change – animation skipped.")
         }
     }
 

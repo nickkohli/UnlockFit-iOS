@@ -7,6 +7,7 @@ struct ProgressView: View {
     @State private var lastRefreshDate = Date()
     @State private var refreshTimer: Timer? = nil
     @State private var isSpinning = false
+    @State private var isActive: Bool = true
 
     var body: some View {
         ZStack {
@@ -116,13 +117,21 @@ struct ProgressView: View {
                 }
                 .padding()
                 .onAppear {
+                    isActive = true
                     goalManager.refreshWeeklyData()
-                    refreshTimer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { _ in
-                        goalManager.refreshWeeklyData()
-                        lastRefreshDate = Date()
+                    refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                        if isActive {
+                            print("⏰ ProgressView timer: refreshing weekly data.")
+                            goalManager.refreshWeeklyData()
+                            lastRefreshDate = Date()
+                        } else {
+                            print("🛑 ProgressView timer skipped – view not visible.")
+                        }
                     }
                 }
                 .onDisappear {
+                    print("👋 Left ProgressView – stopping timer.")
+                    isActive = false
                     refreshTimer?.invalidate()
                     refreshTimer = nil
                 }

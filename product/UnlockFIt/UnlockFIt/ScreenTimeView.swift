@@ -9,6 +9,7 @@ struct ScreenTimeView: View {
     @State private var isRefreshing: Bool = false
     @State private var scrollID: String? = nil
     @State private var scrollAnchor: UnitPoint = .bottom
+    @State private var isActive: Bool = true
 
     // MARK: - Weekly Bar Chart
 
@@ -328,6 +329,7 @@ struct ScreenTimeView: View {
         .navigationTitle("")
         .navigationBarHidden(true) // Remove the navigation bar to save space
         .onAppear {
+            isActive = true
             if !hasAnimated {
                 triggerAnimation()
                 hasAnimated = true
@@ -337,11 +339,19 @@ struct ScreenTimeView: View {
                     historyManager.saveToFirestore()
                 }
         }
+        .onDisappear {
+            print("👋 Left ScreenTimeView – stopping timer")
+            isActive = false
+        }
         .onReceive(Timer.publish(every: 60, on: .main, in: .common).autoconnect()) { _ in
-            print("⏰ Timer triggered: refreshing screen time data.")
-            historyManager.loadFromFirestore {
-                historyManager.refreshDailyTrackingArraysIfNeeded()
-                historyManager.saveToFirestore()
+            if isActive {
+                print("⏰ Timer triggered: refreshing screen time data.")
+                historyManager.loadFromFirestore {
+                    historyManager.refreshDailyTrackingArraysIfNeeded()
+                    historyManager.saveToFirestore()
+                }
+            } else {
+                print("🛑 Timer skipped: ScreenTimeView not visible.")
             }
         }
     }

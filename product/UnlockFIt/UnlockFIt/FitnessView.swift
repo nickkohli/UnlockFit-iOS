@@ -155,18 +155,18 @@ struct FitnessView: View {
         .onAppear {
             print("\n")
             if !hasAnimated {
-                triggerAnimation()
                 hasAnimated = true
                 profileViewModel.fetchNickname { _ in }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     showGreeting = true
                 }
-            } else {
-                goalManager.refreshWeeklyData()
             }
+            goalManager.refreshWeeklyData()
             isActive = true
             print("🔄 FitnessView appeared: refreshing ring data immediately.")
-            refreshAndAnimateIfNeeded()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                refreshAndAnimateIfNeeded(force: true)
+            }
             refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
                 if isActive {
                     print("⏰ FitnessView timer: refreshing ring data.")
@@ -185,7 +185,7 @@ struct FitnessView: View {
         }
     }
 
-    private func refreshAndAnimateIfNeeded() {
+    private func refreshAndAnimateIfNeeded(force: Bool = false) {
         let currentSteps = goalManager.stepsToday
         let currentCalories = goalManager.caloriesBurned
         let currentMinutes = goalManager.minutesExercised
@@ -194,28 +194,16 @@ struct FitnessView: View {
 
         let didChange = currentSteps != lastSteps || currentCalories != lastCalories || currentMinutes != lastMinutes
 
-        if didChange {
+        if didChange || force {
             print("✅ Data changed – triggering animation.")
             lastSteps = currentSteps
             lastCalories = currentCalories
             lastMinutes = currentMinutes
-            animateRings = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.easeInOut(duration: 2.5)) {
-                    animateRings = true
-                }
+            withAnimation(.easeInOut(duration: 2.5)) {
+                animateRings = true
             }
         } else {
             print("⏸ No data change – animation skipped.")
-        }
-    }
-
-    private func triggerAnimation() {
-        DispatchQueue.main.async {
-            animateRings = false // Reset animation
-            withAnimation(.easeInOut(duration: 2.5)) { // Adjust duration here
-                animateRings = true
-            }
         }
     }
 }
@@ -245,6 +233,8 @@ struct ProgressRingView: View {
                 Text("\(Int(progress * 100))%")
                     .font(.headline)
                     .foregroundColor(.white)
+                    .contentTransition(.numericText())
+                    .animation(.easeInOut(duration: 0.5), value: progress)
             }
             .frame(width: 90.78, height: 100)
 

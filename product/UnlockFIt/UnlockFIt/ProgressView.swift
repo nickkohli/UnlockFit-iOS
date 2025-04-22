@@ -71,50 +71,6 @@ struct ProgressView: View {
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
-
-                    // Achievements
-                    VStack(alignment: .leading) {
-                        Text("Achievements")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .multilineTextAlignment(.leading)
-
-                        HStack(spacing: 20) {
-                            AchievementBadge(
-                                title: "10k Steps",
-                                icon: "figure.walk",
-                                gradient: LinearGradient(
-                                    gradient: Gradient(colors: [CustomColors.bronze, CustomColors.bronze2]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                shadowColor: CustomColors.bronze
-                            )
-                            AchievementBadge(
-                                title: "Screen Saver",
-                                icon: "clock",
-                                gradient: LinearGradient(
-                                    gradient: Gradient(colors: [CustomColors.silver, CustomColors.silver2]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                shadowColor: CustomColors.silver
-                            )
-                            AchievementBadge(
-                                title: "Calorie Burner",
-                                icon: "flame",
-                                gradient: LinearGradient(
-                                    gradient: Gradient(colors: [CustomColors.gold, CustomColors.gold2]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                shadowColor: CustomColors.gold
-                            )
-                        }
-                    }
-                    .padding()
-                    .background(Color.gray.opacity(0.2))
-                    .cornerRadius(10)
                 }
                 .padding()
                 .onAppear {
@@ -219,57 +175,6 @@ struct ProgressCard: View {
         .padding(.all, 12.0)
         .background(Color(red: 0.108, green: 0.108, blue: 0.114))
         .cornerRadius(10)
-    }
-}
-
-struct AchievementBadge: View {
-    let title: String
-    let icon: String
-    let gradient: LinearGradient
-    let shadowColor: Color
-
-    @State private var scale: CGFloat = 1.0
-
-    var body: some View {
-        VStack {
-            ZStack {
-                Circle()
-                    .fill(gradient)
-                    .frame(width: 80, height: 80)
-                    .shadow(color: shadowColor.opacity(0.45), radius: 7.5, x: 0, y: 5)
-
-                Circle()
-                    .fill(LinearGradient(
-                        gradient: Gradient(colors: [.white.opacity(0.4), .clear]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ))
-                    .frame(width: 70, height: 70)
-                    .blendMode(.overlay)
-
-                Image(systemName: icon)
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
-            }
-            .scaleEffect(scale)
-            .onAppear {
-                withAnimation(Animation.easeInOut(duration: 0.5)) {
-                    scale = 1.1
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    withAnimation(Animation.easeInOut(duration: 0.5)) {
-                        scale = 1.0
-                    }
-                }
-            }
-
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.gray)
-                .multilineTextAlignment(.center)
-                .padding(.top, 5)
-        }
     }
 }
 

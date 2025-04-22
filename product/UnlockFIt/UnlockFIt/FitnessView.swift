@@ -114,10 +114,14 @@ struct FitnessView: View {
                 // Progress Rings Section
                 progressRingsSection
                 
-                VStack(alignment: .leading, spacing: 25) {
+                Spacer()
+                    .frame(height: 3)
+                
+                VStack(alignment: .leading, spacing: 5) {
                     Text("Goal Unlock Progress")
                         .font(.headline)
                         .foregroundColor(.white)
+                        .padding(.bottom, 15)
 
                     GoalMilestoneBar(
                         title: "Steps",
@@ -171,11 +175,16 @@ struct FitnessView: View {
                         let generator = UIImpactFeedbackGenerator(style: .medium)
                         generator.impactOccurred()
                         isRefreshing = true
-                        goalManager.refreshWeeklyData {
-                            refreshAndAnimateIfNeeded()
-                            checkAndUpdateMilestones()
-                            loadMilestoneState()
-                            isRefreshing = false
+                        // 1. Load Firestore
+                        loadMilestoneState {
+                            // 2. Refresh HealthKit data
+                            goalManager.refreshWeeklyData {
+                                // 3. Update milestones
+                                checkAndUpdateMilestones()
+                                // 4. Save back to Firestore
+                                saveMilestoneState()
+                                isRefreshing = false
+                            }
                         }
                     }) {
                         Image(systemName: "arrow.clockwise")
@@ -196,7 +205,30 @@ struct FitnessView: View {
         .navigationTitle("")
         .navigationBarHidden(true) // Hide the navigation bar title to save space
         .onAppear {
-            print("\n")
+            // 1. Load Firestore state, then
+            loadMilestoneState {
+                // 2. Refresh HealthKit + weekly data
+                goalManager.refreshWeeklyData {
+                    // 3. Check & update local milestone arrays
+                    checkAndUpdateMilestones()
+                    // 4. Persist updates to Firestore
+                    saveMilestoneState()
+                    // 5. Trigger ring animation
+                    refreshAndAnimateIfNeeded(force: true)
+                }
+            }
+            showPermissionScreen = goalManager.isHealthPermissionMissing
+            isActive = true
+            // Start timer: repeat the same sequence every minute
+            refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                guard isActive else { return }
+                loadMilestoneState {
+                    goalManager.refreshWeeklyData {
+                        checkAndUpdateMilestones()
+                        saveMilestoneState()
+                    }
+                }
+            }
             if !hasAnimated {
                 hasAnimated = true
                 profileViewModel.fetchNickname { _ in }
@@ -204,29 +236,6 @@ struct FitnessView: View {
                     showGreeting = true
                 }
             }
-            goalManager.refreshWeeklyData {
-                refreshAndAnimateIfNeeded(force: true)
-                checkAndUpdateMilestones()
-                loadMilestoneState()
-            }
-            showPermissionScreen = goalManager.isHealthPermissionMissing
-            isActive = true
-            print("🔄 FitnessView appeared: refreshing ring data immediately.")
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                // refreshAndAnimateIfNeeded(force: true) is now handled in refreshWeeklyData closure above
-            }
-            refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-                if isActive {
-                    print("⏰ FitnessView timer: refreshing ring data.")
-                    goalManager.refreshWeeklyData {
-                        refreshAndAnimateIfNeeded()
-                        checkAndUpdateMilestones()
-                    }
-                } else {
-                    print("🛑 FitnessView timer skipped – view not visible.")
-                }
-            }
-            // checkAndUpdateMilestones() and loadMilestoneState() are now handled above after refresh
         }
         .onDisappear {
             print("👋 Left FitnessView – stopping timer.")
@@ -258,7 +267,7 @@ struct FitnessView: View {
         }
     }
     // MARK: - Milestone Helper Functions
-    private func loadMilestoneState() {
+    private func loadMilestoneState(completion: (() -> Void)? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
         db.collection("users").document(uid).getDocument { snapshot, error in
@@ -275,9 +284,12 @@ struct FitnessView: View {
                 self.appState.calorieMilestones = self.calorieGoalArray
                 self.appState.flightsMilestones = self.flightsGoalArray
                 print("✅ stepMilestones synced: \(self.appState.stepMilestones)")
+                print("✅ calorieMilestones synced: \(self.appState.calorieMilestones)")
+                print("✅ calorieMilestones synced: \(self.appState.flightsMilestones)")
             } else {
                 print("❌ Failed to load milestone arrays.")
             }
+            completion?()
         }
     }
 
@@ -289,7 +301,6 @@ struct FitnessView: View {
             calorieGoalArray = [0, 0, 0, 0]
             flightsGoalArray = [0, 0, 0, 0]
             milestoneLastUpdated = today
-            saveMilestoneState()
         }
 
         updateArrayIfNeeded(progress: goalManager.stepsToday / Double(appState.stepGoal), array: &stepGoalArray)
@@ -299,8 +310,6 @@ struct FitnessView: View {
         appState.stepMilestones = stepGoalArray
         appState.calorieMilestones = calorieGoalArray
         appState.flightsMilestones = flightsGoalArray
-
-        saveMilestoneState()
     }
 
     private func updateArrayIfNeeded(progress: Double, array: inout [Int]) {
@@ -377,7 +386,7 @@ struct GoalMilestoneBar: View {
     let gradient: LinearGradient
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 0.1) {
             Text(title)
                 .foregroundColor(.white)
 
@@ -389,11 +398,12 @@ struct GoalMilestoneBar: View {
                 RoundedRectangle(cornerRadius: 7)
                     .fill(gradient)
                     .frame(width: CGFloat(progress) * UIScreen.main.bounds.width * 0.85, height: 10)
+                    .animation(.easeInOut(duration: 0.8), value: progress)
 
                 // Dot markers
                 GeometryReader { geometry in
                     let barWidth = geometry.size.width
-                    let dotSize: CGFloat = 11
+                    let dotSize: CGFloat = 10
                     let offsets: [CGFloat] = [0.25, 0.5, 0.75, 1.0].map { $0 * barWidth - dotSize / 2 }
 
                     ForEach(0..<4, id: \.self) { i in
@@ -402,13 +412,16 @@ struct GoalMilestoneBar: View {
                             .foregroundColor(
                                 milestones[i] == 0 ? Color.gray.opacity(0.3) :
                                 milestones[i] == 1 ? Color.white :
-                                Color.gray
+                                Color.black
                             )
-                            .offset(x: offsets[i], y: 7) // Adjust Y-offset if needed
+                            // Animate color and scale changes smoothly
+                            .animation(.easeInOut(duration: 0.3), value: milestones[i])
+                            .offset(x: offsets[i], y: 7.5) // Adjust Y-offset if needed
                     }
                 }
             }
             .frame(height: 25) // Ensure there's space for both bar and dots
+            .animation(.easeInOut(duration: 0.8), value: milestones)
         }
     }
 }

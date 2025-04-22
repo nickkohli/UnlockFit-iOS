@@ -10,6 +10,7 @@ struct ScreenTimeView: View {
     @State private var scrollID: String? = nil
     @State private var scrollAnchor: UnitPoint = .bottom
     @State private var isActive: Bool = true
+    @State private var showOverlay: Bool = true
 
     // MARK: - Weekly Bar Chart
 
@@ -226,12 +227,12 @@ struct ScreenTimeView: View {
                             .animation(.easeInOut(duration: 0.4), value: dataArray.contains(where: { $0 > 0 }))
                             .cornerRadius(10)
                             
-                            if true {
+                            ZStack {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text("Custom Screen Time Session")
                                         .font(.headline)
                                         .foregroundColor(.white)
-                                    
+
                                     VStack(alignment: .leading) {
                                         Text("Duration: \(Int(screenTimeManager.sessionDuration / 60)) min")
                                             .foregroundColor(.gray)
@@ -246,17 +247,17 @@ struct ScreenTimeView: View {
                                             }
                                         }
                                     }
-                                    
+
                                     if screenTimeManager.isSessionActive {
                                         VStack(alignment: .leading, spacing: 10) {
                                             Text(screenTimeManager.timeRemaining > 0 ?
-                                                 "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
+                                                    "\(screenTimeManager.isPaused ? "⏸️" : "⏳") Time Remaining: \(Int(screenTimeManager.timeRemaining / 60)) min \(Int(screenTimeManager.timeRemaining.truncatingRemainder(dividingBy: 60))) sec" :
                                                     "🛑 Time's up! But we’re still counting ⏱️ Tap 'Stop Session' to log your screen time.")
-                                            .foregroundColor(.white)
-                                            .font(.subheadline)
-                                            .padding(.bottom, 5)
-                                            .transition(.opacity.combined(with: .move(edge: .top)))
-                                            
+                                                .foregroundColor(.white)
+                                                .font(.subheadline)
+                                                .padding(.bottom, 5)
+                                                .transition(.opacity.combined(with: .move(edge: .top)))
+
                                             if screenTimeManager.timeRemaining > 0 {
                                                 Button(action: {
                                                     let generator = UIImpactFeedbackGenerator(style: .light)
@@ -280,7 +281,7 @@ struct ScreenTimeView: View {
                                         .animation(.easeInOut(duration: 0.4), value: screenTimeManager.timeRemaining)
                                         .transition(.opacity.combined(with: .move(edge: .top)))
                                     }
-                                    
+
                                     VStack {
                                         if screenTimeManager.isPaused {
                                             Color.clear
@@ -325,6 +326,25 @@ struct ScreenTimeView: View {
                                 .cornerRadius(10)
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                                 .animation(.easeInOut(duration: 0.4), value: (screenTimeManager.isSessionActive || screenTimeManager.isPaused))
+
+                                if showOverlay {
+                                    // Semi-transparent overlay
+                                    Color.black.opacity(0.6)
+                                        .cornerRadius(10)
+                                        .transition(.opacity)
+
+                                    // Lock icon and message
+                                    VStack(spacing: 8) {
+                                        Image(systemName: "lock.fill")
+                                            .font(.largeTitle)
+                                            .foregroundColor(.white)
+                                            .transition(.scale)
+                                        Text("Screen time locked till you hit your next fitness goal")
+                                            .font(.caption)
+                                            .foregroundColor(.white)
+                                            .multilineTextAlignment(.center)
+                                    }
+                                }
                             }
                             
                             Spacer().frame(height: 0).id("ScrollBottom")

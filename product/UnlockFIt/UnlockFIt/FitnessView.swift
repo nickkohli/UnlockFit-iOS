@@ -65,8 +65,9 @@ struct FitnessView: View {
                 .foregroundColor(.gray)
                 .padding(.bottom)
         }
+        .padding(.top, 10)
         .opacity(showGreeting ? 1 : 0)
-        .offset(x: showGreeting ? 0 : -40)
+        .offset(x: showGreeting ? 5 : -40)
         .animation(.easeOut(duration: 1.0), value: showGreeting)
     }
 
@@ -115,7 +116,7 @@ struct FitnessView: View {
                 progressRingsSection
                 
                 Spacer()
-                    .frame(height: 3)
+                    .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
                     Text("Goal Unlock Progress")

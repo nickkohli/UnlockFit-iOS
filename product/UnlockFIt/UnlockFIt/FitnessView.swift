@@ -109,122 +109,127 @@ struct FitnessView: View {
     }
 
     var body: some View {
-        ZStack {
-            // Dark Background
-            Color.black
-                .edgesIgnoringSafeArea(.all)
-            
-            VStack(alignment: .leading, spacing: 10) { // Adjusted spacing
-                // Greeting and Date Header
-                greetingSection
+        NavigationStack {
+            ZStack {
+                // Dark Background
+                Color.black
+                    .edgesIgnoringSafeArea(.all)
                 
-                // Progress Rings Section
-                progressRingsSection
-                
-                Spacer()
-                    .frame(height: 1)
-                
-                VStack(alignment: .leading, spacing: 5) {
-                    HStack {
-                        Text("Screen Time Unlock Progress 🔓")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                        Spacer()
-                        Button(action: { showInfoOverlay.toggle() }) {
-                            Image(systemName: "info.circle")
+                VStack(alignment: .leading, spacing: 10) { // Adjusted spacing
+                    // Greeting and Date Header
+                    greetingSection
+                    
+                    // Progress Rings Section
+                    progressRingsSection
+                    
+                    Spacer()
+                        .frame(height: 1)
+                    
+                    VStack(alignment: .leading, spacing: 5) {
+                        HStack {
+                            Text("Screen Time Unlock Progress 🔓")
                                 .font(.headline)
                                 .foregroundColor(.white)
-                        }
-                    }
-                    .padding(.bottom, 5)
-
-                    GoalMilestoneBar(
-                        title: "Steps",
-                        progress: min(goalManager.stepsToday / Double(appState.stepGoal), 1.0),
-                        milestones: appState.stepMilestones,
-                        gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringRed2, CustomColors.ringRed]), startPoint: .leading, endPoint: .trailing)
-                    )
-
-                    GoalMilestoneBar(
-                        title: "Calories",
-                        progress: min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0),
-                        milestones: appState.calorieMilestones,
-                        gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen2, CustomColors.ringGreen]), startPoint: .leading, endPoint: .trailing)
-                    )
-
-                    GoalMilestoneBar(
-                        title: "Flights Climbed",
-                        progress: min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0),
-                        milestones: appState.flightsMilestones,
-                        gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue2, CustomColors.ringBlue]), startPoint: .leading, endPoint: .trailing)
-                    )
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                
-                // Action Buttons
-                Button(action: {
-                    // Action for setting fitness goals
-                }) {
-                    Text("Set a Step Goal")
-                        .padding(/*@START_MENU_TOKEN@*/.all/*@END_MENU_TOKEN@*/)
-                        .frame(maxWidth: .infinity)
-                        .background(LinearGradient(gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]), startPoint: .leading, endPoint: .trailing))
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .padding(.all)
-                
-                Spacer() // Added a Spacer at the bottom to fill remaining space
-            }
-            .padding(.horizontal) // Added horizontal padding for better alignment
-            .padding(.top, 10) // Adjusted the padding at the top
-            
-            // Refresh Button floating bottom right
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                        isRefreshing = true
-                        // 1. Load Firestore
-                        loadMilestoneState {
-                            // 2. Refresh HealthKit data
-                            goalManager.refreshWeeklyData {
-                                // 3. Update milestones
-                                checkAndUpdateMilestones()
-                                // 4. Save back to Firestore
-                                saveMilestoneState()
-                                isRefreshing = false
+                            Spacer()
+                            Button(action: { showInfoOverlay.toggle() }) {
+                                Image(systemName: "info.circle")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
                             }
                         }
-                    }) {
-                        Image(systemName: "arrow.clockwise")
-                            .rotationEffect(.degrees(isRefreshing ? 360 : 0))
-                            .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
-                            .foregroundColor(.white)
-                            .padding(12)
-                            .background(Color.gray.opacity(0.3))
-                            .clipShape(Circle())
+                        .padding(.bottom, 5)
+                        
+                        GoalMilestoneBar(
+                            title: "Steps",
+                            progress: min(goalManager.stepsToday / Double(appState.stepGoal), 1.0),
+                            milestones: appState.stepMilestones,
+                            gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringRed2, CustomColors.ringRed]), startPoint: .leading, endPoint: .trailing)
+                        )
+                        
+                        GoalMilestoneBar(
+                            title: "Calories",
+                            progress: min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0),
+                            milestones: appState.calorieMilestones,
+                            gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen2, CustomColors.ringGreen]), startPoint: .leading, endPoint: .trailing)
+                        )
+                        
+                        GoalMilestoneBar(
+                            title: "Flights Climbed",
+                            progress: min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0),
+                            milestones: appState.flightsMilestones,
+                            gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue2, CustomColors.ringBlue]), startPoint: .leading, endPoint: .trailing)
+                        )
                     }
                     .padding()
-                }
-            }
-
-            // Info Overlay
-            if showInfoOverlay {
-                ZStack {
-                    Color.black.opacity(0.6)
-                        .edgesIgnoringSafeArea(.all)
-                    VStack(spacing: 20) {
-                        Text("How Session Unlocking Works ⚡")
-                            .font(.title3)
-                            .fontWeight(.bold)
+                    .background(Color.gray.opacity(0.2))
+                    .cornerRadius(10)
+                    
+                    // Action Buttons
+                    NavigationLink(destination: MoveGoalView()) {
+                        Text("Change your goals")
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
                             .foregroundColor(.white)
-                        Text("""
+                            .cornerRadius(10)
+                    }
+                    .padding(.all)
+                    
+                    Spacer() // Added a Spacer at the bottom to fill remaining space
+                }
+                .padding(.horizontal) // Added horizontal padding for better alignment
+                .padding(.top, 10) // Adjusted the padding at the top
+                
+                // Refresh Button floating bottom right
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                            isRefreshing = true
+                            // 1. Load Firestore
+                            loadMilestoneState {
+                                // 2. Refresh HealthKit data
+                                goalManager.refreshWeeklyData {
+                                    // 3. Update milestones
+                                    checkAndUpdateMilestones()
+                                    // 4. Save back to Firestore
+                                    saveMilestoneState()
+                                    isRefreshing = false
+                                }
+                            }
+                        }) {
+                            Image(systemName: "arrow.clockwise")
+                                .rotationEffect(.degrees(isRefreshing ? 360 : 0))
+                                .animation(isRefreshing ? .easeInOut(duration: 1.0) : .default, value: isRefreshing)
+                                .foregroundColor(.white)
+                                .padding(12)
+                                .background(Color.gray.opacity(0.3))
+                                .clipShape(Circle())
+                        }
+                        .padding()
+                    }
+                }
+                
+                // Info Overlay
+                if showInfoOverlay {
+                    ZStack {
+                        Color.black.opacity(0.6)
+                            .edgesIgnoringSafeArea(.all)
+                        VStack(spacing: 20) {
+                            Text("How Session Unlocking Works ⚡")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                            Text("""
 As you hit 25%, 50%, 75%, and 100% of your daily steps, calories, and flights goals, each milestone unlocks a screen time session (hit them all and get unlimited sessions!).
 
 And if multiple milestones unlock at once, they’ll all light up and get consumed together when you start a session - so cash them in wisely!
@@ -233,76 +238,77 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                        Button(action: { showInfoOverlay = false }) {
-                            Text("Got it")
-                                .font(.headline)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 20)
-                                .frame(maxWidth: .infinity)
-                                .background(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
-                                        startPoint: .leading,
-                                        endPoint: .trailing
+                            Button(action: { showInfoOverlay = false }) {
+                                Text("Got it")
+                                    .font(.headline)
+                                    .padding(.vertical, 10)
+                                    .padding(.horizontal, 20)
+                                    .frame(maxWidth: .infinity)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
                                     )
-                                )
-                                .foregroundColor(.white)
-                                .cornerRadius(10)
+                                    .foregroundColor(.white)
+                                    .cornerRadius(10)
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.black.opacity(0.8))
+                        .cornerRadius(12)
+                        .padding(.horizontal, 40)
+                        .transition(.opacity)
+                        .animation(.easeInOut(duration: 0.3), value: showInfoOverlay)
+                    }
+                }
+            }
+            .fullScreenCover(isPresented: $showPermissionScreen) {
+                HealthPermissionView(isVisible: $showPermissionScreen)
+            }
+            .navigationTitle("")
+            .navigationBarHidden(true) // Hide the navigation bar title to save space
+            .onAppear {
+                // 1. Load Firestore state, then
+                loadMilestoneState {
+                    // 2. Refresh HealthKit + weekly data
+                    goalManager.refreshWeeklyData {
+                        // 3. Check & update local milestone arrays
+                        checkAndUpdateMilestones()
+                        // 4. Persist updates to Firestore
+                        saveMilestoneState()
+                        // 5. Trigger ring animation
+                        refreshAndAnimateIfNeeded(force: true)
+                    }
+                }
+                showPermissionScreen = goalManager.isHealthPermissionMissing
+                isActive = true
+                // Start timer: repeat the same sequence every minute
+                refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
+                    guard isActive else { return }
+                    loadMilestoneState {
+                        goalManager.refreshWeeklyData {
+                            checkAndUpdateMilestones()
+                            saveMilestoneState()
                         }
                     }
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.black.opacity(0.8))
-                    .cornerRadius(12)
-                    .padding(.horizontal, 40)
-                    .transition(.opacity)
-                    .animation(.easeInOut(duration: 0.3), value: showInfoOverlay)
                 }
-            }
-        }
-        .fullScreenCover(isPresented: $showPermissionScreen) {
-            HealthPermissionView(isVisible: $showPermissionScreen)
-        }
-        .navigationTitle("")
-        .navigationBarHidden(true) // Hide the navigation bar title to save space
-        .onAppear {
-            // 1. Load Firestore state, then
-            loadMilestoneState {
-                // 2. Refresh HealthKit + weekly data
-                goalManager.refreshWeeklyData {
-                    // 3. Check & update local milestone arrays
-                    checkAndUpdateMilestones()
-                    // 4. Persist updates to Firestore
-                    saveMilestoneState()
-                    // 5. Trigger ring animation
-                    refreshAndAnimateIfNeeded(force: true)
-                }
-            }
-            showPermissionScreen = goalManager.isHealthPermissionMissing
-            isActive = true
-            // Start timer: repeat the same sequence every minute
-            refreshTimer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { _ in
-                guard isActive else { return }
-                loadMilestoneState {
-                    goalManager.refreshWeeklyData {
-                        checkAndUpdateMilestones()
-                        saveMilestoneState()
+                if !hasAnimated {
+                    hasAnimated = true
+                    profileViewModel.fetchNickname { _ in }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        showGreeting = true
                     }
                 }
             }
-            if !hasAnimated {
-                hasAnimated = true
-                profileViewModel.fetchNickname { _ in }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    showGreeting = true
-                }
+            .onDisappear {
+                print("👋 Left FitnessView – stopping timer.")
+                isActive = false
+                refreshTimer?.invalidate()
+                refreshTimer = nil
             }
-        }
-        .onDisappear {
-            print("👋 Left FitnessView – stopping timer.")
-            isActive = false
-            refreshTimer?.invalidate()
-            refreshTimer = nil
         }
     }
 

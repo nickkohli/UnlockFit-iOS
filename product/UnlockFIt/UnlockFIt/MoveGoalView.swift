@@ -44,18 +44,6 @@ struct MoveGoalView: View {
                     endPoint: .trailing
                 ))
 
-                if showSuccessMessage {
-                    Text("Goals updated successfully!")
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                }
-
-                Spacer()
-
                 Button(action: {
                     appState.stepGoal = stepGoal
                     appState.calorieGoal = calorieGoal
@@ -107,6 +95,19 @@ struct MoveGoalView: View {
                         .cornerRadius(10)
                 }
                 .disabled(isButtonDisabled)
+                
+                if showSuccessMessage {
+                    Text("Goals updated successfully!")
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+                
+                Spacer()
+                
             }
             .padding()
                 .onAppear {

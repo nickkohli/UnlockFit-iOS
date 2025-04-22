@@ -1,7 +1,6 @@
 import Foundation
 import HealthKit
 import Combine
-import FirebaseAuth
 
 class GoalManager: ObservableObject {
     @Published var stepsToday: Double = 0
@@ -13,12 +12,6 @@ class GoalManager: ObservableObject {
     @Published var weeklyFlightsClimbed: [Double] = Array(repeating: 0.0, count: 7)
 
     @Published var isHealthPermissionMissing: Bool = false
-
-    // New Published properties for milestone tracking
-    @Published var stepGoalArray: [Int] = [0, 0, 0, 0]
-    @Published var calorieGoalArray: [Int] = [0, 0, 0, 0]
-    @Published var flightsGoalArray: [Int] = [0, 0, 0, 0]
-    @Published var sessionUnlockedToday: Bool = false
 
     private var healthKitManager = APIModule.shared
 
@@ -41,7 +34,6 @@ class GoalManager: ObservableObject {
             DispatchQueue.main.async {
                 print("🔢 Steps Today: \(steps)")
                 self?.stepsToday = steps
-                self?.evaluateFitnessMilestones()
             }
         }
 
@@ -49,7 +41,6 @@ class GoalManager: ObservableObject {
             DispatchQueue.main.async {
                 print("🔥 Calories Burned Today: \(calories)")
                 self?.caloriesBurned = calories
-                self?.evaluateFitnessMilestones()
             }
         }
 
@@ -57,7 +48,6 @@ class GoalManager: ObservableObject {
             DispatchQueue.main.async {
                 print("🧗‍♂️ Flights Climbed Today: \(flights)")
                 self?.flightsClimbed = flights
-                self?.evaluateFitnessMilestones()
             }
         }
     }
@@ -132,88 +122,5 @@ class GoalManager: ObservableObject {
                 }
             }
         }
-    }
-    // MARK: - Fitness Milestone Evaluation
-    func evaluateFitnessMilestones() {
-        guard !sessionUnlockedToday else { return }
-
-        let milestones: [Double] = [0.25, 0.5, 0.75, 1.0]
-
-        // Retrieve user goals (these should come from user settings or Firestore ideally)
-        let stepGoal = 10000.0
-        let calorieGoal = 500.0
-        let flightsGoal = 10.0
-
-        let stepProgress = stepsToday / stepGoal
-        let calorieProgress = caloriesBurned / calorieGoal
-        let flightsProgress = flightsClimbed / flightsGoal
-
-        var updated = false
-
-        for (i, threshold) in milestones.enumerated() {
-            if stepGoalArray[i] == 0, stepProgress >= threshold, stepProgress < (i < 3 ? milestones[i + 1] : Double.infinity) {
-                stepGoalArray[i] = 1
-                updated = true
-                break
-            }
-            if calorieGoalArray[i] == 0, calorieProgress >= threshold, calorieProgress < (i < 3 ? milestones[i + 1] : Double.infinity) {
-                calorieGoalArray[i] = 1
-                updated = true
-                break
-            }
-            if flightsGoalArray[i] == 0, flightsProgress >= threshold, flightsProgress < (i < 3 ? milestones[i + 1] : Double.infinity) {
-                flightsGoalArray[i] = 1
-                updated = true
-                break
-            }
-        }
-
-        if updated {
-            print("🎯 Milestone reached! Unlocking one session.")
-            sessionUnlockedToday = true
-            if let uid = Auth.auth().currentUser?.uid {
-                FirestoreManager.shared.saveMilestoneState(
-                    uid: uid,
-                    stepArray: self.stepGoalArray,
-                    calorieArray: self.calorieGoalArray,
-                    flightsArray: self.flightsGoalArray,
-                    sessionUnlocked: self.sessionUnlockedToday
-                )
-            } else {
-                print("❌ Could not persist milestone state – no user UID found.")
-            }
-        }
-
-        if stepProgress >= 1.0, calorieProgress >= 1.0, flightsProgress >= 1.0 {
-            print("🏆 All goals completed — unlimited sessions unlocked.")
-            sessionUnlockedToday = true
-            if let uid = Auth.auth().currentUser?.uid {
-                FirestoreManager.shared.saveMilestoneState(
-                    uid: uid,
-                    stepArray: self.stepGoalArray,
-                    calorieArray: self.calorieGoalArray,
-                    flightsArray: self.flightsGoalArray,
-                    sessionUnlocked: self.sessionUnlockedToday
-                )
-            } else {
-                print("❌ Could not persist milestone state – no user UID found.")
-            }
-        }
-    }
-    
-    struct MilestoneHint {
-        let metric: String
-        let percentage: Double
-    }
-
-    var closestMilestone: MilestoneHint? {
-        let stepMilestone = stepGoalArray.firstIndex(of: 0).map { MilestoneHint(metric: "steps", percentage: [25, 50, 75, 100][$0]) }
-        let calorieMilestone = calorieGoalArray.firstIndex(of: 0).map { MilestoneHint(metric: "calories", percentage: [25, 50, 75, 100][$0]) }
-        let flightsMilestone = flightsGoalArray.firstIndex(of: 0).map { MilestoneHint(metric: "flights climbed", percentage: [25, 50, 75, 100][$0]) }
-
-        return [stepMilestone, calorieMilestone, flightsMilestone]
-            .compactMap { $0 }
-            .sorted(by: { $0.percentage < $1.percentage })
-            .first
     }
 }

@@ -65,64 +65,34 @@ struct FitnessView: View {
     }
 
     private var progressRingsSection: some View {
-        VStack (spacing: 15) {
-            HStack(spacing: 30) {
-                ProgressRingView(
-                    title: "Steps",
-                    progress: animateRings
-                        ? min(goalManager.stepsToday / Double(appState.stepGoal), 1.0)
-                        : 0,
-                    gradient: LinearGradient(
-                        gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
+        HStack(spacing: 30) {
+            ProgressRingView(
+                title: "Steps",
+                progress: animateRings
+                    ? min(goalManager.stepsToday / Double(appState.stepGoal), 1.0)
+                    : 0,
+                gradient: LinearGradient(
+                    gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
-                ProgressRingView(
-                    title: "Calories",
-                    progress: animateRings ? min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0) : 0,
-                    gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-                ProgressRingView(
-                    title: "Flights",
-                    progress: animateRings ? min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0) : 0,
-                    gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                )
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical)
-            .padding()
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(10)
-
-            // Milestone Progress Bars
-            VStack(alignment: .leading, spacing: 1) {
-                Text("Goal Unlock Progress")
-                    .font(.headline)
-                    .foregroundColor(.white)
-
-                MilestoneProgressView(title: "Steps", progress: goalManager.stepsToday / Double(appState.stepGoal), checkpointStates: goalManager.stepGoalArray, gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]), startPoint: .leading, endPoint: .trailing))
-
-                MilestoneProgressView(title: "Calories", progress: goalManager.caloriesBurned / Double(appState.calorieGoal), checkpointStates: goalManager.calorieGoalArray, gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .leading, endPoint: .trailing))
-
-                MilestoneProgressView(title: "Flights", progress: goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), checkpointStates: goalManager.flightsGoalArray, gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .leading, endPoint: .trailing))
-
-                if let nextMilestone = goalManager.closestMilestone {
-                    Text("Next likely session: \(Int(nextMilestone.percentage))% of \(nextMilestone.metric.capitalized)")
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                }
-
-                Text("Next session unlocks when a milestone is hit.")
-                    .font(.caption2)
-                    .foregroundColor(.gray)
-            }
-            .padding()
-            .background(Color.gray.opacity(0.2))
-            .cornerRadius(10)
-            .transition(.opacity.combined(with: .move(edge: .top)))
-            .animation(.easeInOut(duration: 0.6), value: goalManager.closestMilestone != nil)
+            )
+            ProgressRingView(
+                title: "Calories",
+                progress: animateRings ? min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0) : 0,
+                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
+            ProgressRingView(
+                title: "Flights",
+                progress: animateRings ? min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0) : 0,
+                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+            )
         }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical)
+        .padding()
+        .background(Color.gray.opacity(0.2))
+        .cornerRadius(10)
     }
 
     var body: some View {
@@ -279,47 +249,6 @@ struct ProgressRingView: View {
                 .foregroundColor(.white)
                 .padding(.top, 5)
         }
-    }
-}
-
-struct MilestoneProgressView: View {
-    let title: String
-    let progress: Double
-    let checkpointStates: [Int]
-    let gradient: LinearGradient
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(title)
-                .foregroundColor(.white)
-                .font(.caption)
-
-            GeometryReader { geometry in
-                ZStack(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 10)
-
-                    RoundedRectangle(cornerRadius: 5)
-                        .fill(gradient)
-                        .frame(width: CGFloat(min(progress, 1.0)) * geometry.size.width, height: 10)
-
-                    ForEach(0..<4) { i in
-                        let milestonePercentages: [CGFloat] = [0.25, 0.5, 0.75, 1.0]
-                        let xOffset = milestonePercentages[i] * geometry.size.width
-
-                        Circle()
-                            .fill(progress >= milestonePercentages[i] ? Color.white : Color.white.opacity(0.3))
-                            //.scaleEffect(checkpointStates[i] == 1 ? 1.2 : 1.0) // No longer needed
-                            .position(x: xOffset, y: 5)
-                            .animation(.easeInOut(duration: 0.5), value: progress)
-                    }
-                }
-                .frame(height: 10)
-            }
-            .frame(height: 20)
-        }
-        .padding(.vertical, 8)
     }
 }
 

@@ -1,9 +1,13 @@
+import Firebase
+import FirebaseFirestore
+import FirebaseAuth
 import SwiftUI
 
 struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
     @EnvironmentObject var historyManager: ScreenTimeHistoryManager
+    @EnvironmentObject var appState: AppState
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
     @State private var isRefreshing: Bool = false
@@ -294,6 +298,8 @@ struct ScreenTimeView: View {
                                                     generator.notificationOccurred(.success)
                                                     screenTimeManager.stopSession()
                                                     historyManager.saveScreenTimeHistory()
+                                                    // Mark any used milestones
+                                                    markMilestonesUsed()
                                                     scrollAnchor = .top
                                                     scrollID = "TopAnchor"
                                                 } else {
@@ -328,22 +334,21 @@ struct ScreenTimeView: View {
                                 .animation(.easeInOut(duration: 0.4), value: (screenTimeManager.isSessionActive || screenTimeManager.isPaused))
 
                                 if showOverlay {
-                                    // Semi-transparent overlay
-                                    Color.black.opacity(0.6)
-                                        .cornerRadius(10)
-                                        .transition(.opacity)
-
-                                    // Lock icon and message
-                                    VStack(spacing: 8) {
-                                        Image(systemName: "lock.fill")
-                                            .font(.largeTitle)
-                                            .foregroundColor(.white)
-                                            .transition(.scale)
-                                        Text("Screen time locked till you hit your next fitness goal")
-                                            .font(.caption)
-                                            .foregroundColor(.white)
-                                            .multilineTextAlignment(.center)
+                                    ZStack {
+                                        Color.black.opacity(0.6)
+                                            .cornerRadius(10)
+                                        VStack(spacing: 8) {
+                                            Image(systemName: "lock.fill")
+                                                .font(.largeTitle)
+                                                .foregroundColor(.white)
+                                            Text("Screen time locked till you hit your next fitness goal")
+                                                .font(.caption)
+                                                .foregroundColor(.white)
+                                                .multilineTextAlignment(.center)
+                                        }
                                     }
+                                    .transition(.opacity)
+                                    .animation(.easeInOut(duration: 0.3), value: showOverlay)
                                 }
                             }
                             
@@ -376,7 +381,11 @@ struct ScreenTimeView: View {
                     historyManager.refreshDailyTrackingArraysIfNeeded()
                     historyManager.saveToFirestore()
                 }
+            updateOverlayState()
         }
+        .onChange(of: appState.stepMilestones) { _, _ in updateOverlayState() }
+        .onChange(of: appState.calorieMilestones) { _, _ in updateOverlayState() }
+        .onChange(of: appState.flightsMilestones) { _, _ in updateOverlayState() }
         .onDisappear {
             print("👋 Left ScreenTimeView – stopping timer")
             isActive = false
@@ -399,6 +408,50 @@ struct ScreenTimeView: View {
             animatedProgress = 0.0 // Reset progress
             withAnimation(.easeInOut(duration: 4.0)) { // Slow down animation duration
                 animatedProgress = 0.6 // Target progress
+            }
+        }
+    }
+
+    private func updateOverlayState() {
+        let hasAvailableMilestone = appState.stepMilestones.contains(1)
+                               || appState.calorieMilestones.contains(1)
+                               || appState.flightsMilestones.contains(1)
+
+        let hasRemainingMilestones = appState.stepMilestones.contains(0)
+                                || appState.calorieMilestones.contains(0)
+                                || appState.flightsMilestones.contains(0)
+
+        let newState = !hasAvailableMilestone && hasRemainingMilestones
+        withAnimation(.easeInOut(duration: 0.4)) {
+            showOverlay = newState
+        }
+    }
+
+    private func markMilestonesUsed() {
+        // Convert any "1" entries to "2" for used milestones
+        let usedSteps = appState.stepMilestones.map { $0 == 1 ? 2 : $0 }
+        let usedCalories = appState.calorieMilestones.map { $0 == 1 ? 2 : $0 }
+        let usedFlights = appState.flightsMilestones.map { $0 == 1 ? 2 : $0 }
+
+        // Update AppState immediately
+        appState.stepMilestones = usedSteps
+        appState.calorieMilestones = usedCalories
+        appState.flightsMilestones = usedFlights
+
+        // Persist to Firestore
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let db = Firestore.firestore()
+        db.collection("users").document(uid).updateData([
+            "stepGoalArray": usedSteps,
+            "calorieGoalArray": usedCalories,
+            "flightsGoalArray": usedFlights
+        ]) { error in
+            if let error = error {
+                print("❌ Failed to mark milestones used: \(error.localizedDescription)")
+            } else {
+                print("✅ Milestones marked used and saved to Firestore.")
+                // Refresh overlay state
+                updateOverlayState()
             }
         }
     }
@@ -456,5 +509,6 @@ struct ScreenTimeView_Previews: PreviewProvider {
         ScreenTimeView()
             .environmentObject(ThemeManager()) // Inject ThemeManager for preview
             .environmentObject(GoalManager())
+            .environmentObject(AppState())
     }
 }

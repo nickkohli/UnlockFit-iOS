@@ -4,6 +4,7 @@ struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
     @EnvironmentObject var historyManager: ScreenTimeHistoryManager
+    @EnvironmentObject var goalManager: GoalManager
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
     @State private var isRefreshing: Bool = false
@@ -226,7 +227,7 @@ struct ScreenTimeView: View {
                             .animation(.easeInOut(duration: 0.4), value: dataArray.contains(where: { $0 > 0 }))
                             .cornerRadius(10)
                             
-                            if true {
+                            if goalManager.sessionUnlockedToday {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text("Custom Screen Time Session")
                                         .font(.headline)
@@ -325,6 +326,19 @@ struct ScreenTimeView: View {
                                 .cornerRadius(10)
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                                 .animation(.easeInOut(duration: 0.4), value: (screenTimeManager.isSessionActive || screenTimeManager.isPaused))
+                            }
+                            else {
+                                VStack {
+                                    Text("🔒 Screen time is locked until you hit a fitness milestone.")
+                                        .foregroundColor(.gray)
+                                        .font(.subheadline)
+                                        .multilineTextAlignment(.center)
+                                        .padding()
+                                }
+                                .frame(maxWidth: .infinity)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(10)
+                                .padding()
                             }
                             
                             Spacer().frame(height: 0).id("ScrollBottom")

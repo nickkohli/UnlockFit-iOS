@@ -20,7 +20,7 @@ class GoalManager: ObservableObject {
             if success {
                 print("✅ HealthKit authorization granted")
                 self?.verifyHealthPermissions()
-                self?.updateGoalsFromHealthKit()
+                self?.updateGoalsFromHealthKit(completion: {})
                 self?.fetchWeeklyData()
             } else {
                 print("❌ HealthKit authorization denied or failed")
@@ -29,26 +29,38 @@ class GoalManager: ObservableObject {
         }
     }
 
-    func updateGoalsFromHealthKit() {
+    func updateGoalsFromHealthKit(completion: @escaping () -> Void) {
+        let group = DispatchGroup()
+
+        group.enter()
         healthKitManager.getStepsToday { [weak self] steps in
             DispatchQueue.main.async {
                 print("🔢 Steps Today: \(steps)")
                 self?.stepsToday = steps
+                group.leave()
             }
         }
 
+        group.enter()
         healthKitManager.getCaloriesBurnedToday { [weak self] calories in
             DispatchQueue.main.async {
                 print("🔥 Calories Burned Today: \(calories)")
                 self?.caloriesBurned = calories
+                group.leave()
             }
         }
 
+        group.enter()
         healthKitManager.getFlightsClimbedToday { [weak self] flights in
             DispatchQueue.main.async {
                 print("🧗‍♂️ Flights Climbed Today: \(flights)")
                 self?.flightsClimbed = flights
+                group.leave()
             }
+        }
+
+        group.notify(queue: .main) {
+            completion()
         }
     }
 
@@ -96,11 +108,14 @@ class GoalManager: ObservableObject {
         }
     }
 
-    func refreshWeeklyData() {
+    func refreshWeeklyData(completion: (() -> Void)? = nil) {
         print("🔄 Refreshing weekly data manually or on timer...")
-        updateGoalsFromHealthKit()
-        fetchWeeklyData()
+        updateGoalsFromHealthKit {
+            self.fetchWeeklyData()
+            completion?()
+        }
     }
+    
     private func verifyHealthPermissions() {
         let healthStore = HKHealthStore()
 

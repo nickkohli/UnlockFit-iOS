@@ -22,6 +22,7 @@ struct FitnessView: View {
     @State private var calorieGoalArray: [Int] = [0, 0, 0, 0]
     @State private var flightsGoalArray: [Int] = [0, 0, 0, 0]
     @State private var milestoneLastUpdated: Date = Date()
+    @State private var showInfoOverlay: Bool = false
 
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -72,31 +73,36 @@ struct FitnessView: View {
     }
 
     private var progressRingsSection: some View {
-        HStack(spacing: 30) {
-            ProgressRingView(
-                title: "Steps",
-                progress: animateRings
+        VStack(alignment: .leading, spacing: 5) {
+            Text("Daily Progress 🏃🏽")
+                .font(.headline)
+                .foregroundColor(.white)
+            HStack(spacing: 30) {
+                ProgressRingView(
+                    title: "Steps",
+                    progress: animateRings
                     ? min(goalManager.stepsToday / Double(appState.stepGoal), 1.0)
                     : 0,
-                gradient: LinearGradient(
-                    gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
+                    gradient: LinearGradient(
+                        gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
                 )
-            )
-            ProgressRingView(
-                title: "Calories",
-                progress: animateRings ? min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0) : 0,
-                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
-            )
-            ProgressRingView(
-                title: "Flights",
-                progress: animateRings ? min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0) : 0,
-                gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
-            )
+                ProgressRingView(
+                    title: "Calories",
+                    progress: animateRings ? min(goalManager.caloriesBurned / Double(appState.calorieGoal), 1.0) : 0,
+                    gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                ProgressRingView(
+                    title: "Flights",
+                    progress: animateRings ? min(goalManager.flightsClimbed / Double(appState.flightsClimbedGoal), 1.0) : 0,
+                    gradient: LinearGradient(gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+            }
+            .padding(.vertical)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical)
         .padding()
         .background(Color.gray.opacity(0.2))
         .cornerRadius(10)
@@ -119,10 +125,18 @@ struct FitnessView: View {
                     .frame(height: 1)
                 
                 VStack(alignment: .leading, spacing: 5) {
-                    Text("Goal Unlock Progress")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(.bottom, 15)
+                    HStack {
+                        Text("Screen Time Unlock Progress 🔓")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Spacer()
+                        Button(action: { showInfoOverlay.toggle() }) {
+                            Image(systemName: "info.circle")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                        }
+                    }
+                    .padding(.bottom, 5)
 
                     GoalMilestoneBar(
                         title: "Steps",
@@ -197,6 +211,52 @@ struct FitnessView: View {
                             .clipShape(Circle())
                     }
                     .padding()
+                }
+            }
+
+            // Info Overlay
+            if showInfoOverlay {
+                ZStack {
+                    Color.black.opacity(0.6)
+                        .edgesIgnoringSafeArea(.all)
+                    VStack(spacing: 20) {
+                        Text("How Session Unlocking Works ⚡")
+                            .font(.title3)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text("""
+As you hit 25%, 50%, 75%, and 100% of your daily steps, calories, and flights goals, each milestone unlocks a screen time session (hit them all and get unlimited sessions!).
+
+And if multiple milestones unlock at once, they’ll all light up and get consumed together when you start a session - so cash them in wisely!
+""")
+                            .font(.body)
+                            .foregroundColor(.white)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        Button(action: { showInfoOverlay = false }) {
+                            Text("Got it")
+                                .font(.headline)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 20)
+                                .frame(maxWidth: .infinity)
+                                .background(
+                                    LinearGradient(
+                                        gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .foregroundColor(.white)
+                                .cornerRadius(10)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.black.opacity(0.8))
+                    .cornerRadius(12)
+                    .padding(.horizontal, 40)
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.3), value: showInfoOverlay)
                 }
             }
         }

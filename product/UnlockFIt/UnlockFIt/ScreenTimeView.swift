@@ -10,6 +10,7 @@ struct ScreenTimeView: View {
     @EnvironmentObject var appState: AppState
     @State private var animatedProgress: Double = 0.0 // State to manage progress animation
     @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+    @AppStorage("screenTimeBarDidAnimate") private var didAnimateInitialBar: Bool = false // persists across view navigations
     @State private var isRefreshing: Bool = false
     @State private var scrollID: String? = nil
     @State private var scrollAnchor: UnitPoint = .bottom
@@ -108,6 +109,7 @@ struct ScreenTimeView: View {
                                     historyManager.loadFromFirestore {
                                         historyManager.refreshDailyTrackingArraysIfNeeded()
                                         historyManager.saveToFirestore()
+                                        triggerAnimation()
                                     }
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                         isRefreshing = false
@@ -131,8 +133,18 @@ struct ScreenTimeView: View {
                                 Text("Time Saved Compared to Average")
                                     .font(.headline)
                                     .foregroundColor(.white)
-                                ProgressBarView(progress: progress, color: .green)
+                                ProgressBarView(progress: animatedProgress, color: .green)
                                     .frame(height: 20)
+                                    .onAppear {
+                                        // Only run initial zero-to-current animation once per session
+                                        if !didAnimateInitialBar {
+                                            animatedProgress = 0.0
+                                            withAnimation(.easeInOut(duration: 2.0)) {
+                                                animatedProgress = progress
+                                            }
+                                            didAnimateInitialBar = true
+                                        }
+                                    }
                                 Text("You’ve used screen time for \(totalHours)h \(totalMinutes)m \(totalSeconds)s across \(totalSessions) session(s) today — that’s just \(formattedPercentage)% of the average adult.")
                                     .font(.caption)
                                     .foregroundColor(.gray)
@@ -396,6 +408,7 @@ struct ScreenTimeView: View {
                 historyManager.loadFromFirestore {
                     historyManager.refreshDailyTrackingArraysIfNeeded()
                     historyManager.saveToFirestore()
+                    triggerAnimation()
                 }
             } else {
                 print("🛑 Timer skipped: ScreenTimeView not visible.")
@@ -405,9 +418,16 @@ struct ScreenTimeView: View {
 
     private func triggerAnimation() {
         DispatchQueue.main.async {
-            animatedProgress = 0.0 // Reset progress
-            withAnimation(.easeInOut(duration: 4.0)) { // Slow down animation duration
-                animatedProgress = 0.6 // Target progress
+            if !didAnimateInitialBar {
+                animatedProgress = 0.0
+                withAnimation(.easeInOut(duration: 2.0)) {
+                    animatedProgress = progress
+                }
+                didAnimateInitialBar = true
+            } else {
+                withAnimation(.easeInOut(duration: 2.0)) {
+                    animatedProgress = progress
+                }
             }
         }
     }

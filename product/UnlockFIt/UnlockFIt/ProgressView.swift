@@ -18,6 +18,51 @@ struct ProgressView: View {
     @State private var isActive: Bool = true
     @State private var selectedTrend: TrendType = .steps
     @State private var hasAppearedOnce = false
+    @State private var summaryRefreshTrigger: Int = 0
+
+    // Compute best fitness day index and metrics
+    private var bestDaySummary: (dayName: String, steps: Int, calories: Int, flights: Int) {
+        let steps = goalManager.weeklySteps
+        let calories = goalManager.weeklyCalories
+        let flights = goalManager.weeklyFlightsClimbed
+
+        // find maxima for normalization (avoid divide-by-zero)
+        let maxSteps = steps.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
+        let maxCalories = calories.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
+        let maxFlights = flights.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
+
+        // compute combined normalized score per day
+        let combinedScores: [Double] = zip(zip(steps, calories), flights).map { (sc, f) in
+            let (s, c) = sc
+            let sNorm = Double(s) / Double(maxSteps)
+            let cNorm = c / Double(maxCalories)
+            let fNorm = Double(f) / Double(maxFlights)
+            return (sNorm + cNorm + fNorm) / 3.0
+        }
+
+        // pick index of highest combined score (default to today)
+        let bestIndex = combinedScores.enumerated().max(by: { $0.element < $1.element })?.offset ?? (steps.count - 1)
+
+        // compute the date corresponding to that index
+        let offset = bestIndex - (steps.count - 1)
+        let date = Calendar.current.date(byAdding: .day, value: offset, to: Date())!
+
+        // format day name, showing "Today" if appropriate
+        let formatter = DateFormatter()
+        formatter.dateFormat = "EEEE"
+        let dayName: String
+        if Calendar.current.isDateInToday(date) {
+            dayName = "Today"
+        } else {
+            dayName = formatter.string(from: date)
+        }
+
+        // return the raw metrics for that best day
+        return (dayName: dayName,
+                steps: Int(steps[bestIndex]),
+                calories: Int(calories[bestIndex]),
+                flights: Int(flights[bestIndex]))
+    }
 
     var body: some View {
         ZStack {
@@ -35,6 +80,7 @@ struct ProgressView: View {
                             generator.impactOccurred()
                             isSpinning = true
                             goalManager.refreshWeeklyData()
+                            summaryRefreshTrigger += 1
                             lastRefreshDate = Date()
                             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                 isSpinning = false
@@ -97,6 +143,17 @@ struct ProgressView: View {
                     .padding()
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
+                    
+                    // Best day summary card
+                    let summary = bestDaySummary
+                    Text("🏆 Your best day so far is \(summary.dayName), when you hit \(summary.steps) steps, burned \(summary.calories) calories, and climbed \(summary.flights) flights! Keep going, you’re crushing it! 💪")
+                        .id(summaryRefreshTrigger)
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .background(Color.gray.opacity(0.2))
+                        .cornerRadius(10)
                 }
                 .padding()
                 .onAppear {
@@ -114,6 +171,7 @@ struct ProgressView: View {
                                 print("⏰ ProgressView timer: refreshing weekly data.")
                                 goalManager.refreshWeeklyData()
                                 lastRefreshDate = Date()
+                                summaryRefreshTrigger += 1
                             } else {
                                 print("🛑 ProgressView timer skipped – view not visible.")
                             }

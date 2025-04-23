@@ -275,7 +275,7 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
                 }
             }
             .fullScreenCover(isPresented: $showPermissionScreen) {
-                HealthPermissionView(isVisible: $showPermissionScreen)
+                HealthPermissionView(isVisible: $showPermissionScreen, showDismiss: .constant(true))
             }
             .navigationTitle("")
             .navigationBarHidden(true) // Hide the navigation bar title to save space

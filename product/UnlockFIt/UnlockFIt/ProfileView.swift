@@ -56,7 +56,10 @@ struct ProfileView: View {
                     // Settings Section
                     List {
                         Section(header: Text("Health Settings").foregroundColor(.gray)) {
-                            NavigationLink(destination: Text("Health Details")) {
+                            NavigationLink(destination: HealthPermissionView(isVisible: .constant(true), showDismiss: .constant(false))
+                                .environmentObject(themeManager)
+                                .environmentObject(appState)
+                            ) {
                                 Label("Health Details", systemImage: "heart.fill")
                                     .foregroundColor(.pink)
                             }
@@ -253,7 +256,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView(viewModel: ProfileViewModel())
-            .environmentObject(ThemeManager()) // Provide a basic ThemeManager
+            .environmentObject(ThemeManager())
             .environmentObject(GoalManager())
     }
 }

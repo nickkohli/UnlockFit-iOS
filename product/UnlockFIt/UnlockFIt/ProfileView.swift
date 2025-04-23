@@ -68,11 +68,6 @@ struct ProfileView: View {
                                 Label("Change Move Goal", systemImage: "figure.walk")
                                     .foregroundColor(.green)
                             }
-
-                            NavigationLink(destination: Text("Units of Measure")) {
-                                Label("Units of Measure", systemImage: "ruler.fill")
-                                    .foregroundColor(.blue)
-                            }
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 

@@ -40,7 +40,7 @@ struct NotificationSetupView: View {
                                         .foregroundColor(.white)
                                     Spacer()
                                     if notificationsEnabled {
-                                        Text("✔")
+                                        Text("✅")
                                             .foregroundColor(.green)
                                     }
                                 }
@@ -52,7 +52,6 @@ struct NotificationSetupView: View {
                                     .scaledToFit()
                                     .frame(height: 67)
                                     .cornerRadius(10)
-                                    .opacity(deliverySet ? 0.3 : (notificationsEnabled ? 1.0 : 0.3))
 
                                 Button(action: {
                                     UNUserNotificationCenter.current().getNotificationSettings { settings in
@@ -84,7 +83,7 @@ struct NotificationSetupView: View {
                                         .foregroundColor(.white)
                                     Spacer()
                                     if deliverySet {
-                                        Text("✔")
+                                        Text("✅")
                                             .foregroundColor(.green)
                                     }
                                 }
@@ -96,12 +95,14 @@ struct NotificationSetupView: View {
                                     .scaledToFit()
                                     .frame(height: 150)
                                     .cornerRadius(10)
-                                    .opacity(deliverySet ? 0.3 : (notificationsEnabled ? 1.0 : 0.3))
 
                                 Button(action: {
                                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(settingsURL)
-                                        deliverySet = true // Simulated
+                                        // Delay marking step complete
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            deliverySet = true
+                                        }
                                     }
                                 }) {
                                     Text(deliverySet ? "Step Complete!" : "Set to Immediate")
@@ -122,7 +123,7 @@ struct NotificationSetupView: View {
                                         .foregroundColor(.white)
                                     Spacer()
                                     if bannerSet {
-                                        Text("✔")
+                                        Text("✅")
                                             .foregroundColor(.green)
                                     }
                                 }
@@ -134,12 +135,14 @@ struct NotificationSetupView: View {
                                     .scaledToFit()
                                     .frame(height: 150)
                                     .cornerRadius(10)
-                                    .opacity(bannerSet ? 0.3 : (notificationsEnabled ? 1.0 : 0.3))
 
                                 Button(action: {
                                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(settingsURL)
-                                        bannerSet = true // Simulated
+                                        // Delay marking step complete
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                            bannerSet = true
+                                        }
                                     }
                                 }) {
                                     Text(bannerSet ? "Step Complete!" : "Set to Persistent")

@@ -130,6 +130,7 @@ struct ProfileView: View {
                     VStack(spacing: 20) {
                         Text("Are you sure you want to log out?")
                             .font(.headline)
+                            .foregroundColor(.white)
                             .multilineTextAlignment(.center)
 
                         HStack(spacing: 16) {
@@ -140,7 +141,14 @@ struct ProfileView: View {
                             }
                             .padding(.vertical, 10)
                             .frame(maxWidth: .infinity)
-                            .background(Color(.systemGray5))
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [themeManager.accentColor, themeManager.accentColor2]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .foregroundColor(.white)
                             .cornerRadius(8)
 
                             Button(action: {

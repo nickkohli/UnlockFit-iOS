@@ -116,6 +116,8 @@ struct ProfileView: View {
 
                     // Logout Button
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .rigid)
+                        generator.impactOccurred()
                         withAnimation {
                             showLogoutConfirmation = true
                         }
@@ -148,6 +150,8 @@ struct ProfileView: View {
 
                         HStack(spacing: 16) {
                             Button("Cancel") {
+                                let generator = UIImpactFeedbackGenerator(style: .light)
+                                generator.impactOccurred()
                                 withAnimation {
                                     showLogoutConfirmation = false
                                 }
@@ -165,6 +169,8 @@ struct ProfileView: View {
                             .cornerRadius(8)
 
                             Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
                                 withAnimation {
                                     showLogoutConfirmation = false
                                 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import ConfettiSwiftUI
+import UIKit
 
 struct WelcomeView: View {
     @State private var confettiCounter = 0
@@ -29,6 +30,8 @@ struct WelcomeView: View {
                         .padding(.bottom, 5)
 
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
                         showOnboarding = false
                       }) {
                         Text("Continue to Login")

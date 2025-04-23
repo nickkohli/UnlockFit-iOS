@@ -1,35 +1,45 @@
+import UIKit
 import SwiftUI
 
 struct MainTabView: View {
     let profileViewModel: ProfileViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
+    @State private var selectedTab: Int = 0
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             FitnessView()
                 .tabItem {
                     Image(systemName: "figure.walk")
                     Text("Fitness")
                 }
+                .tag(0)
 
             ScreenTimeView()
                 .tabItem {
                     Image(systemName: "clock")
                     Text("Screen Time")
                 }
+                .tag(1)
 
             ProgressView()
                 .tabItem {
                     Image(systemName: "chart.bar")
                     Text("Progress")
                 }
+                .tag(2)
 
             ProfileView(viewModel: profileViewModel)
                 .tabItem {
                     Image(systemName: "person.crop.circle")
                     Text("Profile")
                 }
+                .tag(3)
+        }
+        .onChange(of: selectedTab) {
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
         }
         .accentColor(
             Color(

@@ -31,6 +31,10 @@ struct UnlockFitApp: App {
                     .environmentObject(screenTimeHistory)
             }
             .onAppear {
+                // Warm up haptic engine with a subtle selection feedback
+                let selectionGenerator = UISelectionFeedbackGenerator()
+                selectionGenerator.selectionChanged()
+
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
                     if let error = error {
                         print("❌ Notification permission error: \(error.localizedDescription)")

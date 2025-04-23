@@ -2,6 +2,7 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
+import UIKit
 
 struct LoginView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -81,6 +82,8 @@ struct LoginView: View {
 
                     // Log In Button
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         isLoggingIn = true
                         loginError = nil
@@ -180,6 +183,8 @@ struct LoginView: View {
 
                     // Register Button
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         showOnboarding = true
                     }) {

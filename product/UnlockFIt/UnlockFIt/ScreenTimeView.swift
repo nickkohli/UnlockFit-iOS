@@ -2,6 +2,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseAuth
 import SwiftUI
+import UIKit
 
 struct ScreenTimeView: View {
     @EnvironmentObject var themeManager: ThemeManager
@@ -163,6 +164,8 @@ struct ScreenTimeView: View {
                                                 .foregroundColor(.white)
                                             Spacer()
                                             Button(action: {
+                                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                                generator.impactOccurred()
                                                 chartType = chartType == .seconds ? .sessions : .seconds
                                             }) {
                                                 Image(systemName: "arrow.left.arrow.right")
@@ -187,6 +190,8 @@ struct ScreenTimeView: View {
                                                         )
                                                         .frame(height: barHeight)
                                                         .onTapGesture {
+                                                            let generator = UIImpactFeedbackGenerator(style: .light)
+                                                            generator.impactOccurred()
                                                             withAnimation(.easeInOut(duration: 0.3)) {
                                                                 selectedIndex = selectedIndex == i ? nil : i
                                                                 scrollAnchor = .bottom

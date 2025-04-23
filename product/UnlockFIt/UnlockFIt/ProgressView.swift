@@ -1,3 +1,4 @@
+import UIKit
 import SwiftUI
 
 // Metric selection for trend graph
@@ -130,6 +131,10 @@ struct ProgressView: View {
                         .padding(.bottom, 8)
                         .environment(\.colorScheme, .dark)
                         .tint(.white)
+                        .onChange(of: selectedTrend) {
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                        }
 
                         Spacer()
                             .frame(height: 20)

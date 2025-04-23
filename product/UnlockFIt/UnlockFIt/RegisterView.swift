@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import FirebaseAuth
 import FirebaseFirestore
 
@@ -65,6 +66,8 @@ struct RegisterView: View {
                     }
 
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
                         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
                         showError = false
                         errorMessage = ""
@@ -132,6 +135,8 @@ struct RegisterView: View {
                     }
                     
                     Button(action: {
+                        let generator = UIImpactFeedbackGenerator(style: .light)
+                        generator.impactOccurred()
                         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                            let window = windowScene.windows.first {
                             window.rootViewController?.dismiss(animated: true, completion: nil)

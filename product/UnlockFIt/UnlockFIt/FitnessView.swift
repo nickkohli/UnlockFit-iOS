@@ -1,3 +1,4 @@
+import UIKit
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
@@ -132,6 +133,8 @@ struct FitnessView: View {
                                 .foregroundColor(.white)
                             Spacer()
                             Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showInfoOverlay.toggle()
                                 }
@@ -183,6 +186,10 @@ struct FitnessView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
+                    .simultaneousGesture(TapGesture().onEnded {
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                    })
                     .padding(.all)
                     
                     Spacer() // Added a Spacer at the bottom to fill remaining space
@@ -244,6 +251,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                             Button(action: {
+                                let generator = UIImpactFeedbackGenerator(style: .medium)
+                                generator.impactOccurred()
                                 withAnimation(.easeInOut(duration: 0.3)) {
                                     showInfoOverlay = false
                                 }

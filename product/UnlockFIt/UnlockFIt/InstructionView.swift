@@ -54,7 +54,9 @@ struct InstructionView: View {
                             Text("⏲️ Sessions & Notifications")
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            Text("Sessions run in the background (Dynamic Island timer) and alert you when time’s up. You can pause/resume or stop to log the session. Sessions range from 1 minute to 1 hour. After your session ends, used dots turn black - you must earn new white dots for more sessions.")
+                            Text("""
+Sessions run in the background (Dynamic Island timer) and alert you when time’s up. The Dynamic Island ring flashes red when the session ends. You need to stop the session manually to log it, reinforcing your focus. The default recommended session is 10 minutes, but you can choose any duration from 1 minute to 1 hour. After your session ends, used dots turn black—you must earn new white dots for more sessions.
+""")
                                 .foregroundColor(.gray)
                         }
 
@@ -82,6 +84,17 @@ struct InstructionView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                             Text("Customize your profile picture and nickname, review Health Access Details, change your move goal, manage notifications, pick themes, and read privacy info. Don’t forget you can log out here too!")
+                                .foregroundColor(.gray)
+                        }
+                        
+                        // Connectivity recommendation section
+                        Group {
+                            Text("🌐 Connectivity Recommended")
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Text("""
+For best results, use an internet connection (Wi‑Fi or cellular) so your goals, themes, and session history sync to the cloud. Working offline may risk losing logging data until you reconnect.
+""")
                                 .foregroundColor(.gray)
                         }
 

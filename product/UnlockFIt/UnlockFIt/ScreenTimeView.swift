@@ -267,14 +267,27 @@ struct ScreenTimeView: View {
                                     VStack(alignment: .leading) {
                                         Text("Duration: \(Int(screenTimeManager.sessionDuration / 60)) min")
                                             .foregroundColor(.gray)
-                                        Slider(value: Binding(
-                                            get: { screenTimeManager.sessionDuration / 60 },
-                                            set: { screenTimeManager.sessionDuration = $0 * 60 }
-                                        ), in: 0.05...60, step: 5)
+                                        Slider(
+                                            value: Binding(
+                                                get: { screenTimeManager.sessionDuration / 60 },
+                                                set: { newMinutes in
+                                                    // If below 5 minutes, snap to 1 minute; otherwise snap to nearest 5-minute increment
+                                                    let minutes: Int
+                                                    if newMinutes < 5 {
+                                                        minutes = 1
+                                                    } else {
+                                                        minutes = (Int(newMinutes) / 5) * 5
+                                                    }
+                                                    screenTimeManager.sessionDuration = TimeInterval(minutes * 60)
+                                                }
+                                            ),
+                                            in: 1...60,
+                                            step: 1
+                                        )
                                         .accentColor(themeManager.accentColor)
                                         .onAppear {
-                                            if screenTimeManager.sessionDuration < 300 {
-                                                screenTimeManager.sessionDuration = 300
+                                            if screenTimeManager.sessionDuration < 600 {
+                                                screenTimeManager.sessionDuration = 600
                                             }
                                         }
                                     }
@@ -330,7 +343,7 @@ struct ScreenTimeView: View {
                                                     scrollID = "TopAnchor"
                                                 } else {
                                                     generator.notificationOccurred(.success)
-                                                    if screenTimeManager.sessionDuration >= 3 {
+                                                if screenTimeManager.sessionDuration >= 60 {
                                                         screenTimeManager.startSession(duration: screenTimeManager.sessionDuration)
                                                         scrollAnchor = .bottom
                                                         scrollID = "ScrollBottom"

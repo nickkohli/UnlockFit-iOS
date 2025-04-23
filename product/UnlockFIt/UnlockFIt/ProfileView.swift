@@ -9,11 +9,12 @@ struct ProfileView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @State private var isImagePickerPresented = false
+    @State private var showLogoutConfirmation = false
 
     var body: some View {
         NavigationView {
             ZStack {
-                Color.black.edgesIgnoringSafeArea(.all) // Black background
+                Color(.systemBackground).edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) { // Removed extra spacing
                     // Profile Section
@@ -99,7 +100,9 @@ struct ProfileView: View {
 
                     // Logout Button
                     Button(action: {
-                        appState.isLoggedIn = false // Log out and return to LoginView
+                        withAnimation {
+                            showLogoutConfirmation = true
+                        }
                     }) {
                         Text("Log Out")
                             .frame(maxWidth: .infinity)
@@ -114,6 +117,56 @@ struct ProfileView: View {
                             .padding(.horizontal)
                             .padding(.bottom, 10) // Add padding at the bottom
                     }
+                }
+                
+                if showLogoutConfirmation {
+                    Color.black.opacity(0.6)
+                        .ignoresSafeArea()
+                        .transition(.opacity)
+
+                    VStack(spacing: 20) {
+                        Text("Are you sure you want to log out?")
+                            .font(.headline)
+                            .multilineTextAlignment(.center)
+
+                        HStack(spacing: 16) {
+                            Button("Cancel") {
+                                withAnimation {
+                                    showLogoutConfirmation = false
+                                }
+                            }
+                            .padding(.vertical, 10)
+                            .frame(maxWidth: .infinity)
+                            .background(Color(.systemGray5))
+                            .cornerRadius(8)
+
+                            Button(action: {
+                                withAnimation {
+                                    showLogoutConfirmation = false
+                                }
+                                appState.isLoggedIn = false
+                            }) {
+                                Text("Log Out")
+                                    .fontWeight(.semibold)
+                                    .padding(.vertical, 10)
+                                    .frame(maxWidth: .infinity)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [.red, .pink]),
+                                            startPoint: .leading,
+                                            endPoint: .trailing
+                                        )
+                                    )
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                            }
+                        }
+                    }
+                    .transition(.opacity)
+                    .padding(30)
+                    .background(Color.black.opacity(0.8))
+                    .cornerRadius(12)
+                    .padding(.horizontal, 40)
                 }
             }
             .onAppear {

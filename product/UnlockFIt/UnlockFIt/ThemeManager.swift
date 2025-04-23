@@ -1,7 +1,7 @@
-// ThemeManager.swift: Manages the user’s selected color theme, persists it, and applies it across the app UI.
+// ThemeManager.swift: Manages the user’s selected colour theme, persists it, and applies it across the app UI.
 import SwiftUI
 
-// ThemeManager publishes theme changes and provides accent colors based on the selected theme.
+// ThemeManager publishes theme changes and provides accent colours based on the selected theme.
 class ThemeManager: ObservableObject {
     // The currently selected theme name; saving and applying whenever it changes.
     @Published var selectedTheme: String = "Default" {
@@ -11,7 +11,7 @@ class ThemeManager: ObservableObject {
         }
     }
 
-    // Primary accent color for UI elements based on the selected theme.
+    // Primary accent colour for UI elements based on the selected theme.
     var accentColor: Color {
         switch selectedTheme {
         case "Neon":
@@ -31,7 +31,7 @@ class ThemeManager: ObservableObject {
         }
     }
 
-    // Secondary accent color for gradients based on the selected theme.
+    // Secondary accent colour for gradients based on the selected theme.
     var accentColor2: Color {
         switch selectedTheme {
         case "Neon":
@@ -51,7 +51,7 @@ class ThemeManager: ObservableObject {
         }
     }
 
-    // On initialization, load saved theme and apply it immediately.
+    // On initialisation, load saved theme and apply it immediately.
     init() {
         loadTheme()
         applyTheme()

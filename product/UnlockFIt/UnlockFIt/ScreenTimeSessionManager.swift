@@ -5,7 +5,7 @@ import Combine
 
 // ScreenTimeSessionManager manages the lifecycle of a screen-time session: timing, notifications, history, and Live Activity updates.
 class ScreenTimeSessionManager: ObservableObject {
-    // Published state for session activity, pause status, timing values, flashing alert, and history synchronization.
+    // Published state for session activity, pause status, timing values, flashing alert, and history synchronisation.
     @Published var isSessionActive: Bool = false
     @Published var isPaused: Bool = false
     @Published var sessionDuration: TimeInterval = 0
@@ -42,7 +42,7 @@ class ScreenTimeSessionManager: ObservableObject {
         startLiveActivity()
     }
 
-    // Stop the session: finalize timing, log to history, end Live Activity, and clear pending notifications.
+    // Stop the session: finalise timing, log to history, end Live Activity, and clear pending notifications.
     func stopSession() {
         timer?.invalidate()
         timer = nil

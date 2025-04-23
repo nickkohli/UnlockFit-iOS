@@ -8,7 +8,7 @@ class FirestoreManager {
     // Reference to the Firestore database.
     private let db = Firestore.firestore()
     
-    // Private initializer to enforce singleton pattern.
+    // Private initialiser to enforce singleton pattern.
     private init() {}
 
     // Create a new user document with initial profile, goals, and history arrays.

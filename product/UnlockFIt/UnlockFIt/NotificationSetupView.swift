@@ -204,7 +204,7 @@ struct NotificationSetupView: View {
                 }
                 .padding()
             }
-            // Initial fetch of notification authorization status on view appear.
+            // Initial fetch of notification authorisation status on view appear.
             .onAppear {
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
                     DispatchQueue.main.async {

@@ -23,7 +23,7 @@ class GoalManager: ObservableObject {
 
     private var healthKitManager = APIModule.shared
 
-    // On init, request HealthKit authorization and load initial data or mark permissions missing.
+    // On init, request HealthKit authorisation and load initial data or mark permissions missing.
     init() {
         healthKitManager.requestAuthorization { [weak self] success in
             if success {

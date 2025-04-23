@@ -124,7 +124,7 @@ struct TimerText: View {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
-    // Display the formatted time with conditional coloring.
+    // Display the formatted time with conditional colouring.
     var body: some View {
         Text(isTimeUp ? "0:00" : formattedTime)
             .foregroundColor(isTimeUp ? .red : .white)

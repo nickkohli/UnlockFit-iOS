@@ -17,7 +17,7 @@ struct UnlockFitApp: App {
     @StateObject private var screenTimeManager = ScreenTimeSessionManager()
     @StateObject private var screenTimeHistory = ScreenTimeHistoryManager()
 
-    // App initializer: configure Firebase if needed and log the result.
+    // App initialiser: configure Firebase if needed and log the result.
     init() {
         if FirebaseApp.app() == nil {
             FirebaseApp.configure()
@@ -38,7 +38,7 @@ struct UnlockFitApp: App {
                     .environmentObject(screenTimeManager)
                     .environmentObject(screenTimeHistory)
             }
-            // On appear of the root view: warm up haptics, request notification authorization, and set up session history link.
+            // On appear of the root view: warm up haptics, request notification authorisation, and set up session history link.
             .onAppear {
                 // Warm up the haptic engine with a subtle selection feedback.
                 let selectionGenerator = UISelectionFeedbackGenerator()

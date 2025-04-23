@@ -1,4 +1,4 @@
-// ThemesView.swift: UI for selecting and persisting the app’s color theme options.
+// ThemesView.swift: UI for selecting and persisting the app’s colour theme options.
 import SwiftUI
 // Import FirebaseAuth to update the user’s theme choice in Firestore.
 import FirebaseAuth
@@ -42,7 +42,7 @@ struct ThemesView: View {
                         .foregroundColor(.white)
                         .font(.headline)
                 }
-                // Apply the current theme’s accent color to the toggle switch.
+                // Apply the current theme’s accent colour to the toggle switch.
                 .toggleStyle(SwitchToggleStyle(tint: themeManager.accentColor))
                 .padding(.vertical, 5)
             }

@@ -2,7 +2,7 @@ import Foundation
 import HealthKit
 
 // APIModule is a singleton responsible for interfacing with HealthKit.
-// It handles authorization and querying of health data (steps, calories, flights).
+// It handles authorisation and querying of health data (steps, calories, flights).
 class APIModule {
     static let shared = APIModule()
     let healthStore = HKHealthStore()
@@ -10,7 +10,7 @@ class APIModule {
     private init() {}
 
     // Request read-only access to step count, active energy, and flights climbed from HealthKit.
-    // Calls completion(true) if authorization succeeds.
+    // Calls completion(true) if authorisation succeeds.
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         let typesToRead: Set = [
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
@@ -26,7 +26,7 @@ class APIModule {
         }
     }
     
-    // Alternative authorization method: checks availability then requests HealthKit permissions.
+    // Alternative authorisation method: checks availability then requests HealthKit permissions.
     func requestHealthKitAuthorization(completion: @escaping (Bool, Error?) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else {
             completion(false, nil)

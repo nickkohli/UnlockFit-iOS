@@ -131,7 +131,7 @@ struct MoveGoalView: View {
         }
     }
 
-    // Helper function that builds a slider with a colored gradient bar and numeric label for a given goal.
+    // Helper function that builds a slider with a coloured gradient bar and numeric label for a given goal.
     func goalSlider(title: String, value: Binding<Int>, range: ClosedRange<Int>, gradient: LinearGradient) -> some View {
         VStack(alignment: .leading) {
             HStack {

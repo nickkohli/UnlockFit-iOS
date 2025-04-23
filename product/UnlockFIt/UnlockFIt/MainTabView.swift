@@ -9,7 +9,7 @@ struct MainTabView: View {
     // Environment objects for app-wide theme settings and authentication/app state.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
-    // Tracks the currently selected tab index for haptic feedback and accent coloring.
+    // Tracks the currently selected tab index for haptic feedback and accent colouring.
     @State private var selectedTab: Int = 0
 
     // The view body builds the TabView with four tabs and applies theming and haptics.
@@ -49,7 +49,7 @@ struct MainTabView: View {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
         }
-        // Compute and apply a blended accent color based on the current theme gradient.
+        // Compute and apply a blended accent colour based on the current theme gradient.
         .accentColor(
             Color(
                 red: (themeManager.accentColor.components.red + themeManager.accentColor2.components.red) / 2,
@@ -57,7 +57,7 @@ struct MainTabView: View {
                 blue: (themeManager.accentColor.components.blue + themeManager.accentColor2.components.blue) / 2
             )
         )
-        // Configure the tab bar appearance (blur, background color) and fetch profile data on launch.
+        // Configure the tab bar appearance (blur, background colour) and fetch profile data on launch.
         .onAppear {
             let appearance = UITabBarAppearance()
             appearance.configureWithDefaultBackground()
@@ -81,7 +81,7 @@ struct MainTabView_Previews: PreviewProvider {
     }
 }
 
-// Extension to extract RGB components from a SwiftUI Color for dynamic color blending.
+// Extension to extract RGB components from a SwiftUI Colour for dynamic colour blending.
 extension Color {
     var components: (red: Double, green: Double, blue: Double) {
         let uiColor = UIColor(self)

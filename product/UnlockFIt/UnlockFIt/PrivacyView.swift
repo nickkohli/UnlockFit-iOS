@@ -45,7 +45,7 @@ UnlockFit reads your **Steps**, **Active Energy (Calories)**, and **Flights Clim
                                 .font(.headline)
                                 .foregroundColor(.white)
                             Text("""
-UnlockFit stores your optional profile image, display name (nickname), and email address so you can personalize your experience. In addition, we track:
+UnlockFit stores your optional profile image, display name (nickname), and email address so you can personalise your experience. In addition, we track:
 - **nickname**: your chosen display name  
 - **profileImageURL**: link to your optional photo in Firebase Storage  
 - **milestone data**: thresholds you set (e.g. step, calorie, flight milestones) and the last time they were updated (“milestoneLastUpdated”)  
@@ -106,7 +106,7 @@ We use **Firebase Firestore**, a cloud-hosted NoSQL database, to securely store 
 - **Document-based**: each user has a document under `users/{uid}` containing their profile and session data  
 - **Encrypted in transit and at rest** by Google’s security infrastructure  
 - **Fine-grained security rules** ensuring only you can read/write your own document  
-- **Real-time synchronization** so changes (e.g. new sessions, updated goals) propagate instantly across your devices  
+- **Real-time synchronisation** so changes (e.g. new sessions, updated goals) propagate instantly across your devices  
 """)
                                 .foregroundColor(.gray)
                         }

@@ -83,7 +83,7 @@ Sessions run in the background (Dynamic Island timer) and alert you when time’
                             Text("👤 Profile Tab")
                                 .font(.headline)
                                 .foregroundColor(.white)
-                            Text("Customize your profile picture and nickname, review Health Access Details, change your move goal, manage notifications, pick themes, and read privacy info. Don’t forget you can log out here too!")
+                            Text("Customise your profile picture and nickname, review Health Access Details, change your move goal, manage notifications, pick themes, and read privacy info. Don’t forget you can log out here too!")
                                 .foregroundColor(.gray)
                         }
                         

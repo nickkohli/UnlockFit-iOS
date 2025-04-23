@@ -32,12 +32,12 @@ struct ProgressView: View {
         let calories = goalManager.weeklyCalories
         let flights = goalManager.weeklyFlightsClimbed
 
-        // find maxima for normalization (avoid divide-by-zero)
+        // Find maxima for normalisation (avoid divide-by-zero)
         let maxSteps = steps.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
         let maxCalories = calories.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
         let maxFlights = flights.max().flatMap { $0 > 0 ? $0 : nil } ?? 1
 
-        // compute combined normalized score per day
+        // Compute combined normalised score per day
         let combinedScores: [Double] = zip(zip(steps, calories), flights).map { (sc, f) in
             let (s, c) = sc
             let sNorm = Double(s) / Double(maxSteps)
@@ -214,7 +214,7 @@ struct MultiLineGraph: View {
     let flightsClimbedData: [Double]
     @State private var graphProgress: CGFloat = 0.0
 
-    // Provide the selected data series and its color
+    // Provide the selected data series and its colour
     private var chartData: (data: [Double], color: Color) {
         switch trend {
         case .steps:

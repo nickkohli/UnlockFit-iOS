@@ -81,7 +81,7 @@ struct ScreenTimeView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 17)
                     .padding(.top, 10) // Add safe area space
-                    .padding(.bottom, 15)
+                    .padding(.bottom, 10)
                     .background(Color.black)
                 
                 ScrollViewReader { proxy in

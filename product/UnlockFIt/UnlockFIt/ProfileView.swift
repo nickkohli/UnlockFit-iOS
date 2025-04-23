@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import Foundation
 import FirebaseStorage
 import FirebaseFirestore
@@ -16,7 +17,17 @@ struct ProfileView: View {
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
 
-                VStack(spacing: 0) { // Removed extra spacing
+                VStack(spacing: 0) {
+                    Text("Profile Settings")
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal)
+                    
+                    Spacer()
+                        .frame(height: 15)
+                    
                     // Profile Section
                     HStack {
                         ZStack {
@@ -55,7 +66,7 @@ struct ProfileView: View {
 
                     // Settings Section
                     List {
-                        Section(header: Text("Health Settings").foregroundColor(.gray)) {
+                        Section(header: Text("Health Settings").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
                             NavigationLink(destination: HealthPermissionView(isVisible: .constant(true), showDismiss: .constant(false))
                                 .environmentObject(themeManager)
                                 .environmentObject(appState)
@@ -71,8 +82,12 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
-                        Section(header: Text("App Settings").foregroundColor(.gray)) {
-                            NavigationLink(destination: Text("Notifications Settings")) {
+                        Section(header: Text("App Settings").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
+                            Button(action: {
+                                if let url = URL(string: UIApplication.openSettingsURLString) {
+                                    UIApplication.shared.open(url)
+                                }
+                            }) {
                                 Label("Notifications", systemImage: "bell.fill")
                                     .foregroundColor(.yellow)
                             }
@@ -84,8 +99,8 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
-                        Section(header: Text("Privacy").foregroundColor(.gray)) {
-                            NavigationLink(destination: Text("Apple Fitness Privacy")) {
+                        Section(header: Text("Privacy").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
+                            NavigationLink(destination: Text("UnlockFit Privacy")) {
                                 Label("Apple Fitness Privacy", systemImage: "lock.fill")
                                     .foregroundColor(.purple)
                             }

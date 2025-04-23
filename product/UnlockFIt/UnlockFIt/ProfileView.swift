@@ -141,7 +141,7 @@ struct ProfileView: View {
                         .transition(.opacity)
 
                     VStack(spacing: 20) {
-                        Text("Are you sure you want to log out?")
+                        Text("Are you sure you want to log out? ⚠️")
                             .font(.headline)
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)

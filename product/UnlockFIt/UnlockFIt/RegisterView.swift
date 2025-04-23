@@ -137,7 +137,7 @@ struct RegisterView: View {
                             window.rootViewController?.dismiss(animated: true, completion: nil)
                         }
                     }) {
-                        Text("Already have an account? Log In")
+                        Text("Already have an account? Log In 🔑")
                             .foregroundColor(.white.opacity(0.7))
                             .underline()
                             .font(.footnote)
@@ -161,7 +161,7 @@ struct RegisterView: View {
                         Color.black.opacity(0.85).edgesIgnoringSafeArea(.all)
                         VStack {
                             VStack(spacing: 10) {
-                                Text("✅ Account Created")
+                                Text("Account Created ✅")
                                     .font(.title2)
                                     .foregroundColor(.white)
                                     .padding(.bottom, 5)

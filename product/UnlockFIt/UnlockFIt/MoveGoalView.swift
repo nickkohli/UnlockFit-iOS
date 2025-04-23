@@ -26,19 +26,19 @@ struct MoveGoalView: View {
                     .fontWeight(.bold)
                     .foregroundColor(.white)
 
-                goalSlider(title: "Step Goal", value: $stepGoal, range: 1000...30000, gradient: LinearGradient(
+                goalSlider(title: "Step Goal 🚶‍♂️", value: $stepGoal, range: 1000...30000, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
 
-                goalSlider(title: "Calorie Goal", value: $calorieGoal, range: 100...2000, gradient: LinearGradient(
+                goalSlider(title: "Calorie Goal 🔥", value: $calorieGoal, range: 100...2000, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
 
-                    goalSlider(title: "Flights Climbed Goal", value: $flightsClimbedGoal, range: 1...30, gradient: LinearGradient(
+                    goalSlider(title: "Flights Climbed Goal 🪜", value: $flightsClimbedGoal, range: 1...30, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]),
                     startPoint: .leading,
                     endPoint: .trailing

@@ -98,7 +98,7 @@ struct ProgressView: View {
 
                     // Weekly Overview
                     VStack(alignment: .leading) {
-                        Text("Weekly Overview")
+                        Text("Weekly Overview 🔍")
                             .font(.headline)
                             .foregroundColor(.white)
                         HStack {
@@ -113,7 +113,7 @@ struct ProgressView: View {
 
                     // Fitness Trends
                     VStack(alignment: .leading) {
-                        Text("Fitness Trends")
+                        Text("Fitness Trends 📈")
                             .font(.headline)
                             .foregroundColor(.white)
                         

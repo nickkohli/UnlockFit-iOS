@@ -74,7 +74,7 @@ struct ScreenTimeView: View {
             
             VStack(spacing: 0) {
                 // Header
-                Text("Today's Screen Time")
+                Text("Screen Time")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
@@ -92,7 +92,7 @@ struct ScreenTimeView: View {
                             // Screen Time Summary Card
                             HStack {
                                 VStack(alignment: .leading, spacing: 8) {
-                                    Text("Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
+                                    Text(" 📱 Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     Text("Sessions Today: \(totalSessions)")
@@ -130,7 +130,7 @@ struct ScreenTimeView: View {
                             
                             // Progress Bar
                             VStack(alignment: .leading) {
-                                Text("Time Saved Compared to Average")
+                                Text("Time Saved Compared to Average ⏰")
                                     .font(.headline)
                                     .foregroundColor(.white)
                                 ProgressBarView(progress: animatedProgress, color: .green)
@@ -158,7 +158,7 @@ struct ScreenTimeView: View {
                                 Group {
                                     if hasNonZero {
                                         HStack {
-                                            Text(chartType == .seconds ? "Screen Time (last 7 days)" : "Sessions (last 7 days)")
+                                            Text(chartType == .seconds ? "Screen Time (last 7 days) 📅" : "Sessions (last 7 days) 🗓️")
                                                 .font(.headline)
                                                 .foregroundColor(.white)
                                             Spacer()
@@ -245,7 +245,7 @@ struct ScreenTimeView: View {
                             
                             ZStack {
                                 VStack(alignment: .leading, spacing: 10) {
-                                    Text("Custom Screen Time Session")
+                                    Text("Custom Screen Time Session 🕒")
                                         .font(.headline)
                                         .foregroundColor(.white)
 

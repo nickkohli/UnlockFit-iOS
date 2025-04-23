@@ -25,7 +25,7 @@ struct NotificationSetupView: View {
                     }
                 }
                 VStack(spacing: 30) {
-                    Text("🔔 Notification Setup")
+                    Text("Notification Setup")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .foregroundColor(.white)
@@ -35,7 +35,7 @@ struct NotificationSetupView: View {
                             // Step 1
                             VStack(spacing: 10) {
                                 HStack {
-                                    Text("Step 1: Enable Notifications")
+                                    Text("Step 1: Enable Notifications 🔔")
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     Spacer()
@@ -78,7 +78,7 @@ struct NotificationSetupView: View {
                             // Step 2
                             VStack(spacing: 10) {
                                 HStack {
-                                    Text("Step 2: Set Delivery to Immediate")
+                                    Text("Step 2: Set Delivery to Immediate ⚡")
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     Spacer()
@@ -118,7 +118,7 @@ struct NotificationSetupView: View {
                             // Step 3
                             VStack(spacing: 10) {
                                 HStack {
-                                    Text("Step 3: Make Banner Persistent")
+                                    Text("Step 3: Make Banner Persistent 📌")
                                         .font(.headline)
                                         .foregroundColor(.white)
                                     Spacer()

@@ -25,7 +25,7 @@ struct HealthPermissionView: View {
 
                 // ── Health Details Explanation ──
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("How UnlockFit Uses Health Data:")
+                    Text("How UnlockFit Uses Health Data 🩺")
                         .font(.headline)
                         .foregroundColor(.white)
                     

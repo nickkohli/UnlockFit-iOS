@@ -16,7 +16,7 @@ struct WelcomeView: View {
             VStack {
                 Spacer()
                 VStack(spacing: 10) {
-                    Text("🎉 Welcome to UnlockFit!")
+                    Text("Welcome to UnlockFit! 🎉")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .multilineTextAlignment(.center)

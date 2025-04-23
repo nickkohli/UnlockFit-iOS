@@ -162,12 +162,12 @@ struct RegisterView: View {
                     
                     Spacer()
                     
-                    // Debug button to show the account-created success overlay.
-                    Button("Test Success Overlay") {
-                        showSuccess = true
-                    }
-                    .foregroundColor(.gray)
-                    .padding(.top, 10)
+//                    // Debug button to show the account-created success overlay.
+//                    Button("Test Success Overlay") {
+//                        showSuccess = true
+//                    }
+//                    .foregroundColor(.gray)
+//                    .padding(.top, 10)
 
                 }
                 .padding()

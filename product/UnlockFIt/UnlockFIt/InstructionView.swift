@@ -55,7 +55,7 @@ struct InstructionView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                             Text("""
-Sessions run in the background (Dynamic Island timer) and alert you when time’s up. The Dynamic Island ring flashes red when the session ends. You need to stop the session manually to log it, reinforcing your focus. The default recommended session is 10 minutes, but you can choose any duration from 1 minute to 1 hour. After your session ends, used dots turn black—you must earn new white dots for more sessions.
+Sessions run in the background (Dynamic Island timer) and alert you when time’s up. The Dynamic Island ring flashes red when the session ends. You need to stop the session manually to log it, reinforcing your focus. The default recommended session is 10 minutes, but you can choose any duration from 1 minute to 1 hour. After your session ends, used dots turn black — you must earn new white dots for more sessions.
 """)
                                 .foregroundColor(.gray)
                         }

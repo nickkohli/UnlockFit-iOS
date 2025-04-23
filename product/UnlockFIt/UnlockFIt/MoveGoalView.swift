@@ -156,11 +156,11 @@ struct MoveGoalView: View {
                         let newValue = Int($0)
                         let step: Int
                         switch title {
-                        case "Step Goal":
+                        case "Step Goal 🚶‍♂️":
                             step = 500
-                        case "Calorie Goal":
+                        case "Calorie Goal 🔥":
                             step = 50
-                        case "Flights Climbed Goal":
+                        case "Flights Climbed Goal 🪜":
                             step = 1
                         default:
                             step = 1

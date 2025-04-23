@@ -18,6 +18,14 @@ class ThemeManager: ObservableObject {
             return CustomColors.neonYellow
         case "Ulku":
             return CustomColors.ulkuBlue
+        case "Performance":
+            return CustomColors.performanceRed
+        case "Slate":
+            return CustomColors.slateGray
+        case "Aurora":
+            return CustomColors.auroraTeal
+        case "Cyberpunk":
+            return CustomColors.cyberpunkBlue
         default:
             return .purple
         }
@@ -30,6 +38,14 @@ class ThemeManager: ObservableObject {
             return CustomColors.neonYellow2
         case "Ulku":
             return CustomColors.ulkuBlue2
+        case "Performance":
+            return CustomColors.performanceRed2
+        case "Slate":
+            return CustomColors.slateGray2
+        case "Aurora":
+            return CustomColors.auroraMagenta
+        case "Cyberpunk":
+            return CustomColors.cyberpunkPink
         default:
             return .pink
         }
@@ -48,6 +64,14 @@ class ThemeManager: ObservableObject {
             UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.neonYellow2)
         case "Ulku":
             UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.ulkuBlue2)
+        case "Performance":
+            UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.performanceRed2)
+        case "Slate":
+            UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.slateGray2)
+        case "Aurora":
+            UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.auroraMagenta)
+        case "Cyberpunk":
+            UITabBar.appearance().unselectedItemTintColor = UIColor(CustomColors.cyberpunkPink)
         default:
             UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray
         }

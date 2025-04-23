@@ -9,7 +9,8 @@ struct ThemesView: View {
     @EnvironmentObject var themeManager: ThemeManager
 
     // The list of theme identifiers available for user selection.
-    let themes = ["Default", "Neon", "Ulku"]
+    // The list of theme identifiers available for user selection.
+    let themes = ["Default", "Neon", "Ulku", "Performance", "Slate", "Aurora", "Cyberpunk"]
 
     // The view body lays out the header and a toggle for each theme option.
     var body: some View {

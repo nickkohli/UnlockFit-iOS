@@ -42,6 +42,26 @@ struct CustomColors {
     // Ulku Theme - Hatsune Miku Inspired
     static let ulkuBlue = Color(hex: "#39C5BB")
     static let ulkuBlue2 = Color(hex: "#006D7A")
+
+    // Performance theme colors (bold red accent).
+    // Performance Red Theme - primary bold and darker red accents.
+    static let performanceRed = Color(hex: "#FF2800")
+    static let performanceRed2 = Color(hex: "#B22222")
+
+    // Slate theme colors for monochrome UI styling.
+    // Slate Theme - light and dark slate gray accents.
+    static let slateGray = Color(hex: "#708090")
+    static let slateGray2 = Color(hex: "#2F4F4F")
+    
+    // Aurora theme colors (inspired by the Northern Lights).
+    // Aurora Theme - teal and magenta accent pair.
+    static let auroraTeal = Color(hex: "#00FFC0")
+    static let auroraMagenta = Color(hex: "#9B30FF")
+
+    // Cyberpunk theme colors (futuristic neon contrast).
+    // Cyberpunk Theme - electric blue and hot pink accent pair.
+    static let cyberpunkBlue = Color(hex: "#00FFFF")
+    static let cyberpunkPink = Color(hex: "#FF2D95")
     
     // Utility gray for disabled elements and dividers.
     static let lightGray = Color(white: 0.6)

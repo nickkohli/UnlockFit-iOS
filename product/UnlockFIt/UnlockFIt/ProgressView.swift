@@ -1,5 +1,13 @@
 import SwiftUI
 
+// Metric selection for trend graph
+enum TrendType: String, CaseIterable, Identifiable {
+    case steps = "Steps"
+    case calories = "Calories"
+    case flights = "Flights"
+    var id: Self { self }
+}
+
 struct ProgressView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
@@ -8,6 +16,7 @@ struct ProgressView: View {
     @State private var refreshTimer: Timer? = nil
     @State private var isSpinning = false
     @State private var isActive: Bool = true
+    @State private var selectedTrend: TrendType = .steps
     @State private var hasAppearedOnce = false
 
     var body: some View {
@@ -61,7 +70,24 @@ struct ProgressView: View {
                         Text("Fitness Trends")
                             .font(.headline)
                             .foregroundColor(.white)
+                        
+                        Spacer()
+                            .frame(height: 21)
+                        
+                        // Metric selector
+                        Picker("Metric", selection: $selectedTrend) {
+                            ForEach(TrendType.allCases) { metric in
+                                Text(metric.rawValue).tag(metric)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .padding(.bottom, 8)
+
+                        Spacer()
+                            .frame(height: 20)
+
                         MultiLineGraph(
+                            trend: selectedTrend,
                             stepData: goalManager.weeklySteps,
                             calorieData: goalManager.weeklyCalories,
                             flightsClimbedData: goalManager.weeklyFlightsClimbed
@@ -109,22 +135,98 @@ struct ProgressView: View {
 
 // MultiLineGraph to display multiple data series
 struct MultiLineGraph: View {
+    let trend: TrendType
     let stepData: [Double]
     let calorieData: [Double]
     let flightsClimbedData: [Double]
     @State private var graphProgress: CGFloat = 0.0
 
+    // Provide the selected data series and its color
+    private var chartData: (data: [Double], color: Color) {
+        switch trend {
+        case .steps:
+            return (stepData, CustomColors.ringRed)
+        case .calories:
+            return (calorieData, CustomColors.ringGreen)
+        case .flights:
+            return (flightsClimbedData, CustomColors.ringBlue)
+        }
+    }
+
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                LinePath(data: stepData, color: CustomColors.ringRed, progress: graphProgress, geometry: geometry)
-                LinePath(data: calorieData, color: CustomColors.ringGreen, progress: graphProgress, geometry: geometry)
-                LinePath(data: flightsClimbedData, color: CustomColors.ringBlue, progress: graphProgress, geometry: geometry)
-            }
-            .onAppear {
-                withAnimation(.easeInOut(duration: 2.5)) {
-                    graphProgress = 1.0
+        let data = chartData.data
+        let lineColor = chartData.color
+        let maxValue = data.max() ?? 0
+        let midValue = maxValue / 2
+
+        return VStack {
+            HStack(alignment: .top) {
+                // Y-Axis labels
+                VStack {
+                    Text(String(format: "%.0f", maxValue))
+                        .font(.caption)
+                    Spacer()
+                    Text(String(format: "%.0f", midValue))
+                        .font(.caption)
+                    Spacer()
+                    Text("0")
+                        .font(.caption)
                 }
+                .foregroundColor(.white)
+                .frame(width: 30)
+
+                // Chart area
+                GeometryReader { geometry in
+                    ZStack {
+                        // Draw grid lines
+                        Path { path in
+                            let height = geometry.size.height
+                            // horizontal at mid
+                            path.move(to: CGPoint(x: 0, y: height / 2))
+                            path.addLine(to: CGPoint(x: geometry.size.width, y: height / 2))
+                        }
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                        
+                        LinePath(data: data, color: lineColor, progress: graphProgress, geometry: geometry)
+                    }
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 2.5)) {
+                            graphProgress = 1.0
+                        }
+                    }
+                }
+            }
+            .frame(height: 200)
+
+            // X-Axis day labels
+            HStack {
+                let labels = generateDayLabels(count: data.count)
+                ForEach(labels, id: \.self) { label in
+                    Text(label)
+                        .font(.caption2)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                }
+            }
+            .offset(x: 17)
+        }
+    }
+
+    // Helper to generate day labels with single-letter weekdays and "TDY" for today
+    private func generateDayLabels(count: Int) -> [String] {
+        let calendar = Calendar.current
+        // Single-letter abbreviations: Sunday through Saturday
+        let weekdayLetters = ["S", "M", "T", "W", "T", "F", "S"]
+        return (0..<count).map { index in
+            let offset = count - 1 - index
+            guard let date = calendar.date(byAdding: .day, value: -offset, to: Date()) else {
+                return ""
+            }
+            if calendar.isDateInToday(date) {
+                return "TDY"
+            } else {
+                let weekdayIndex = calendar.component(.weekday, from: date) - 1
+                return weekdayLetters[weekdayIndex]
             }
         }
     }

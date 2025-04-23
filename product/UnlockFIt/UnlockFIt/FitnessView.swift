@@ -131,7 +131,11 @@ struct FitnessView: View {
                                 .font(.headline)
                                 .foregroundColor(.white)
                             Spacer()
-                            Button(action: { showInfoOverlay.toggle() }) {
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showInfoOverlay.toggle()
+                                }
+                            }) {
                                 Image(systemName: "info.circle")
                                     .font(.headline)
                                     .foregroundColor(.white)
@@ -224,6 +228,7 @@ struct FitnessView: View {
                     ZStack {
                         Color.black.opacity(0.6)
                             .edgesIgnoringSafeArea(.all)
+                            .transition(.opacity)
                         VStack(spacing: 20) {
                             Text("How Session Unlocking Works ⚡")
                                 .font(.title3)
@@ -238,7 +243,11 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
                             .foregroundColor(.white)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                            Button(action: { showInfoOverlay = false }) {
+                            Button(action: {
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showInfoOverlay = false
+                                }
+                            }) {
                                 Text("Got it")
                                     .font(.headline)
                                     .padding(.vertical, 10)
@@ -260,9 +269,9 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
                         .background(Color.black.opacity(0.8))
                         .cornerRadius(12)
                         .padding(.horizontal, 40)
-                        .transition(.opacity)
-                        .animation(.easeInOut(duration: 0.3), value: showInfoOverlay)
                     }
+                    .transition(.opacity)
+                    .animation(.easeInOut(duration: 0.3), value: showInfoOverlay)
                 }
             }
             .fullScreenCover(isPresented: $showPermissionScreen) {

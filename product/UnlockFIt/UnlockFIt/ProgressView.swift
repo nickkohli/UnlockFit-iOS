@@ -128,6 +128,8 @@ struct ProgressView: View {
                         }
                         .pickerStyle(SegmentedPickerStyle())
                         .padding(.bottom, 8)
+                        .environment(\.colorScheme, .dark)
+                        .tint(.white)
 
                         Spacer()
                             .frame(height: 20)
@@ -146,7 +148,7 @@ struct ProgressView: View {
                     
                     // Best day summary card
                     let summary = bestDaySummary
-                    Text("🏆 Your best day so far is \(summary.dayName), when you hit \(summary.steps) steps, burned \(summary.calories) calories, and climbed \(summary.flights) flights! Keep going, you’re crushing it! 💪")
+                    Text("🏆 Your best day so far is \(summary.dayName), where you've hit \(summary.steps) steps, burned \(summary.calories) calories, and climbed \(summary.flights) flights! Keep going, you’re crushing it! 💪")
                         .id(summaryRefreshTrigger)
                         .font(.subheadline)
                         .foregroundColor(.white)

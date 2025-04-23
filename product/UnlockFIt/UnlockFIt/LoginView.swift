@@ -1,28 +1,34 @@
+// LoginView.swift: UI for logging in or navigating to registration, with form validation and error handling.
 import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 import UIKit
 
+// LoginView handles user authentication: input fields, validation, and Firebase sign-in.
 struct LoginView: View {
+    // Environment objects for theming, app state, and health goals.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
     
     @ObservedObject var profileViewModel: ProfileViewModel
     
+    // Local state for form inputs, loading indicator, errors, and navigation.
     @State private var username: String = ""
     @State private var password: String = ""
     @State private var loginError: String?
     @State private var isLoggingIn = false
     @State private var showOnboarding = false
 
+    // The view body constructs the login form, buttons, and handles user interactions.
     var body: some View {
         NavigationView {
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 20) {
+                    // App title with branded gradient treatment.
                     // App Title
                     HStack(spacing: 0) {
                         // "Unlock" in white
@@ -51,6 +57,7 @@ struct LoginView: View {
                     }
                     .padding(.bottom, 40)
 
+                    // Email input field with placeholder.
                     // Username Field (Email)
                     ZStack(alignment: .leading) {
                         if username.isEmpty {
@@ -66,6 +73,7 @@ struct LoginView: View {
                             .autocapitalization(.none)
                     }
 
+                    // Password input field with secure entry.
                     // Password Field
                     ZStack(alignment: .leading) {
                         if password.isEmpty {
@@ -80,6 +88,7 @@ struct LoginView: View {
                             .foregroundColor(.white)
                     }
 
+                    // Button to validate input and sign in via Firebase Auth.
                     // Log In Button
                     Button(action: {
                         let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -181,6 +190,7 @@ struct LoginView: View {
                     }
                     .disabled(isLoggingIn)
 
+                    // Button to open registration flow.
                     // Register Button
                     Button(action: {
                         let generator = UIImpactFeedbackGenerator(style: .light)
@@ -202,6 +212,7 @@ struct LoginView: View {
                             .environmentObject(goalManager)
                     }
 
+                    // Display login error messages to the user.
                     // Error Message
                     if let loginError = loginError {
                         Text(loginError)
@@ -220,6 +231,7 @@ struct LoginView: View {
     }
 }
 
+// ProgressCircle shows a spinning loader during login.
 struct ProgressCircle: View {
     @State private var isAnimating = false
     
@@ -236,6 +248,7 @@ struct ProgressCircle: View {
     }
 }
 
+// Preview provider for the LoginView.
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginView(profileViewModel: ProfileViewModel())

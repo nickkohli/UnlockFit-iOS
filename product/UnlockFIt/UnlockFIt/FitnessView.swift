@@ -4,6 +4,7 @@ import FirebaseFirestore
 import FirebaseAuth
 import SwiftUI
 
+// FitnessView displays daily progress rings, milestone bars, and lets the user refresh data or change goals.
 struct FitnessView: View {
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
@@ -24,7 +25,8 @@ struct FitnessView: View {
     @State private var flightsGoalArray: [Int] = [0, 0, 0, 0]
     @State private var milestoneLastUpdated: Date = Date()
     @State private var showInfoOverlay: Bool = false
-
+    
+    // greetingSection builds the “Let’s move, [nickname]!” header with date and entrance animation.
     private var greetingSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 0) {
@@ -72,7 +74,8 @@ struct FitnessView: View {
         .offset(x: showGreeting ? 5 : -40)
         .animation(.easeOut(duration: 1.0), value: showGreeting)
     }
-
+    
+    // progressRingsSection shows three circular progress rings for steps, calories, and flights.
     private var progressRingsSection: some View {
         VStack(alignment: .leading, spacing: 5) {
             Text("Daily Progress 🏃🏽")
@@ -108,7 +111,8 @@ struct FitnessView: View {
         .background(Color.gray.opacity(0.2))
         .cornerRadius(10)
     }
-
+    
+    // The view body arranges the greeting, rings, milestone bars, refresh button, and info overlay.
     var body: some View {
         NavigationStack {
             ZStack {
@@ -329,7 +333,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
             }
         }
     }
-
+    
+    // Decide if health data changed (or force) and animate the rings accordingly.
     private func refreshAndAnimateIfNeeded(force: Bool = false) {
         let currentSteps = goalManager.stepsToday
         let currentCalories = goalManager.caloriesBurned
@@ -351,7 +356,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
             print("⏸ No data change – animation skipped.")
         }
     }
-
+    
+    // Load milestone hit arrays and last-update date from Firestore, then sync to AppState.
     private func loadMilestoneState(completion: (() -> Void)? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
@@ -377,7 +383,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
             completion?()
         }
     }
-
+    
+    // Reset daily milestones if it’s a new day, then mark any newly reached thresholds.
     private func checkAndUpdateMilestones() {
         let today = Calendar.current.startOfDay(for: Date())
         if Calendar.current.startOfDay(for: milestoneLastUpdated) != today {
@@ -396,7 +403,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
         appState.calorieMilestones = calorieGoalArray
         appState.flightsMilestones = flightsGoalArray
     }
-
+    
+    // Helper to flip milestone array entries when progress crosses 25%, 50%, 75%, and 100%.
     private func updateArrayIfNeeded(progress: Double, array: inout [Int]) {
         let thresholds: [Double] = [0.25, 0.5, 0.75, 1.0]
         for (index, threshold) in thresholds.enumerated() {
@@ -406,7 +414,8 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
             }
         }
     }
-
+    
+    // Persist the milestone arrays and update timestamp back to Firestore.
     private func saveMilestoneState() {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
@@ -424,7 +433,7 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
         }
     }
 }
-
+// ProgressRingView draws a circular ring and percentage label for one metric.
 struct ProgressRingView: View {
     let title: String
     let progress: Double
@@ -463,7 +472,7 @@ struct ProgressRingView: View {
         }
     }
 }
-
+// GoalMilestoneBar draws a horizontal bar with milestone dots showing unlock progress.
 struct GoalMilestoneBar: View {
     let title: String
     let progress: Double

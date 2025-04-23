@@ -3,7 +3,9 @@ import UserNotifications
 import ActivityKit
 import Combine
 
+// ScreenTimeSessionManager manages the lifecycle of a screen-time session: timing, notifications, history, and Live Activity updates.
 class ScreenTimeSessionManager: ObservableObject {
+    // Published state for session activity, pause status, timing values, flashing alert, and history synchronization.
     @Published var isSessionActive: Bool = false
     @Published var isPaused: Bool = false
     @Published var sessionDuration: TimeInterval = 0
@@ -11,14 +13,18 @@ class ScreenTimeSessionManager: ObservableObject {
     @Published var isFlashing: Bool = false
     @Published var historyManager: ScreenTimeHistoryManager?
 
+    // Timer for counting down the session second-by-second.
     private var timer: Timer?
+    // Records when the session began to compute actual duration.
     private var sessionStartDate: Date?
     private var cancellables = Set<AnyCancellable>()
     private var liveActivity: Activity<ScreenTimeActivityAttributes>?
     private var flashingTimer: Timer?
     private var pauseStartDate: Date?
+    // Accumulates time spent paused so it is excluded from session duration.
     private var totalPausedTime: TimeInterval = 0
 
+    // Start a new screen-time session: reset state, start countdown, schedule notification, and launch Live Activity.
     func startSession(duration: TimeInterval) {
         sessionDuration = duration
         timeRemaining = duration
@@ -36,6 +42,7 @@ class ScreenTimeSessionManager: ObservableObject {
         startLiveActivity()
     }
 
+    // Stop the session: finalize timing, log to history, end Live Activity, and clear pending notifications.
     func stopSession() {
         timer?.invalidate()
         timer = nil
@@ -53,6 +60,7 @@ class ScreenTimeSessionManager: ObservableObject {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
+    // Internal: decrement timeRemaining every second and trigger flashing when time runs out.
     private func startTimer() {
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
             self.timeRemaining -= 1
@@ -67,6 +75,7 @@ class ScreenTimeSessionManager: ObservableObject {
         }
     }
 
+    // Internal: schedule a time-sensitive local notification for session end.
     private func scheduleNotification() {
         let content = UNMutableNotificationContent()
         content.title = "UnlockFit Timer"
@@ -80,6 +89,7 @@ class ScreenTimeSessionManager: ObservableObject {
         UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
 
+    // Internal: begin a Live Activity on Lock Screen / Dynamic Island to show session progress.
     private func startLiveActivity() {
         let attributes = ScreenTimeActivityAttributes(sessionDuration: sessionDuration)
         let initialState = ScreenTimeActivityAttributes.ContentState(
@@ -100,6 +110,7 @@ class ScreenTimeSessionManager: ObservableObject {
         }
     }
 
+    // Internal: end the Live Activity with time-up state and flashing ring.
     private func endLiveActivity() {
         Task {
             let finalContent = ScreenTimeActivityAttributes.ContentState(timeRemaining: 0, isTimeUp: true, isFlashingRing: true)
@@ -111,6 +122,7 @@ class ScreenTimeSessionManager: ObservableObject {
         }
     }
     
+    // Internal: push updated timeRemaining and flashing state to the Live Activity.
     private func updateLiveActivity() {
         Task {
             let updatedContent = ScreenTimeActivityAttributes.ContentState(
@@ -122,6 +134,7 @@ class ScreenTimeSessionManager: ObservableObject {
         }
     }
 
+    // Internal: start a timer to toggle flashing state for the Live Activity ring.
     private func startFlashing() {
         flashingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
             DispatchQueue.main.async {
@@ -131,18 +144,21 @@ class ScreenTimeSessionManager: ObservableObject {
         }
     }
 
+    // Internal: stop the flashing timer and reset flashing state.
     private func stopFlashing() {
         flashingTimer?.invalidate()
         flashingTimer = nil
         isFlashing = false
     }
 
+    // Pause the countdown timer and record the pause start time.
     func pauseSession() {
         timer?.invalidate()
         isPaused = true
         pauseStartDate = Date()
     }
 
+    // Resume a paused session: adjust totalPausedTime and restart the countdown timer.
     func resumeSession() {
         if isPaused {
             isPaused = false

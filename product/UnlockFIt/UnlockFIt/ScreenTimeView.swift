@@ -1,10 +1,14 @@
+// ScreenTimeView.swift: Main UI for displaying today’s screen-time summary, weekly trends, and session controls.
 import Firebase
 import FirebaseFirestore
 import FirebaseAuth
+// Uses SwiftUI for layout and UIKit for haptic feedback.
 import SwiftUI
 import UIKit
 
+// ScreenTimeView displays summary cards, bar charts, custom session controls, and lock overlay.
 struct ScreenTimeView: View {
+    // Environment objects for theming, session/history managers, app state, and state for animations, refresh, and overlays.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
     @EnvironmentObject var historyManager: ScreenTimeHistoryManager
@@ -18,6 +22,7 @@ struct ScreenTimeView: View {
     @State private var isActive: Bool = true
     @State private var showOverlay: Bool = true
 
+    // ChartType toggles between displaying seconds or session counts in the weekly bar chart.
     enum ChartType {
         case seconds, sessions
     }
@@ -26,6 +31,7 @@ struct ScreenTimeView: View {
     @State private var selectedIndex: Int? = nil
 
 
+    // Compute total screen time seconds for today from historyManager.
     var totalTime: TimeInterval {
         historyManager.getTodayScreenTime()
     }
@@ -46,14 +52,17 @@ struct ScreenTimeView: View {
         String(format: "%.2f", (totalTime / 18000.0) * 100)
     }
 
+    // Compute total number of screen-time sessions for today.
     var totalSessions: Int {
         historyManager.getTodaySessionCount()
     }
 
+    // Compute progress toward the average usage baseline (5 hours) for the progress bar.
     var progress: Double {
         min(max(1.0 - (totalTime / 18000.0), 0.0), 1.0)
     }
 
+    // Body builds the scrollable content: summary card, progress bar, weekly chart, custom session controls, and overlay.
     var body: some View {
         let calendar = Calendar.current
         let todayIndex = calendar.component(.weekday, from: Date()) - 1
@@ -72,7 +81,7 @@ struct ScreenTimeView: View {
             Color.black.edgesIgnoringSafeArea(.all)
             
             VStack(spacing: 0) {
-                // Header
+                // Header title showing “Screen Time”.
                 Text("Screen Time")
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -88,7 +97,7 @@ struct ScreenTimeView: View {
                         VStack(alignment: .leading, spacing: 15) {
                             Spacer().frame(height: 1).id("TopAnchor")
                             
-                            // Screen Time Summary Card
+                            // Summary card: shows total time and session count with a manual refresh button.
                             HStack {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(" 📱 Total Screen Time: \(totalHours)h \(totalMinutes)m \(totalSeconds)s")
@@ -127,7 +136,7 @@ struct ScreenTimeView: View {
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(10)
                             
-                            // Progress Bar
+                            // Progress bar comparing today’s usage to average adult usage (5 hours).
                             VStack(alignment: .leading) {
                                 Text("Time Saved Compared to Average ⏰")
                                     .font(.headline)
@@ -151,10 +160,12 @@ struct ScreenTimeView: View {
                             .background(Color.gray.opacity(0.2))
                             .cornerRadius(10)
                             
+                            // Weekly chart section: bar chart of screen-time or session counts over the last 7 days.
                             VStack(alignment: .leading) {
                                 let hasNonZero = dataArray.contains(where: { $0 > 0 })
                                 Group {
                                     if hasNonZero {
+                                        // Section header for the weekly bar chart, switching label based on chartType.
                                         HStack {
                                             Text(chartType == .seconds ? "Screen Time (last 7 days) 📅" : "Sessions (last 7 days) 🗓️")
                                                 .font(.headline)
@@ -169,8 +180,9 @@ struct ScreenTimeView: View {
                                                     .foregroundColor(.white)
                                             }
                                         }
-                                        
+
                                         HStack(alignment: .bottom, spacing: 6) {
+                                            // Generate each bar and label for the 7-day chart, with tap-to-select for details.
                                             ForEach(0..<7, id: \.self) { i in
                                                 let val = dataArray[i]
                                                 let barHeight = hasNonZero ? CGFloat(val) / CGFloat(maxVal) * 100 : 0.001
@@ -195,7 +207,7 @@ struct ScreenTimeView: View {
                                                                 scrollID = "ScrollBottom"
                                                             }
                                                         }
-                                                    
+
                                                     Text(weekLabels[i])
                                                         .font(.caption2)
                                                         .foregroundColor(.white)
@@ -204,7 +216,8 @@ struct ScreenTimeView: View {
                                         }
                                         .frame(height: 120)
                                         .animation(.easeInOut(duration: 0.4), value: chartType)
-                                        
+
+                                        // Detail box showing exact time or session count for the selected day.
                                         if let index = selectedIndex {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text(weekLabels[index])
@@ -244,6 +257,7 @@ struct ScreenTimeView: View {
                             .animation(.easeInOut(duration: 0.4), value: dataArray.contains(where: { $0 > 0 }))
                             .cornerRadius(10)
                             
+                            // Custom session controls: slider to choose duration and buttons to start/pause/resume/stop.
                             ZStack {
                                 VStack(alignment: .leading, spacing: 10) {
                                     Text("Custom Screen Time Session 🕒")
@@ -345,6 +359,7 @@ struct ScreenTimeView: View {
                                 .transition(.opacity.combined(with: .move(edge: .top)))
                                 .animation(.easeInOut(duration: 0.4), value: (screenTimeManager.isSessionActive || screenTimeManager.isPaused))
 
+                                // Overlay view locking screen-time controls until fitness milestones are met.
                                 if showOverlay {
                                     ZStack {
                                         Color.black.opacity(0.6)
@@ -476,7 +491,7 @@ struct ScreenTimeView: View {
     }
 }
 
-// Reusable App Usage View
+// AppUsageView: reusable component for displaying individual app usage (not currently used).
 struct AppUsageView: View {
     let appName: String
     let usage: String
@@ -500,7 +515,7 @@ struct AppUsageView: View {
     }
 }
 
-// Reusable Progress Bar View
+// ProgressBarView: reusable horizontal progress bar with rounded corners.
 struct ProgressBarView: View {
     let progress: Double
     let color: Color
@@ -523,6 +538,7 @@ struct ProgressBarView: View {
     }
 }
 
+// PreviewProvider for rendering ScreenTimeView in Xcode canvas.
 struct ScreenTimeView_Previews: PreviewProvider {
     static var previews: some View {
         ScreenTimeView()

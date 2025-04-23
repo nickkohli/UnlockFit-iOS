@@ -1,10 +1,13 @@
 import SwiftUI
 
+// ContentView determines whether to show the login flow or the main app tabs based on authentication state.
 struct ContentView: View {
     @EnvironmentObject var appState: AppState
     @StateObject private var profileViewModel = ProfileViewModel()
 
+    // Switch between LoginView and MainTabView when `appState.isLoggedIn` changes.
     var body: some View {
+        // Group wrapper to handle conditional view display.
         Group {
             if appState.isLoggedIn {
                 MainTabView(profileViewModel: profileViewModel)
@@ -21,6 +24,7 @@ struct ContentView: View {
                 .navigationViewStyle(StackNavigationViewStyle())
             }
         }
+        // Debug print current login state whenever ContentView appears.
         .onAppear {
             print("ContentView appeared. Current isLoggedIn: \(appState.isLoggedIn)")
         }

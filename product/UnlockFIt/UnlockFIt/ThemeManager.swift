@@ -1,6 +1,9 @@
+// ThemeManager.swift: Manages the user’s selected color theme, persists it, and applies it across the app UI.
 import SwiftUI
 
+// ThemeManager publishes theme changes and provides accent colors based on the selected theme.
 class ThemeManager: ObservableObject {
+    // The currently selected theme name; saving and applying whenever it changes.
     @Published var selectedTheme: String = "Default" {
         didSet {
             saveTheme()
@@ -8,6 +11,7 @@ class ThemeManager: ObservableObject {
         }
     }
 
+    // Primary accent color for UI elements based on the selected theme.
     var accentColor: Color {
         switch selectedTheme {
         case "Neon":
@@ -19,6 +23,7 @@ class ThemeManager: ObservableObject {
         }
     }
 
+    // Secondary accent color for gradients based on the selected theme.
     var accentColor2: Color {
         switch selectedTheme {
         case "Neon":
@@ -30,11 +35,13 @@ class ThemeManager: ObservableObject {
         }
     }
 
+    // On initialization, load saved theme and apply it immediately.
     init() {
         loadTheme()
         applyTheme()
     }
 
+    // Apply the theme by updating system appearance (e.g., tab bar tint) and refreshing the UI.
     func applyTheme() {
         switch selectedTheme {
         case "Neon":
@@ -47,6 +54,7 @@ class ThemeManager: ObservableObject {
         refreshUI()
     }
 
+    // Refresh the root view controller to force UI to update with the new theme.
     private func refreshUI() {
         DispatchQueue.main.async {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -59,12 +67,12 @@ class ThemeManager: ObservableObject {
         }
     }
 
-    // Save the theme to UserDefaults
+    // Persist the selected theme to UserDefaults.
     private func saveTheme() {
         UserDefaults.standard.set(selectedTheme, forKey: "SelectedTheme")
     }
 
-    // Load the theme from UserDefaults
+    // Load the previously saved theme from UserDefaults, if any.
     private func loadTheme() {
         if let savedTheme = UserDefaults.standard.string(forKey: "SelectedTheme") {
             selectedTheme = savedTheme

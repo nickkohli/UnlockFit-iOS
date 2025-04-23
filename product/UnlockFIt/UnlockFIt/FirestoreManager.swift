@@ -1,12 +1,17 @@
 import Foundation
 import FirebaseFirestore
 
+// FirestoreManager handles all reads/writes to Firebase Firestore for user data.
 class FirestoreManager {
+    // Singleton instance for global access to Firestore operations.
     static let shared = FirestoreManager()
+    // Reference to the Firestore database.
     private let db = Firestore.firestore()
     
+    // Private initializer to enforce singleton pattern.
     private init() {}
 
+    // Create a new user document with initial profile, goals, and history arrays.
     func saveNewUser(uid: String, email: String, nickname: String, completion: ((Error?) -> Void)? = nil) {
         let userData: [String: Any] = [
             "email": email,
@@ -33,6 +38,7 @@ class FirestoreManager {
         }
     }
     
+    // Retrieve the user’s document data from Firestore by UID.
     func fetchUserData(uid: String, completion: @escaping ([String: Any]?, Error?) -> Void) {
         db.collection("users").document(uid).getDocument { documentSnapshot, error in
             if let error = error {
@@ -53,6 +59,7 @@ class FirestoreManager {
         }
     }
     
+    // Update only the user’s fitness goal values in their Firestore document.
     func saveUserGoals(uid: String, stepGoal: Int, calorieGoal: Int, flightsClimbedGoal: Int) {
         let goals: [String: Any] = [
             "stepGoal": stepGoal,
@@ -69,6 +76,7 @@ class FirestoreManager {
         }
     }
     
+    // Update the user’s selected theme string in Firestore.
     func updateUserTheme(uid: String, theme: String) {
         Firestore.firestore().collection("users").document(uid).updateData([
             "theme": theme

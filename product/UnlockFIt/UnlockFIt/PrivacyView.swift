@@ -1,15 +1,18 @@
 import SwiftUI
 
+// PrivacyView displays the app’s privacy policy details in a scrollable view.
 struct PrivacyView: View {
+    // Environment objects providing global app state and theme configuration.
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var themeManager: ThemeManager
 
+    // The view body layers a black background and the privacy content.
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
 
             VStack(alignment: .leading, spacing: 0) {
-                // Header
+                // Header title for the Privacy screen.
                 Text("UnlockFit Privacy")
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -19,9 +22,10 @@ struct PrivacyView: View {
                     .padding(.top, 10)
                     .padding(.bottom, 20)
 
-                // Content
+                // ScrollView containing all privacy policy sections.
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
+                        // Section: explains how HealthKit data is used by the app.
                         Group {
                             Text("**Health Data Usage**")
                                 .font(.headline)
@@ -35,6 +39,7 @@ UnlockFit reads your **Steps**, **Active Energy (Calories)**, and **Flights Clim
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: details what profile and session data we collect and store.
                         Group {
                             Text("**Profile & Session Data**")
                                 .font(.headline)
@@ -51,6 +56,7 @@ All of this data is attached to your unique user record so your settings and his
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: describes Firebase Authentication and user identification.
                         Group {
                             Text("**Authentication & Identification**")
                                 .font(.headline)
@@ -61,6 +67,7 @@ We use **Firebase Authentication** to uniquely identify you and secure access to
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: describes what session records are saved for screen-time.
                         Group {
                             Text("**Session Data**")
                                 .font(.headline)
@@ -75,6 +82,7 @@ We use this to display your total screen-time, percentage of average usage, and 
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: outlines encryption and security measures for stored data.
                         Group {
                             Text("**Cloud Storage & Security**")
                                 .font(.headline)
@@ -88,6 +96,7 @@ All user data (profile info, goals, theme choice, session history) is stored und
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: explains use of Firestore for real-time, document-based storage.
                         Group {
                             Text("**Firebase Firestore Storage**")
                                 .font(.headline)
@@ -102,6 +111,7 @@ We use **Firebase Firestore**, a cloud-hosted NoSQL database, to securely store 
                                 .foregroundColor(.gray)
                         }
                         
+                        // Section: informs users of their control over permissions and data sharing.
                         Group {
                             Text("**Your Control & Consent**")
                                 .font(.headline)

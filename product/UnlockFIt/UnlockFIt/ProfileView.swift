@@ -1,3 +1,4 @@
+// ProfileView.swift: UI for viewing and editing user profile, settings, and logout functionality.
 import SwiftUI
 import UIKit
 import Foundation
@@ -5,19 +6,25 @@ import FirebaseStorage
 import FirebaseFirestore
 import FirebaseAuth
 
+// ProfileView presents the user’s profile info, app settings links, and logout controls.
 struct ProfileView: View {
+    // ViewModel, environment objects, and state flags for image picker and logout confirmation.
     @ObservedObject var viewModel: ProfileViewModel
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @State private var isImagePickerPresented = false
     @State private var showLogoutConfirmation = false
 
+    // The view body builds the navigation, background, profile section, settings list, and logout overlay.
     var body: some View {
+        // Wrap content in a navigation view for header and modal presentation.
         NavigationView {
+            // ZStack layers a black background and the main VStack content, plus optional overlays.
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 0) {
+                    // Screen title for profile settings.
                     Text("Profile Settings")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -28,6 +35,7 @@ struct ProfileView: View {
                     Spacer()
                         .frame(height: 15)
                     
+                    // Profile Section: shows profile image, nickname, and email with edit tap action.
                     // Profile Section
                     HStack {
                         ZStack {
@@ -64,8 +72,10 @@ struct ProfileView: View {
                     .cornerRadius(15)
                     .padding(.horizontal)
 
+                    // Settings Section: navigation links for health details, goal changes, app settings, and privacy.
                     // Settings Section
                     List {
+                        // Section header for Health Settings settings.
                         Section(header: Text("Health Settings").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
                             NavigationLink(destination: HealthPermissionView(isVisible: .constant(true), showDismiss: .constant(false))
                                 .environmentObject(themeManager)
@@ -82,6 +92,7 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
+                        // Section header for App Settings settings.
                         Section(header: Text("App Settings").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
                             Button(action: {
                                 if let url = URL(string: UIApplication.openSettingsURLString) {
@@ -99,6 +110,7 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
+                        // Section header for Privacy settings.
                         Section(header: Text("Privacy").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
                             NavigationLink(destination: PrivacyView()
                                 .environmentObject(appState)
@@ -114,6 +126,7 @@ struct ProfileView: View {
 
                     Spacer()
 
+                    // Logout Button: prompts confirmation before signing out.
                     // Logout Button
                     Button(action: {
                         let generator = UIImpactFeedbackGenerator(style: .rigid)
@@ -137,12 +150,14 @@ struct ProfileView: View {
                     }
                 }
                 
+                // Logout confirmation overlay with cancel and confirm actions.
                 if showLogoutConfirmation {
                     Color.black.opacity(0.6)
                         .ignoresSafeArea()
                         .transition(.opacity)
 
                     VStack(spacing: 20) {
+                        // Confirmation prompt text.
                         Text("Are you sure you want to log out? ⚠️")
                             .font(.headline)
                             .foregroundColor(.white)
@@ -210,10 +225,13 @@ struct ProfileView: View {
     }
 }
 
+// ImagePicker for selecting and uploading a new profile photo to Firebase Storage.
 // Custom Image Picker
+// UIKit wrapper to present the system image picker in SwiftUI.
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
 
+    // Create and configure UIImagePickerController.
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
         picker.delegate = context.coordinator
@@ -221,12 +239,15 @@ struct ImagePicker: UIViewControllerRepresentable {
         return picker
     }
 
+    // No-op update for the image picker controller.
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
 
+    // Create coordinator to handle picker delegate callbacks.
     func makeCoordinator() -> Coordinator {
         Coordinator(self)
     }
 
+    // Coordinator implements UIImagePickerControllerDelegate to receive selected images.
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: ImagePicker
 
@@ -280,6 +301,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     }
 }
 
+// Preview provider for rendering ProfileView in Xcode canvas.
 struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
         ProfileView(viewModel: ProfileViewModel())

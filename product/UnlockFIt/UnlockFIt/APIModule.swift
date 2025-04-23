@@ -1,12 +1,16 @@
 import Foundation
 import HealthKit
 
+// APIModule is a singleton responsible for interfacing with HealthKit.
+// It handles authorization and querying of health data (steps, calories, flights).
 class APIModule {
     static let shared = APIModule()
     let healthStore = HKHealthStore()
     
     private init() {}
 
+    // Request read-only access to step count, active energy, and flights climbed from HealthKit.
+    // Calls completion(true) if authorization succeeds.
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         let typesToRead: Set = [
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,
@@ -22,7 +26,7 @@ class APIModule {
         }
     }
     
-    // Request HealthKit authorization
+    // Alternative authorization method: checks availability then requests HealthKit permissions.
     func requestHealthKitAuthorization(completion: @escaping (Bool, Error?) -> Void) {
         guard HKHealthStore.isHealthDataAvailable() else {
             completion(false, nil)
@@ -40,7 +44,7 @@ class APIModule {
         }
     }
     
-    // Fetch today's step count
+    // Fetch the total number of steps for today, from midnight until now.
     func fetchTodayStepCount(completion: @escaping (Double) -> Void) {
         guard let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount) else {
             completion(0.0)
@@ -61,7 +65,7 @@ class APIModule {
         healthStore.execute(query)
     }
     
-    // Fetch today's calories burned
+    // Fetch the total active calories burned today.
     func fetchTodayCalories(completion: @escaping (Double) -> Void) {
         guard let calorieType = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) else {
             completion(0.0)
@@ -82,7 +86,7 @@ class APIModule {
         healthStore.execute(query)
     }
     
-    // Fetch today's flights climbed
+    // Fetch the total number of flights of stairs climbed today.
     func fetchTodayFlightsClimbed(completion: @escaping (Double) -> Void) {
         guard let flightsType = HKQuantityType.quantityType(forIdentifier: .flightsClimbed) else {
             completion(0.0)
@@ -103,7 +107,7 @@ class APIModule {
         healthStore.execute(query)
     }
     
-    
+    // Convenience wrappers for today's health metrics using the fetch... methods.
     func getStepsToday(completion: @escaping (Double) -> Void) {
         fetchTodayStepCount(completion: completion)
     }
@@ -116,6 +120,7 @@ class APIModule {
         fetchTodayFlightsClimbed(completion: completion)
     }
 
+    // Fetch cumulative health data between two dates (used for weekly summaries).
     func getSteps(from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
         let stepType = HKQuantityType.quantityType(forIdentifier: .stepCount)!
         fetchSumQuantity(for: stepType, unit: HKUnit.count(), from: startDate, to: endDate, completion: completion)
@@ -131,6 +136,7 @@ class APIModule {
         fetchSumQuantity(for: flightsType, unit: HKUnit.count(), from: startDate, to: endDate, completion: completion)
     }
 
+    // Internal helper: run an HKStatisticsQuery to sum samples of a given quantity type over a date range.
     private func fetchSumQuantity(for type: HKQuantityType, unit: HKUnit, from startDate: Date, to endDate: Date, completion: @escaping (Double) -> Void) {
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate)
         let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, error in

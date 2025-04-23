@@ -1,22 +1,31 @@
+// NotificationSetupView.swift: UI for setting up local notification permissions and preferences.
+
 import SwiftUI
 import UserNotifications
 
+// NotificationSetupView guides the user through enabling and configuring app notifications in three steps.
 struct NotificationSetupView: View {
+    // Environment objects for theming, app state, and fitness goal logic.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
     @EnvironmentObject var goalManager: GoalManager
 
+    // Local state tracking each setup step and navigation flow.
     @State private var notificationsEnabled = false
     @State private var deliverySet = false
     @State private var bannerSet = false
     @State private var showWelcomeFlow = false
     
+    // Binding to control dismissal of the onboarding flow.
     @Binding var showOnboarding: Bool
 
+    // The view body builds the step-by-step notification setup UI.
     var body: some View {
         NavigationStack {
+            // ZStack layers a dark background with an auto-updating status check.
             ZStack {
                 Color.black.ignoresSafeArea()
+                // Poll notification settings every 2 seconds to update the UI.
                 .onReceive(Timer.publish(every: 2, on: .main, in: .common).autoconnect()) { _ in
                     UNUserNotificationCenter.current().getNotificationSettings { settings in
                         DispatchQueue.main.async {
@@ -25,6 +34,7 @@ struct NotificationSetupView: View {
                     }
                 }
                 VStack(spacing: 30) {
+                    // Header title for the notification setup screen.
                     Text("Notification Setup")
                         .font(.largeTitle)
                         .fontWeight(.bold)
@@ -32,6 +42,7 @@ struct NotificationSetupView: View {
 
                     ScrollView {
                         VStack(spacing: 30) {
+                            // Step 1 card: instructions, image, and action button for this setting.
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 1: Enable Notifications 🔔")
@@ -74,6 +85,7 @@ struct NotificationSetupView: View {
                                 }
                             }
 
+                            // Step 2 card: instructions, image, and action button for this setting.
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 2: Set Delivery to Immediate ⚡")
@@ -112,6 +124,7 @@ struct NotificationSetupView: View {
                                 .disabled(!notificationsEnabled)
                             }
 
+                            // Step 3 card: instructions, image, and action button for this setting.
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 3: Make Banner Persistent 📌")
@@ -150,11 +163,13 @@ struct NotificationSetupView: View {
                                 .disabled(!notificationsEnabled)
                             }
 
+                            // Informational text shown after all steps are complete.
                             Text("Once you've completed all 3 steps, continue to unlock your fitness journey.")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
                                 .multilineTextAlignment(.center)
 
+                            // Continue button to proceed once all notification steps are done.
                             Button(action: {
                                 showWelcomeFlow = true
                             }) {
@@ -189,6 +204,7 @@ struct NotificationSetupView: View {
                 }
                 .padding()
             }
+            // Initial fetch of notification authorization status on view appear.
             .onAppear {
                 UNUserNotificationCenter.current().getNotificationSettings { settings in
                     DispatchQueue.main.async {

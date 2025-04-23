@@ -1,6 +1,9 @@
+// ProgressView.swift: Displays weekly fitness summaries, trends graph, and best-day highlights.
 import UIKit
+// Uses SwiftUI for layout and UIKit for haptic feedback.
 import SwiftUI
 
+// TrendType defines which metric to plot: steps, calories, or flights.
 // Metric selection for trend graph
 enum TrendType: String, CaseIterable, Identifiable {
     case steps = "Steps"
@@ -9,7 +12,9 @@ enum TrendType: String, CaseIterable, Identifiable {
     var id: Self { self }
 }
 
+// ProgressView shows overall progress cards, a segmented trend graph, and best-day summary.
 struct ProgressView: View {
+    // Environment objects and state for theming, health data, timers, and UI refresh triggers.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var goalManager: GoalManager
     @EnvironmentObject var appState: AppState
@@ -21,7 +26,7 @@ struct ProgressView: View {
     @State private var hasAppearedOnce = false
     @State private var summaryRefreshTrigger: Int = 0
 
-    // Compute best fitness day index and metrics
+    // Compute a combined score across steps, calories, and flights to pick the user’s best day.
     private var bestDaySummary: (dayName: String, steps: Int, calories: Int, flights: Int) {
         let steps = goalManager.weeklySteps
         let calories = goalManager.weeklyCalories
@@ -65,6 +70,7 @@ struct ProgressView: View {
                 flights: Int(flights[bestIndex]))
     }
 
+    // Body builds the dark background, refresh button, overview cards, trends graph, and summary card.
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
@@ -76,6 +82,7 @@ struct ProgressView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.white)
                         Spacer()
+                        // Refresh button: triggers haptic feedback and reloads weekly data.
                         Button(action: {
                             let generator = UIImpactFeedbackGenerator(style: .medium)
                             generator.impactOccurred()
@@ -97,7 +104,7 @@ struct ProgressView: View {
                         }
                     }
 
-                    // Weekly Overview
+                    // Section header for weekly totals of each metric.
                     VStack(alignment: .leading) {
                         Text("Weekly Overview 🔍")
                             .font(.headline)
@@ -112,7 +119,7 @@ struct ProgressView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
 
-                    // Fitness Trends
+                    // Section header for selectable metric trend graph.
                     VStack(alignment: .leading) {
                         Text("Fitness Trends 📈")
                             .font(.headline)
@@ -121,7 +128,7 @@ struct ProgressView: View {
                         Spacer()
                             .frame(height: 21)
                         
-                        // Metric selector
+                        // Picker to switch between steps, calories, and flights trends.
                         Picker("Metric", selection: $selectedTrend) {
                             ForEach(TrendType.allCases) { metric in
                                 Text(metric.rawValue).tag(metric)
@@ -139,6 +146,7 @@ struct ProgressView: View {
                         Spacer()
                             .frame(height: 20)
 
+                        // Graph view plotting the selected metric over the last 7 days.
                         MultiLineGraph(
                             trend: selectedTrend,
                             stepData: goalManager.weeklySteps,
@@ -151,7 +159,7 @@ struct ProgressView: View {
                     .background(Color.gray.opacity(0.2))
                     .cornerRadius(10)
                     
-                    // Best day summary card
+                    // Summary card highlighting the single best performance day across all metrics.
                     let summary = bestDaySummary
                     Text("🏆 Your best day so far is \(summary.dayName), where you've hit \(summary.steps) steps, burned \(summary.calories) calories, and climbed \(summary.flights) flights! Keep going, you’re crushing it! 💪")
                         .id(summaryRefreshTrigger)
@@ -198,7 +206,7 @@ struct ProgressView: View {
     }
 }
 
-// MultiLineGraph to display multiple data series
+// MultiLineGraph draws a line chart for one metric with Y-axis and X-axis labels.
 struct MultiLineGraph: View {
     let trend: TrendType
     let stepData: [Double]
@@ -277,7 +285,7 @@ struct MultiLineGraph: View {
         }
     }
 
-    // Helper to generate day labels with single-letter weekdays and "TDY" for today
+    // generateDayLabels creates weekday initials and "TDY" for today under each data point.
     private func generateDayLabels(count: Int) -> [String] {
         let calendar = Calendar.current
         let weekdayLetters = ["S", "M", "T", "W", "T", "F", "S"]
@@ -296,6 +304,7 @@ struct MultiLineGraph: View {
     }
 }
 
+// LinePath constructs the actual path connecting data points in the graph.
 struct LinePath: View {
     let data: [Double]
     let color: Color
@@ -321,6 +330,7 @@ struct LinePath: View {
     }
 }
 
+// ProgressCard displays a single metric’s total value and title in a styled card.
 struct ProgressCard: View {
     let title: String
     let value: String
@@ -344,6 +354,7 @@ struct ProgressCard: View {
     }
 }
 
+// PreviewProvider for rendering ProgressView in Xcode canvas.
 struct ProgressView_Previews: PreviewProvider {
     static var previews: some View {
         ProgressView()

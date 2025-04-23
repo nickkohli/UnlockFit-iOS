@@ -1,49 +1,61 @@
+// MoveGoalView.swift: UI for editing step, calorie, and flights-climbed goals with animated confirmation and confetti.
 import SwiftUI
 import FirebaseAuth
 import UIKit
 import ConfettiSwiftUI
 
+// MoveGoalView allows the user to adjust their daily fitness goals and saves them to Firestore with feedback.
+
 struct MoveGoalView: View {
+    // Environment objects for applying app theme and storing global app state including user goals.
     @EnvironmentObject var themeManager: ThemeManager
     @EnvironmentObject var appState: AppState
 
+    // Local state for the goal values before they are saved to global AppState and Firestore.
     @State private var stepGoal: Int = 10000
     @State private var calorieGoal: Int = 500
     @State private var flightsClimbedGoal: Int = 30
 
+    // Local UI state for showing success, triggering confetti, disabling the save button, and animating the button gradient.
     @State private var showSuccessMessage = false
     @State private var confettiCounter = 0
     @State private var isButtonDisabled = false
     @State private var animationProgress: CGFloat = 1.0
 
+    // The view body lays out the sliders, save button, and handles animations and confetti on goal update.
     var body: some View {
         ZStack {
             Color.black.edgesIgnoringSafeArea(.all)
 
             VStack(spacing: 30) {
+                // Header text prompting the user to update their fitness goals.
                 Text("Update Your Goals")
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .foregroundColor(.white)
 
+                // Slider control for adjusting the Step goal with a gradient fill.
                 goalSlider(title: "Step Goal 🚶‍♂️", value: $stepGoal, range: 1000...30000, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringRed, CustomColors.ringRed2]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
 
+                // Slider control for adjusting the Calorie goal with a gradient fill.
                 goalSlider(title: "Calorie Goal 🔥", value: $calorieGoal, range: 100...2000, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringGreen, CustomColors.ringGreen2]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
 
-                    goalSlider(title: "Flights Climbed Goal 🪜", value: $flightsClimbedGoal, range: 1...30, gradient: LinearGradient(
+                // Slider control for adjusting the Flights Climbed goal with a gradient fill.
+                goalSlider(title: "Flights Climbed Goal 🪜", value: $flightsClimbedGoal, range: 1...30, gradient: LinearGradient(
                     gradient: Gradient(colors: [CustomColors.ringBlue, CustomColors.ringBlue2]),
                     startPoint: .leading,
                     endPoint: .trailing
                 ))
 
+                // Save Changes button: writes new goals to AppState and Firestore, then shows haptic, animation, and confetti.
                 Button(action: {
                     appState.stepGoal = stepGoal
                     appState.calorieGoal = calorieGoal
@@ -95,7 +107,7 @@ struct MoveGoalView: View {
                         .cornerRadius(10)
                 }
                 .disabled(isButtonDisabled)
-                
+                // Display a temporary success message after goals are saved.
                 if showSuccessMessage {
                     Text("Goals updated successfully!")
                         .padding()
@@ -119,6 +131,7 @@ struct MoveGoalView: View {
         }
     }
 
+    // Helper function that builds a slider with a colored gradient bar and numeric label for a given goal.
     func goalSlider(title: String, value: Binding<Int>, range: ClosedRange<Int>, gradient: LinearGradient) -> some View {
         VStack(alignment: .leading) {
             HStack {
@@ -162,6 +175,7 @@ struct MoveGoalView: View {
     }
 }
 
+// PreviewProvider for rendering MoveGoalView in Xcode canvas.
 struct MoveGoalView_Previews: PreviewProvider {
     static var previews: some View {
         MoveGoalView()

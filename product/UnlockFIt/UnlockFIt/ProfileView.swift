@@ -100,8 +100,11 @@ struct ProfileView: View {
                         .listRowBackground(Color.gray.opacity(0.2))
 
                         Section(header: Text("Privacy").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
-                            NavigationLink(destination: Text("UnlockFit Privacy")) {
-                                Label("Apple Fitness Privacy", systemImage: "lock.fill")
+                            NavigationLink(destination: PrivacyView()
+                                .environmentObject(appState)
+                                .environmentObject(themeManager)
+                            ) {
+                                Label("UnlockFit Privacy", systemImage: "lock.fill")
                                     .foregroundColor(.purple)
                             }
                         }

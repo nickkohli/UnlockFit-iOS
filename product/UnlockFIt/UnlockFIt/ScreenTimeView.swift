@@ -80,7 +80,7 @@ struct ScreenTimeView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 17)
-                    .padding(.top, 10) // Add safe area space
+                    .padding(.top, 10)
                     .padding(.bottom, 10)
                     .background(Color.black)
                 

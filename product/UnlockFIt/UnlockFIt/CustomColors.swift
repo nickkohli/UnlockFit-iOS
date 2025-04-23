@@ -27,25 +27,13 @@ struct CustomColors {
     static let ringGreen2 = Color(hex: "#90F600")
     static let ringBlue2 = Color(hex: "#00C8CF")
 
-    // Nike Run Club Neon
+    // Neon Theme - Nike Run Club Inspired
     static let neonYellow = Color(hex: "#CFE640")
     static let neonYellow2 = Color(hex: "#66731A")
     
-    // Ulku Theme - Hatsune Miku Blue
+    // Ulku Theme - Hatsune Miku Inspired
     static let ulkuBlue = Color(hex: "#39C5BB")
     static let ulkuBlue2 = Color(hex: "#006D7A")
-
-    // Badges - Primary
-    static let bronze = Color(hex: "#CC8040")
-    static let silver = Color(hex: "#BFBFBF")
-    static let gold = Color(hex: "#FFD700")
-    static let platinum = Color(hex: "#E6E6ED")
-
-    // Badges - Secondary (Much Darker)
-    static let bronze2 = Color(hex: "#663300")
-    static let silver2 = Color(hex: "#4D4D4D")
-    static let gold2 = Color(hex: "#805900")
-    static let platinum2 = Color(hex: "#808089")
     
     static let lightGray = Color(white: 0.6)
 }

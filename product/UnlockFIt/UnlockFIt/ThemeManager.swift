@@ -3,7 +3,7 @@ import SwiftUI
 class ThemeManager: ObservableObject {
     @Published var selectedTheme: String = "Default" {
         didSet {
-            saveTheme() // Save the theme whenever it changes
+            saveTheme()
             applyTheme()
         }
     }
@@ -31,8 +31,8 @@ class ThemeManager: ObservableObject {
     }
 
     init() {
-        loadTheme() // Load the saved theme during initialization
-        applyTheme() // Apply the loaded theme
+        loadTheme()
+        applyTheme()
     }
 
     func applyTheme() {
@@ -44,8 +44,6 @@ class ThemeManager: ObservableObject {
         default:
             UITabBar.appearance().unselectedItemTintColor = UIColor.lightGray
         }
-
-        // Notify the system to refresh the UI
         refreshUI()
     }
 

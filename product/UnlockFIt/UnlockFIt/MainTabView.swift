@@ -47,7 +47,7 @@ struct MainTabView: View {
                 green: (themeManager.accentColor.components.green + themeManager.accentColor2.components.green) / 2,
                 blue: (themeManager.accentColor.components.blue + themeManager.accentColor2.components.blue) / 2
             )
-        ) // Selected tab icon color
+        )
         .onAppear {
             let appearance = UITabBarAppearance()
             appearance.configureWithDefaultBackground()

@@ -9,16 +9,14 @@ struct ScreenTimeView: View {
     @EnvironmentObject var screenTimeManager: ScreenTimeSessionManager
     @EnvironmentObject var historyManager: ScreenTimeHistoryManager
     @EnvironmentObject var appState: AppState
-    @State private var animatedProgress: Double = 0.0 // State to manage progress animation
-    @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
-    @AppStorage("screenTimeBarDidAnimate") private var didAnimateInitialBar: Bool = false // persists across view navigations
+    @State private var animatedProgress: Double = 0.0
+    @State private var hasAnimated: Bool = false
+    @AppStorage("screenTimeBarDidAnimate") private var didAnimateInitialBar: Bool = false
     @State private var isRefreshing: Bool = false
     @State private var scrollID: String? = nil
     @State private var scrollAnchor: UnitPoint = .bottom
     @State private var isActive: Bool = true
     @State private var showOverlay: Bool = true
-
-    // MARK: - Weekly Bar Chart
 
     enum ChartType {
         case seconds, sessions
@@ -58,8 +56,8 @@ struct ScreenTimeView: View {
 
     var body: some View {
         let calendar = Calendar.current
-        let todayIndex = calendar.component(.weekday, from: Date()) - 1 // 0 = Sunday
-        let allWeekdays = calendar.shortWeekdaySymbols // ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+        let todayIndex = calendar.component(.weekday, from: Date()) - 1
+        let allWeekdays = calendar.shortWeekdaySymbols
         let weekLabels = (0..<7).map { i in
             let index = (todayIndex - (6 - i) + 7) % 7
             return i == 6 ? "TODAY" : allWeekdays[index].uppercased()
@@ -137,7 +135,6 @@ struct ScreenTimeView: View {
                                 ProgressBarView(progress: animatedProgress, color: .green)
                                     .frame(height: 20)
                                     .onAppear {
-                                        // Only run initial zero-to-current animation once per session
                                         if !didAnimateInitialBar {
                                             animatedProgress = 0.0
                                             withAnimation(.easeInOut(duration: 2.0)) {
@@ -240,7 +237,6 @@ struct ScreenTimeView: View {
                                             .transition(.opacity.combined(with: .move(edge: .top)))
                                     }
                                 }
-                                // animation/transition modifiers go here
                             }
                             .padding()
                             .background(Color.gray.opacity(0.2))
@@ -306,7 +302,7 @@ struct ScreenTimeView: View {
                                     VStack {
                                         if screenTimeManager.isPaused {
                                             Color.clear
-                                                .frame(height: 0) // Keeps the spacing consistent even when button is hidden
+                                                .frame(height: 0)
                                                 .transition(.opacity.combined(with: .move(edge: .top)))
                                         } else {
                                             Button(action: {
@@ -315,7 +311,6 @@ struct ScreenTimeView: View {
                                                     generator.notificationOccurred(.success)
                                                     screenTimeManager.stopSession()
                                                     historyManager.saveScreenTimeHistory()
-                                                    // Mark any used milestones
                                                     markMilestonesUsed()
                                                     scrollAnchor = .top
                                                     scrollID = "TopAnchor"
@@ -371,8 +366,8 @@ struct ScreenTimeView: View {
                             
                             Spacer().frame(height: 0).id("ScrollBottom")
                         }
-                        .padding(.horizontal) // Horizontal padding for alignment
-                        .padding(.bottom, 20) // Add a bit of bottom padding so it doesn't clash with tab bar
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
                         .onChange(of: scrollID) { _, newID in
                             guard let id = newID else { return }
                             withAnimation(.easeInOut(duration: 0.5)) {
@@ -385,7 +380,7 @@ struct ScreenTimeView: View {
             }
         }
         .navigationTitle("")
-        .navigationBarHidden(true) // Remove the navigation bar to save space
+        .navigationBarHidden(true)
         .onAppear {
             print("\n")
             isActive = true
@@ -475,7 +470,6 @@ struct ScreenTimeView: View {
                 print("❌ Failed to mark milestones used: \(error.localizedDescription)")
             } else {
                 print("✅ Milestones marked used and saved to Firestore.")
-                // Refresh overlay state
                 updateOverlayState()
             }
         }
@@ -522,7 +516,7 @@ struct ProgressBarView: View {
                 Rectangle()
                     .frame(width: CGFloat(progress) * geometry.size.width, height: geometry.size.height)
                     .foregroundColor(color)
-                    .animation(.easeInOut(duration: 2.0), value: progress) // Matches the duration of the animation
+                    .animation(.easeInOut(duration: 2.0), value: progress)
             }
             .cornerRadius(geometry.size.height / 2)
         }
@@ -532,7 +526,7 @@ struct ProgressBarView: View {
 struct ScreenTimeView_Previews: PreviewProvider {
     static var previews: some View {
         ScreenTimeView()
-            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(ThemeManager())
             .environmentObject(GoalManager())
             .environmentObject(AppState())
     }

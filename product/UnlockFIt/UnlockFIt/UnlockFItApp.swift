@@ -43,7 +43,6 @@ struct UnlockFitApp: App {
                     }
                 }
                 screenTimeManager.historyManager = screenTimeHistory
-                // Delay needed to ensure UIWindow is fully available
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     UnlockFitApp.resetApp(
                         screenTimeManager: screenTimeManager,

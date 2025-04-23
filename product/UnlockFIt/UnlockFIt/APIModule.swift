@@ -6,8 +6,7 @@ class APIModule {
     let healthStore = HKHealthStore()
     
     private init() {}
-    
-    // MARK: - HealthKit Authorisation
+
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         let typesToRead: Set = [
             HKQuantityType.quantityType(forIdentifier: .stepCount)!,

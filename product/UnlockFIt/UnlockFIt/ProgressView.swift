@@ -280,7 +280,6 @@ struct MultiLineGraph: View {
     // Helper to generate day labels with single-letter weekdays and "TDY" for today
     private func generateDayLabels(count: Int) -> [String] {
         let calendar = Calendar.current
-        // Single-letter abbreviations: Sunday through Saturday
         let weekdayLetters = ["S", "M", "T", "W", "T", "F", "S"]
         return (0..<count).map { index in
             let offset = count - 1 - index

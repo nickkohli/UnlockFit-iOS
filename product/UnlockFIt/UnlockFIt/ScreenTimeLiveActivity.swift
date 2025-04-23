@@ -8,7 +8,6 @@ struct ScreenTimeLiveActivity: Widget {
             LiveActivityView(context: context)
         } dynamicIsland: { context in
             DynamicIsland {
-                // Expanded view
                 DynamicIslandExpandedRegion(.leading) {
                     let progress = max(min(context.state.timeRemaining / context.attributes.sessionDuration, 1.0), 0.0)
                     ZStack {
@@ -54,7 +53,7 @@ struct LiveActivityView: View {
 }
 
 struct RotatingRingView: View {
-    var progress: Double // from 1.0 (full circle) to 0.0 (empty)
+    var progress: Double
     var flashing: Bool = false
     @State private var ringOpacity: Double = 1.0
 
@@ -71,7 +70,7 @@ struct RotatingRingView: View {
                         style: StrokeStyle(lineWidth: 4, lineCap: .round)
                     )
                     .frame(width: 20, height: 20)
-                    .rotationEffect(.degrees(270)) // Start from top
+                    .rotationEffect(.degrees(270))
                     .animation(.linear(duration: 0.2), value: progress)
             } else {
                 Circle()

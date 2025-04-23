@@ -11,8 +11,8 @@ struct LoginView: View {
     
     @ObservedObject var profileViewModel: ProfileViewModel
     
-    @State private var username: String = "" // Email input
-    @State private var password: String = "" // Password input
+    @State private var username: String = ""
+    @State private var password: String = ""
     @State private var loginError: String?
     @State private var isLoggingIn = false
     @State private var showOnboarding = false
@@ -20,7 +20,7 @@ struct LoginView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                Color.black.edgesIgnoringSafeArea(.all) // Background color
+                Color.black.edgesIgnoringSafeArea(.all)
 
                 VStack(spacing: 20) {
                     // App Title
@@ -55,7 +55,7 @@ struct LoginView: View {
                     ZStack(alignment: .leading) {
                         if username.isEmpty {
                             Text("Email")
-                                .foregroundColor(Color.white.opacity(0.5)) // Lightened placeholder text color
+                                .foregroundColor(Color.white.opacity(0.5))
                                 .padding(.leading, 15)
                         }
                         TextField("", text: $username)
@@ -70,7 +70,7 @@ struct LoginView: View {
                     ZStack(alignment: .leading) {
                         if password.isEmpty {
                             Text("Password")
-                                .foregroundColor(Color.white.opacity(0.5)) // Lightened placeholder text color
+                                .foregroundColor(Color.white.opacity(0.5))
                                 .padding(.leading, 15)
                         }
                         SecureField("", text: $password)
@@ -211,10 +211,10 @@ struct LoginView: View {
                             .padding(.top, 5)
                     }
 
-                    Spacer() // Fills remaining space at the bottom
+                    Spacer()
                 }
                 .padding()
-                .navigationBarHidden(true) // Hide navigation bar
+                .navigationBarHidden(true)
             }
         }
     }

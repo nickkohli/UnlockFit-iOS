@@ -6,7 +6,7 @@ import Combine
 class ScreenTimeSessionManager: ObservableObject {
     @Published var isSessionActive: Bool = false
     @Published var isPaused: Bool = false
-    @Published var sessionDuration: TimeInterval = 0 // Duration in seconds
+    @Published var sessionDuration: TimeInterval = 0
     @Published var timeRemaining: TimeInterval = 0
     @Published var isFlashing: Bool = false
     @Published var historyManager: ScreenTimeHistoryManager?

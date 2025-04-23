@@ -32,7 +32,6 @@ struct NotificationSetupView: View {
 
                     ScrollView {
                         VStack(spacing: 30) {
-                            // Step 1
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 1: Enable Notifications 🔔")
@@ -75,7 +74,6 @@ struct NotificationSetupView: View {
                                 }
                             }
 
-                            // Step 2
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 2: Set Delivery to Immediate ⚡")
@@ -99,7 +97,6 @@ struct NotificationSetupView: View {
                                 Button(action: {
                                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(settingsURL)
-                                        // Delay marking step complete
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             deliverySet = true
                                         }
@@ -115,7 +112,6 @@ struct NotificationSetupView: View {
                                 .disabled(!notificationsEnabled)
                             }
 
-                            // Step 3
                             VStack(spacing: 10) {
                                 HStack {
                                     Text("Step 3: Make Banner Persistent 📌")
@@ -139,7 +135,6 @@ struct NotificationSetupView: View {
                                 Button(action: {
                                     if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
                                         UIApplication.shared.open(settingsURL)
-                                        // Delay marking step complete
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                                             bannerSet = true
                                         }

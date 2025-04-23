@@ -46,7 +46,7 @@ struct ProfileView: View {
                             }
                         }
                         .onTapGesture {
-                            isImagePickerPresented = true // Open image picker
+                            isImagePickerPresented = true
                         }
 
                         VStack(alignment: .leading) {
@@ -110,9 +110,9 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
                     }
-                    .scrollContentBackground(.hidden) // Hides the default list background
+                    .scrollContentBackground(.hidden)
 
-                    Spacer() // Push logout button to the bottom
+                    Spacer()
 
                     // Logout Button
                     Button(action: {
@@ -133,7 +133,7 @@ struct ProfileView: View {
                             .foregroundColor(.white)
                             .cornerRadius(10)
                             .padding(.horizontal)
-                            .padding(.bottom, 10) // Add padding at the bottom
+                            .padding(.bottom, 10)
                     }
                 }
                 

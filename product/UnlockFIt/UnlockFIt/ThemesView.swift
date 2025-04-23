@@ -32,7 +32,7 @@ struct ThemesView: View {
                         .foregroundColor(.white)
                         .font(.headline)
                 }
-                .toggleStyle(SwitchToggleStyle(tint: themeManager.accentColor)) // Dynamic tint color
+                .toggleStyle(SwitchToggleStyle(tint: themeManager.accentColor))
                 .padding(.vertical, 5)
             }
             

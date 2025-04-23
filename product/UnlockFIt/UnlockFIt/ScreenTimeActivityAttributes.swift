@@ -8,5 +8,5 @@ struct ScreenTimeActivityAttributes: ActivityAttributes {
         var isFlashingRing: Bool
     }
 
-    var sessionDuration: TimeInterval // The duration selected when session starts
+    var sessionDuration: TimeInterval
 }

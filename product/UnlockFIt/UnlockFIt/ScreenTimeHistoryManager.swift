@@ -5,7 +5,7 @@ import FirebaseAuth
 struct ScreenTimeSession: Codable, Identifiable {
     var id: UUID
     let date: Date
-    let duration: TimeInterval // in seconds
+    let duration: TimeInterval
 }
 
 class ScreenTimeHistoryManager: ObservableObject {

@@ -28,7 +28,7 @@ class ProfileViewModel: ObservableObject {
                let nickname = data["nickname"] as? String {
                 print("✅ fetchNickname success: \(nickname)")
                 DispatchQueue.main.async {
-                    self.nickname = nickname // <- update the @Published var here
+                    self.nickname = nickname
                 }
                 completion(nickname)
             } else {
@@ -59,7 +59,7 @@ class ProfileViewModel: ObservableObject {
                         }.resume()
                     }
 
-                    // 🔄 Sync app state + theme
+                    // Sync app state + theme
                     if let appState = appState {
                         appState.stepGoal = data["stepGoal"] as? Int ?? appState.stepGoal
                         appState.calorieGoal = data["calorieGoal"] as? Int ?? appState.calorieGoal

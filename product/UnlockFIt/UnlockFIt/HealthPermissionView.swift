@@ -23,7 +23,6 @@ struct HealthPermissionView: View {
                     .foregroundColor(.gray)
                     .multilineTextAlignment(.center)
 
-                // ── Health Details Explanation ──
                 VStack(alignment: .leading, spacing: 12) {
                     Text("How UnlockFit Uses Health Data 🩺")
                         .font(.headline)
@@ -37,7 +36,6 @@ struct HealthPermissionView: View {
                         .font(.subheadline)
                         .foregroundColor(.gray)
                     
-                    // Placeholder image for recommended settings
                     VStack {
                         Image("health_perms")
                             .resizable()

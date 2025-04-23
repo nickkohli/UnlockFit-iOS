@@ -9,8 +9,8 @@ struct FitnessView: View {
     @EnvironmentObject var goalManager: GoalManager
     @EnvironmentObject var appState: AppState
     @StateObject var profileViewModel = ProfileViewModel()
-    @State private var animateRings: Bool = false // State to control animation
-    @State private var hasAnimated: Bool = false // Tracks if animation has already been triggered
+    @State private var animateRings: Bool = false
+    @State private var hasAnimated: Bool = false
     @State private var isActive: Bool = true
     @State private var refreshTimer: Timer? = nil
     @State private var isRefreshing: Bool = false
@@ -351,7 +351,7 @@ And if multiple milestones unlock at once, they’ll all light up and get consum
             print("⏸ No data change – animation skipped.")
         }
     }
-    // MARK: - Milestone Helper Functions
+
     private func loadMilestoneState(completion: (() -> Void)? = nil) {
         guard let uid = Auth.auth().currentUser?.uid else { return }
         let db = Firestore.firestore()
@@ -467,7 +467,7 @@ struct ProgressRingView: View {
 struct GoalMilestoneBar: View {
     let title: String
     let progress: Double
-    let milestones: [Int] // 0 = unhit, 1 = hit, 2 = used
+    let milestones: [Int]
     let gradient: LinearGradient
 
     var body: some View {
@@ -499,13 +499,12 @@ struct GoalMilestoneBar: View {
                                 milestones[i] == 1 ? Color.white :
                                 Color.black
                             )
-                            // Animate color and scale changes smoothly
                             .animation(.easeInOut(duration: 0.3), value: milestones[i])
-                            .offset(x: offsets[i], y: 7.5) // Adjust Y-offset if needed
+                            .offset(x: offsets[i], y: 7.5)
                     }
                 }
             }
-            .frame(height: 25) // Ensure there's space for both bar and dots
+            .frame(height: 25)
             .animation(.easeInOut(duration: 0.8), value: milestones)
         }
     }
@@ -514,7 +513,7 @@ struct GoalMilestoneBar: View {
 struct FitnessView_Previews: PreviewProvider {
     static var previews: some View {
         FitnessView()
-            .environmentObject(ThemeManager()) // Inject ThemeManager for preview
+            .environmentObject(ThemeManager())
             .environmentObject(GoalManager())
             .environmentObject(AppState())
     }

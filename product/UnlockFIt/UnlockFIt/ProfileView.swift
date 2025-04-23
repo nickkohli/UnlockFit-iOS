@@ -72,7 +72,7 @@ struct ProfileView: View {
                     .cornerRadius(15)
                     .padding(.horizontal)
 
-                    // Settings Section: navigation links for health details, goal changes, app settings, and privacy.
+                    // Settings Section: navigation links for health details, goal changes, app settings, privacy & information.
                     // Settings Section
                     List {
                         // Section header for Health Settings settings.
@@ -110,14 +110,21 @@ struct ProfileView: View {
                         }
                         .listRowBackground(Color.gray.opacity(0.2))
 
-                        // Section header for Privacy settings.
-                        Section(header: Text("Privacy").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
+                        // Section header for Privacy and Information
+                        Section(header: Text("Information").foregroundColor(.gray) .frame(maxWidth: .infinity, alignment: .leading)) {
                             NavigationLink(destination: PrivacyView()
                                 .environmentObject(appState)
                                 .environmentObject(themeManager)
                             ) {
                                 Label("UnlockFit Privacy", systemImage: "lock.fill")
                                     .foregroundColor(.purple)
+                            }
+                            NavigationLink(destination: InstructionView()
+                                .environmentObject(appState)
+                                .environmentObject(themeManager)
+                            ) {
+                                Label("How UnlockFit Works", systemImage: "info.circle")
+                                    .foregroundColor(.blue)
                             }
                         }
                         .listRowBackground(Color.gray.opacity(0.2))

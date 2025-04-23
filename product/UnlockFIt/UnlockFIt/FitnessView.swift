@@ -249,6 +249,8 @@ struct FitnessView: View {
 As you hit 25%, 50%, 75%, and 100% of your daily steps, calories, and flights goals, each milestone unlocks a screen time session (hit them all and get unlimited sessions!).
 
 And if multiple milestones unlock at once, they’ll all light up and get consumed together when you start a session - so cash them in wisely!
+
+For more info, see Profile → How UnlockFit Works.
 """)
                             .font(.body)
                             .foregroundColor(.white)

@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict/>
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>UnlockFit requires access to your health data to track your steps, calories, and exercise time.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>UnlockFit uses your activity data to personalise your fitness goals and progress rings.</string>
+	<key>NSSystemExtensionUsageDescription</key>
+	<string>UnlockFit uses system extension capabilities to limit distractions by monitoring app usage.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app needs access to screen time usage to help improve your focus and fitness goals.</string>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundlePrimaryIcon</key>
+		<dict>
+			<key>CFBundleIconName</key>
+			<string>AppIcon</string>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string></string>
+			</array>
+			<key>UIPrerenderedIcon</key>
+			<false/>
+			<key>CFBundleIconFiles</key>
+			<array>
+				<string>AppIcon</string>
+			</array>
+			<key>UINewsstandBindingType</key>
+			<string>UINewsstandBindingTypeMagazine</string>
+			<key>UINewsstandBindingEdge</key>
+			<string>UINewsstandBindingEdgeLeft</string>
+		</dict>
+	</dict>
+	<key>NSSupportsLiveActivities</key>
+	<true/>
+</dict>
 </plist>

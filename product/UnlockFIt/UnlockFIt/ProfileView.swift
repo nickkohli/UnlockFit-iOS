@@ -316,3 +316,4 @@ struct ProfileView_Previews: PreviewProvider {
             .environmentObject(GoalManager())
     }
 }
+

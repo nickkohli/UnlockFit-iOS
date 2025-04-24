@@ -163,6 +163,8 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
 ## Upcoming Milestones
 - **Integrate Screen Time API:** Contact Apple for access to the Screen Time API and explore incorporation into future app updates once available.
 - **Community Features:** Explore options for shared challenges and leaderboards.
+- **App Packaging:** Prepare the project for distribution as a testable package to facilitate further development and beta testing.
+- **App Store Release:** Complete App Store submission requirements including App Store assets, compliance checks, and final testing for public release.
 
 ---
 

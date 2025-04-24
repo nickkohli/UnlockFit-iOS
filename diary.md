@@ -2,6 +2,55 @@
 
 ---
 
+## **24th April 2025**
+I completed the final polish and resolved the outstanding asset issues. The notification icon display was fixed by restoring the provisioning profile configuration and updating the CFBundleIcons entries. I verified that the icons rendered correctly on physical devices.
+
+The app icon assets were refreshed to ensure consistency across all resolutions, and deprecated image sets were removed. I also conducted end-to-end smoke tests on both iPhone and iPad simulators to confirm there were no regressions in launch or notification behaviour.
+
+---
+
+## **23rd April 2025**
+My focus was on code quality, internationalisation, and preparing for a feature walkthrough. I reviewed and refined all code comments, standardising terminology to British English and removing redundant annotations. Additionally, I temporarily disabled the release success overlay in ScreenTimeView to streamline the first public demonstration, while preserving the code for later reactivation.
+
+I finalised the InstructionView content by adding detailed connectivity recommendations, minimum session duration guidance, and integrating illustrative screenshots. To help new users, I developed a step-by-step InstructionView walkthrough page complete with annotated visuals. Furthermore, I introduced four new themes — Performance, Slate, Aurora, and Cyberpunk — with defined accent colour pairings in ThemeManager and updated ThemesView accordingly.
+
+---
+
+## **22nd April 2025**
+I enhanced the milestone tracking logic and improved user interface responsiveness. The milestone state loading and animation triggers were reordered to ensure that data is fetched prior to UI animation. FitnessView was updated to reflect real-time milestone progress at 25%, 50%, 75%, and 100%, with only a single unlock per data refresh.
+
+The AppState milestone lock logic was refactored to animate overlay visibility when milestones are achieved or consumed. Informational overlays were added to explain milestone rules, unlimited session conditions, and the midnight reset behaviour. I also fixed the progress bar duplicate animation by introducing a first-appearance guard and smoothing transitions.
+
+---
+
+## **21st April 2025**
+I completed the integration of the flights climbed metric and made several UI enhancements. The previous minute-based goal was replaced with flights climbed across all views, and I confirmed that HealthKit data retrieval and Firestore synchronisation were working correctly. A new 'Ulku' theme was added, featuring a turquoise-to-blue gradient, which was integrated into CustomColors and ThemeManager.
+
+The double-bounce animation issue in FitnessView was resolved by delaying the ring animation trigger until HealthKit data stability was ensured. I implemented an animated greeting section in FitnessView with gradient nickname rendering and a fade-in effect. Additionally, the FitnessView refresh button was relocated and restyled, and debug messages were logged for background timer events.
+
+---
+
+## **20th April 2025**
+I stabilised background refresh processes and improved chart interactions. Both automatic and manual refresh were enabled in FitnessView, with background timers that pause when the view is not visible. A refresh spinner and haptic feedback were implemented on the ProgressView reload action to enhance user experience.
+
+Furthermore, I developed a weekly screen time bar chart featuring a sticky header and a scrollable layout. Smooth auto-scroll functionality was ensured on bar taps, making the interface more intuitive and responsive.
+
+---
+
+## **19th April 2025**
+I addressed Firestore synchronisation and user session persistence. Screen time history was synced with Firestore, and the onboarding flow was adjusted to return to WelcomeView on logout. A goal save confirmation overlay was added, which includes confetti animation, haptic feedback, and button lockout until the save process completes.
+
+To maintain consistency, default goal and theme values now persist after app relaunch by syncing AppState on MainTabView load. Profile image upload to Firebase Storage was integrated, and user nickname and email are loaded from Firestore to personalise the experience.
+
+---
+
+## **18th April 2025**
+I established a robust authentication and registration flow by integrating the Firebase SDK via Swift Package Manager and configuring app-wide authentication setup. A RegisterView was added, which includes a nickname field, input validation, and navigation from LoginView. The Firebase registration logic was implemented to save default user data such as profile image URL, goals, and theme to Firestore.
+
+I created NotificationSetupView and fixed environment object injection issues to enable a scrollable layout with a fixed header. The WelcomeView flow was refactored to reset the root view on login state change, and I validated the UIWindow override to ensure a secure reset process.
+
+---
+
 ## **17th April 2025**
 Finally finished the full Live Activity integration. Got the rotating ring in the Dynamic Island working and animating based on the timer progress — had some strange clipping issues at first but sorted it by adjusting padding and ring sizing. Also added a red flashing ring when the timer ends, which took a lot of trial and error to get the flashing to work properly with SwiftUI.
 
@@ -64,10 +113,10 @@ In `FitnessView`, I added interactive progress rings and goal tracking to make t
 
 ## **4th December 2024**
 The GitLab repository for UnlockFit was set up today to ensure proper version control and a structured development process. The repository includes:
-- `diary.md` for tracking weekly progress.
-- A `product/` folder to store the core project files for the app.
-- A `documents/` folder for reports and presentations.
-- A `.gitignore` file to exclude unnecessary files such as simulator data.
+ -  `diary.md` for tracking weekly progress.
+ -  A `product/` folder to store the core project files for the app.
+ -  A `documents/` folder for reports and presentations.
+ -  A `.gitignore` file to exclude unnecessary files such as simulator data.
 
 An initial README.md file was created to summarise the project’s objectives and structure. I tested GitLab access by making initial test commits, confirming a smooth workflow.
 

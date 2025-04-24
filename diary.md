@@ -1,6 +1,8 @@
 # UnlockFit - Project Diary
 
 ---
+This diary provides a detailed and chronological account of all significant milestones and progress made during the development of UnlockFit. It serves as a reflective tool to track achievements and areas of improvement throughout the project.
+---
 
 ## **24th April 2025**
 I completed the final polish and resolved the outstanding asset issues. The notification icon display was fixed by restoring the provisioning profile configuration and updating the CFBundleIcons entries. I verified that the icons rendered correctly on physical devices.
@@ -121,5 +123,3 @@ The GitLab repository for UnlockFit was set up today to ensure proper version co
 An initial README.md file was created to summarise the project’s objectives and structure. I tested GitLab access by making initial test commits, confirming a smooth workflow.
 
 ---
-
-This diary provides a detailed and chronological account of all significant milestones and progress made during the development of UnlockFit. It serves as a reflective tool to track achievements and areas of improvement throughout the project.

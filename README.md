@@ -1,4 +1,7 @@
+
 # UnlockFit
+
+**Gamified iOS wellness app linking physical activity to controlled screen time.**
 
 ## Project Overview
 UnlockFit is a gamified wellness application that links physical activity with controlled screen time access. Users complete personalised fitness goals (steps, active calories, and flights climbed) to earn timed screen sessions, reinforcing disciplined digital habits through measurable physical progress.
@@ -195,8 +198,23 @@ A template file is included in the repository:
 
 ---
 
-## Screenshots / Demo Link
-*Coming soon.*
+
+## Screenshots
+
+A selection of key application flows is shown below.  
+The full gallery is available in `documents/screenshots/`.
+
+### Fitness & Progress
+![Fitness](documents/screenshots/fitness.jpg)
+![Progress](documents/screenshots/progress.jpg)
+
+### Screen Time & Notifications
+![Screen Time](documents/screenshots/screentime.jpg)
+![Notification Setup](documents/screenshots/notification-setup.jpg)
+
+### Authentication & Profile
+![Login](documents/screenshots/login.jpg)
+![Profile](documents/screenshots/profile.jpg)
 
 ---
 

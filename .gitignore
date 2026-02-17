@@ -2,13 +2,19 @@
 .DS_Store
 
 # Xcode
-*.xcuserdata
-*.xcworkspace
 DerivedData/
 build/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+xcuserdata/
+*.xcbkptlist
+# Xcode workspace user data (within .xcodeproj)
+*.xcodeproj/project.xcworkspace/
 
-# Swift Package Manager
+# SwiftPM
 .build/
+Package.resolved
 
-# Logs
-*.log
+# Firebase / secrets
+**/GoogleService-Info.plist

@@ -1,7 +1,11 @@
 # UnlockFit
 
 ## Project Overview
-UnlockFit is a comprehensive, gamified wellness app that tightly weaves together physical activity and digital wellness goals through HealthKit and Firebase Firestore’s real time sync. At its core, UnlockFit requires you to meet personalised fitness challenges, steps, active calories and flights climbed, to “earn” screen time sessions you can then start and stop yourself, promoting discipline and rewarding healthy behaviour. Behind the scenes, every HealthKit reading and goal adjustment immediately writes to Firestore (and propagates across your devices via snapshot listeners), while milestone progress, visualised as concentric rings and dot arrays, and seven day screen time logs persist in arrays that unlock extra sessions as you hit thresholds. The result is a seamless loop: move to earn digital freedom, track both metrics in real time, and see weekly trends and your “best day” highlighted in the Progress tab. Offline caching makes sure there's no data loss, midnight resets guarantee a fresh start each day, and customisable profile and notification settings, all bound to Firestore, let you tailor the experience so UnlockFit not only motivates physical well being but also cultivates mindful screen time balance in one unified, interactive package.
+UnlockFit is a gamified wellness application that links physical activity with controlled screen time access. Users complete personalised fitness goals (steps, active calories, and flights climbed) to earn timed screen sessions, reinforcing disciplined digital habits through measurable physical progress.
+
+The app integrates HealthKit for real-time fitness tracking and Firebase Firestore for synchronised user data across devices. Every goal update, milestone unlock, and screen session is written to Firestore and reflected instantly via snapshot listeners, ensuring consistent cross-device state.
+
+Progress is visualised through concentric activity rings, milestone indicators, and seven-day screen time logs. Offline caching prevents data loss, scheduled midnight resets maintain daily integrity, and customisable themes and profile settings allow users to tailor their experience while maintaining a structured behavioural feedback loop.
 
 ---
 
@@ -22,15 +26,14 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
 - **Swift and SwiftUI:** For seamless UI development and declarative design.
 - **HealthKit API:** Integrated to track fitness metrics like steps, active energy, and flights climbed.
 - **Firebase Firestore:** Real-time synchronisation, offline caching, and snapshot listeners for user data.
-- **GitLab:** Used for version control and collaborative development.
-- **Screen Time API:** Depreciated / Not used due to limitations; screen time logic is custom-implemented using Firestore and internal session tracking.
+- **Git:** Version control and collaborative development workflow.
+- **Screen Time API:** Not used due to platform limitations; screen time logic is implemented using internal session tracking and Firestore.
 
 ---
 
 ## Repository Structure
 ```
-/
-└── PROJECT/                                            # Root directory containing all project files and resources
+    /
     ├── README.md                                       # Overview of the project, setup instructions, and documentation
     ├── diary.md                                        # Project diary tracking progress, updates, and notes
     └── product/                                        # Core project files for UnlockFIt application
@@ -54,7 +57,7 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
             │   ├── MoveGoalView.swift                  # UI for setting and displaying move goals
             │   ├── CustomColors.swift                  # Defines custom colour palette used in UI
             │   ├── ViewModifiers.swift                 # Reusable SwiftUI view modifiers
-            │   ├── GoogleService-Info.plist            # Firebase configuration file for Google services
+            │   ├── GoogleService-Info.template.plist   # Template Firebase configuration file (replace with your own)
             │   ├── ThemeManager.swift                  # Handles dynamic theming across the app
             │   ├── WelcomeView.swift                   # UI shown on first launch or after logout
             │   ├── ScreenTimeActivityAttributes.swift  # Attributes for Live Activity widget
@@ -95,10 +98,7 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
             │   ├── project.pbxproj                     # Project configuration and file references
             │   ├── project.xcworkspace/                # Workspace data for Xcode
             │   │   ├── contents.xcworkspacedata
-            │   │   ├── xcuserdata/                     # User-specific workspace settings
-            │   │   │   └── woozy.xcuserdatad/
-            │   │   │       ├── IDEFindNavigatorScopes.plist
-            │   │   │       └── UserInterfaceState.xcuserstate
+            │   │   |
             │   │   └── xcshareddata/                   # Shared workspace data (SwiftPM, schemes)
             │   │       └── swiftpm/
             │   │           └── Package.resolved
@@ -106,12 +106,7 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
             │   │   └── xcschemes/
             │   │       ├── UnlockFIt.xcscheme
             │   │       └── UnlockFItWidgetExtension.xcscheme
-            │   └── xcuserdata/                         # User-specific project settings
-            │       └── woozy.xcuserdatad/
-            │           ├── xcdebugger/
-            │           │   └── Breakpoints_v2.xcbkptlist
-            │           └── xcschemes/
-            │               └── xcschememanagement.plist
+            │   |
             ├── UnlockFItTests/                         # Unit test target for core app logic
             │   └── UnlockFItTests.swift                # Test cases for UnlockFIt modules
             ├── UnlockFItUITests/                       # UI test target for app interface
@@ -161,17 +156,33 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
 ---
 
 ## Upcoming Milestones
-- **Integrate Screen Time API:** Contact Apple for access to the Screen Time API and explore incorporation into future app updates once available.
+- **Screen Time API Integration:** Explore deeper integration with Apple Screen Time APIs as platform capabilities evolve.
 - **Community Features:** Explore options for shared challenges and leaderboards.
 - **App Packaging:** Prepare the project for distribution as a testable package to facilitate further development and beta testing.
 - **App Store Release:** Complete App Store submission requirements including App Store assets, compliance checks, and final testing for public release.
 
 ---
 
+## Setup (Firebase)
+
+This project uses Firebase for authentication and real-time data synchronisation.
+
+1. Create a Firebase project in the Firebase Console.
+2. Add an iOS app to the project.
+3. Download your `GoogleService-Info.plist`.
+4. Place the file in:
+   `product/UnlockFIt/UnlockFIt/`
+5. Build and run the project in Xcode.
+
+A template file is included in the repository:
+`GoogleService-Info.template.plist`
+
+---
+
 ## How to Run
 1. Clone this repository:
    ```bash
-   git clone https://gitlab.cim.rhul.ac.uk/zlac300/PROJECT.git
+   git clone ___
    ```
 2. Open the project in Xcode.
 3. Select your target device or simulator.
@@ -186,11 +197,10 @@ UnlockFit is a comprehensive, gamified wellness app that tightly weaves together
 ---
 
 ## Contributing
-After the 24th of April 2025, contributions are welcome! If you'd like to contribute to UnlockFit, please fork the repository and create a pull request with your proposed changes.
+Contributions are welcome! If you'd like to contribute to UnlockFit, please fork the repository and create a pull request with your proposed changes.
 
 ---
 
 ## Contact
 **Developer:** Nick Kohli  
-**Supervisor:** Dr. Nguyen Khuong  
-For any questions or feedback, please contact zlac300@live.rhul.ac.uk.
+For questions or collaboration, feel free to connect via GitHub or LinkedIn.

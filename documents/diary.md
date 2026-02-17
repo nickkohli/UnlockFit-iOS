@@ -4,6 +4,17 @@
 This diary provides a chronological account of key development milestones and technical decisions made during the evolution of UnlockFit.
 ---
 
+## **17th February 2026**
+Prepared UnlockFit for public release on GitHub. Removed sensitive configuration files (Firebase credentials) and replaced them with a `GoogleService-Info.template.plist` to ensure secure distribution. Updated the `.gitignore` to prevent accidental exposure of environment files, API keys, and user-specific Xcode data.
+
+During security review, a publicly exposed Google API key was detected by Google Cloud. The compromised key was immediately rotated, restricted to the iOS bundle identifier (`com.zlac300.UnlockFIt`), and limited to required Firebase-related APIs. The entire Git history was rewritten using `git-filter-repo` to permanently remove the leaked `GoogleService-Info.plist` from all previous commits. The cleaned history was force-pushed to GitHub to ensure no credentials remained accessible in any commit snapshot.
+
+Restructured the repository to separate documentation into a `documents/` directory and added a `screenshots/` subdirectory for visual assets. Updated the README to reflect production-level architecture, setup instructions, repository structure, and embedded screenshots demonstrating core user flows (fitness tracking, progress analytics, screen time sessions, authentication, and notifications).
+
+Added GitHub repository metadata including topics, description, and enabled Releases for portfolio presentation. Included an MIT License to formalise open-source distribution and clarify usage rights.
+
+Created the initial public release (`v1.0.0`) to mark the first fully sanitised, portfolio-ready version of the project.
+
 ## **24th April 2025**
 I completed the final polish and resolved the outstanding asset issues. The notification icon display was fixed by restoring the provisioning profile configuration and updating the CFBundleIcons entries. I verified that the icons rendered correctly on physical devices.
 

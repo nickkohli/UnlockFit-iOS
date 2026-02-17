@@ -35,7 +35,8 @@ Progress is visualised through concentric activity rings, milestone indicators, 
 ```
     /
     ├── README.md                                       # Overview of the project, setup instructions, and documentation
-    ├── diary.md                                        # Project diary tracking progress, updates, and notes
+    ├── docs/
+    │   └── diary.md                                    # Project diary tracking progress and development notes
     └── product/                                        # Core project files for UnlockFIt application
         └── UnlockFIt/                                  # Main Xcode project for UnlockFIt
             ├── Info.plist                              # Configuration file defining app metadata and permissions
@@ -128,6 +129,8 @@ Progress is visualised through concentric activity rings, milestone indicators, 
                     └── AccentColor.colorset/
                         └── Contents.json
 ```
+
+The full development diary can be found in `docs/diary.md`, documenting architectural decisions, feature iterations, and technical refinements throughout the project lifecycle.
 
 ---
 

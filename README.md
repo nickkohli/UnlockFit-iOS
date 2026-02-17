@@ -37,7 +37,7 @@ Progress is visualised through concentric activity rings, milestone indicators, 
     ├── README.md                                       # Overview of the project, setup instructions, and documentation
     ├── diary.md                                        # Project diary tracking progress, updates, and notes
     └── product/                                        # Core project files for UnlockFIt application
-        └── UnlockFIt/                                  # Main Xcode workspace for UnlockFIt
+        └── UnlockFIt/                                  # Main Xcode project for UnlockFIt
             ├── Info.plist                              # Configuration file defining app metadata and permissions
             ├── UnlockFIt/                              # Source code folder for the UnlockFIt app
             │   ├── AppState.swift                      # Defines global application state management
@@ -182,12 +182,13 @@ A template file is included in the repository:
 ## How to Run
 1. Clone this repository:
    ```bash
-   git clone ___
+   git clone https://github.com/nickkohli/UnlockFit-iOS.git
    ```
-2. Open the project in Xcode.
+2. Open `product/UnlockFIt/UnlockFIt/UnlockFIt.xcodeproj` in Xcode.
 3. Select your target device or simulator.
 4. Build and run the project.
 5. Ensure HealthKit permissions are enabled in your device’s Settings for full functionality.
+6. Xcode 15+ is recommended. For full HealthKit functionality, run on a physical iPhone device.
 
 ---
 
